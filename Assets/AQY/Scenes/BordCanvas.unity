@@ -158,7 +158,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -36.1}
+  m_AnchoredPosition: {x: -70, y: -37}
   m_SizeDelta: {x: -1120, y: -607.9}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &94585120
@@ -622,8 +622,8 @@ MonoBehaviour:
   drawingImage: {fileID: 1521624550}
   brushSize: 5
   brushColor: {r: 0, g: 0, b: 0, a: 1}
-  minPointDistance: 1.5
-  lineSubdivisions: 10
+  minPointDistance: 10
+  lineSubdivisions: 20
 --- !u!1 &1753316908
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 7c291a8d2871d3148b67687ed4990bd3
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - cam: {instanceID: 0}
+  - groundMat: {instanceID: 0}
+  - brushTex: {fileID: 10912, guid: 0000000000000000f000000000000000, type: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
