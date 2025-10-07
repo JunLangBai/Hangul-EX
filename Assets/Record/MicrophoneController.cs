@@ -1,12 +1,22 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using System.IO; // 【新增】引入System.IO来处理文件路径
+using System.IO;
+using System.Threading.Tasks;
+using System.Collections;
+using UnityEngine.Networking;
 
 [RequireComponent(typeof(AudioSource))]
 public class MicrophoneController : MonoBehaviour
 {
-    // ... (您之前的UI关联和自定义按钮外观变量) ...
+    // =================================================================
+    // V V V  就是下面这几行代码，会在检视面板中生成“网络设置” V V V
+    [Header("网络设置")]
+    [Tooltip("您的Python上传脚本的完整URL地址")]
+    public string uploadURL = "http://your_domain_or_ip/upload";
+    // =================================================================
+
+
     [Header("UI元素关联")]
     [Tooltip("请将您在场景中创建的Button-TMP拖到这里")]
     public Button recordButton;
@@ -17,146 +27,119 @@ public class MicrophoneController : MonoBehaviour
     [Tooltip("未录音时，按钮上显示的文字")]
     public string startRecordingText = "开始录音";
     [Tooltip("正在录音时，按钮上显示的文字")]
-    public string stopRecordingText = "停止并播放";
+    public string stopRecordingText = "停止录音";
+    [Tooltip("保存音频时，按钮上显示的文字")]
+    public string savingText = "上传中...";
+
     [Tooltip("未录音时，按钮的颜色")]
     public Color idleColor = Color.white;
     [Tooltip("正在录音时，按钮的颜色")]
     public Color recordingColor = Color.red;
 
-    // 【新增】文件保存设置
     [Header("音频文件设置")]
     [Tooltip("保存的音频文件名（无需后缀）")]
     public string outputFileName = "my_recorded_audio";
-
-    // ... (私有变量) ...
+    
+    // --- 私有变量 ---
     private AudioSource audioSource;
     private bool isRecording = false;
+    private bool isSaving = false;
     private string microphoneDeviceName;
-    private string fullFilePath; // 【新增】用于存储完整文件路径
+    private string fullFilePath;
 
     void Start()
     {
-        // 1. 检查麦克风
         if (Microphone.devices.Length == 0)
         {
             Debug.LogWarning("未找到任何麦克风设备。");
-            if (recordButton != null)
-            {
-                recordButton.interactable = false;
-                buttonText.text = "无麦克风";
-            }
+            if (recordButton != null) { recordButton.interactable = false; buttonText.text = "无麦克风"; }
             return;
         }
-
-        // 2. 获取组件
         microphoneDeviceName = Microphone.devices[0];
         audioSource = GetComponent<AudioSource>();
-
-        // 3. 【核心修改】根据不同平台设置保存路径
         string savePath;
-
 #if UNITY_EDITOR
-        // 在Unity编辑器中，保存在 "Assets/Recordings" 文件夹下
         savePath = Path.Combine(Application.dataPath, "Recordings");
 #else
-        // 在发布的游戏中，保存在安全的 persistentDataPath
         savePath = Application.persistentDataPath;
 #endif
-
-        // 如果文件夹不存在，则创建它
-        if (!Directory.Exists(savePath))
-        {
-            Directory.CreateDirectory(savePath);
-        }
-
-        // 组合最终的文件路径（这里我们先不加后缀，方便后面切换wav/mp3）
+        if (!Directory.Exists(savePath)) { Directory.CreateDirectory(savePath); }
         fullFilePath = Path.Combine(savePath, outputFileName);
-        
-        // 在编辑器模式下，让Unity刷新资源数据库，这样新文件才能显示出来
-#if UNITY_EDITOR
-        UnityEditor.AssetDatabase.Refresh();
-#endif
-        
         Debug.Log($"音频文件将被保存到: {Path.GetFullPath(fullFilePath)}");
-
-
-        // 4. 检查UI关联
         if (recordButton == null || buttonText == null)
         {
             Debug.LogError("请在Inspector面板中关联Record Button和Button Text！");
             return;
         }
-
-        // 5. 添加按钮监听
         recordButton.onClick.AddListener(OnRecordButtonPressed);
-
-        // 6. 初始化UI
         UpdateUI();
     }
 
-    private void OnRecordButtonPressed()
+    private void OnRecordButtonPressed() { if (isRecording) { StopRecordingAndProcess(); } else if (!isSaving) { StartRecording(); } }
+
+    private void StartRecording() { if (audioSource.isPlaying) { audioSource.Stop(); } Debug.Log("开始录音..."); audioSource.clip = Microphone.Start(microphoneDeviceName, true, 300, 22050); isRecording = true; UpdateUI(); }
+
+    private void StopRecordingAndProcess()
     {
-        if (isRecording)
-        {
-            // --- 停止录音 ---
-            Microphone.End(microphoneDeviceName);
-            isRecording = false;
-            Debug.Log("停止录音...");
-
-            // 【新增】调用保存方法
-            SaveAudio();
-
-            // 播放录制的音频
-            if (audioSource.clip != null)
-            {
-                audioSource.Play();
-            }
-        }
-        else
-        {
-            // --- 开始录音 ---
-            // 开始前先确保之前的播放已停止
-            if (audioSource.isPlaying)
-            {
-                audioSource.Stop();
-            }
-            
-            Debug.Log("开始录音...");
-            audioSource.clip = Microphone.Start(microphoneDeviceName, true, 300, 44100); // 录制300秒 (5分钟)
-            isRecording = true;
-        }
-
+        int lastSamplePosition = Microphone.GetPosition(microphoneDeviceName);
+        Microphone.End(microphoneDeviceName);
+        isRecording = false;
+        Debug.Log("停止录音...");
+        if (lastSamplePosition <= 0) { Debug.LogWarning("录音时间过短，不进行处理。"); UpdateUI(); return; }
+        AudioClip originalClip = audioSource.clip;
+        float[] audioData = new float[lastSamplePosition * originalClip.channels];
+        originalClip.GetData(audioData, 0);
+        int channels = originalClip.channels;
+        int frequency = originalClip.frequency;
+        isSaving = true;
         UpdateUI();
+        SaveAudioAsync(audioData, channels, frequency);
     }
-
-    /// <summary>
-    /// 【新增】保存音频文件的方法
-    /// </summary>
-    private void SaveAudio()
+    
+    private async void SaveAudioAsync(float[] samples, int channels, int frequency)
     {
-        if (audioSource.clip == null)
+        string wavFilePath = fullFilePath + ".wav";
+        Debug.Log("开始异步保存到本地...");
+        bool success = await Task.Run(() => SavWav.Save(wavFilePath, samples, frequency, channels));
+        if (success)
         {
-            Debug.LogError("没有可保存的音频片段！");
-            return;
-        }
-        
-        // 使用我们的帮助类来保存文件
-        Debug.Log($"正在保存音频文件到: {fullFilePath}");
-        SavWav.Save(fullFilePath, audioSource.clip);
-    }
-
-    private void UpdateUI()
-    {
-        // ... (此部分代码无需改变) ...
-        if (isRecording)
-        {
-            buttonText.text = stopRecordingText;
-            recordButton.GetComponent<Image>().color = recordingColor;
+            Debug.Log("本地保存成功！开始上传...");
+            StartCoroutine(UploadAudio(wavFilePath));
         }
         else
         {
-            buttonText.text = startRecordingText;
-            recordButton.GetComponent<Image>().color = idleColor;
+            Debug.LogError("本地保存失败！");
+            isSaving = false;
+            UpdateUI();
         }
     }
+
+    IEnumerator UploadAudio(string filePath)
+    {
+        WWWForm form = new WWWForm();
+        byte[] fileData = File.ReadAllBytes(filePath);
+        string fileName = Path.GetFileName(filePath);
+        form.AddBinaryData("file", fileData, fileName, "audio/wav");
+        using (UnityWebRequest www = UnityWebRequest.Post(uploadURL, form))
+        {
+            Debug.Log("正在上传文件...");
+            yield return www.SendWebRequest();
+            if (www.result != UnityWebRequest.Result.Success)
+            {
+                Debug.LogError("上传失败: " + www.error);
+                Debug.LogError("服务器响应: " + www.downloadHandler.text);
+            }
+            else
+            {
+                Debug.Log("上传成功！服务器响应: " + www.downloadHandler.text);
+            }
+        }
+        isSaving = false;
+        UpdateUI();
+#if UNITY_EDITOR
+        UnityEditor.AssetDatabase.Refresh();
+#endif
+    }
+    
+    private void UpdateUI() { if (isSaving) { recordButton.interactable = false; buttonText.text = savingText; } else if (isRecording) { recordButton.interactable = true; buttonText.text = stopRecordingText; recordButton.GetComponent<Image>().color = recordingColor; } else { recordButton.interactable = true; buttonText.text = startRecordingText; recordButton.GetComponent<Image>().color = idleColor; } }
 }

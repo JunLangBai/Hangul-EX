@@ -711,13 +711,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8d4535249d824b447aec11480288d25e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  uploadURL: http://110.40.170.159/upload
   recordButton: {fileID: 972688985}
   buttonText: {fileID: 624745218}
   startRecordingText: Record
   stopRecordingText: Stop and Play
+  savingText: "\u4FDD\u5B58\u4E2D..."
   idleColor: {r: 1, g: 1, b: 1, a: 1}
   recordingColor: {r: 1, g: 0, b: 0, a: 1}
-  statusText: {fileID: 624745218}
+  outputFileName: 1
 --- !u!4 &1369579999
 Transform:
   m_ObjectHideFlags: 0
