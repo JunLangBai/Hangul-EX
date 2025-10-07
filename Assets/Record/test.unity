@@ -717,7 +717,7 @@ MonoBehaviour:
   stopRecordingText: Stop and Play
   idleColor: {r: 1, g: 1, b: 1, a: 1}
   recordingColor: {r: 1, g: 0, b: 0, a: 1}
-  statusText: {fileID: 624745218}
+  outputFileName: 1
 --- !u!4 &1369579999
 Transform:
   m_ObjectHideFlags: 0
