@@ -1,4 +1,4 @@
-    using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -10,6 +10,7 @@ using UnityEngine.UI;
 ///     - 添加最“小点距”判断，避免在原地不动时产生大量冗余数据点。
 ///     - 添加“线段细分”参数，可以控制曲线的平滑程度。
 ///     - 优化了数据结构和绘制逻辑，只在需要时才绘制新的曲线段。
+///     - 新增了撤销功能 (Undo)。
 /// </summary>
 public class DrawingBoard : MonoBehaviour,
     IPointerDownHandler, IPointerUpHandler,
@@ -36,6 +37,11 @@ public class DrawingBoard : MonoBehaviour,
     // 用于存储当前笔画的所有采样点
     private readonly List<Vector2> strokePoints = new();
 
+    // --- 撤销功能 ---
+    // 用于存储历史记录的栈
+    private readonly Stack<Color[]> history = new Stack<Color[]>();
+
+
     private void Start()
     {
         // 初始化画布
@@ -45,7 +51,7 @@ public class DrawingBoard : MonoBehaviour,
         drawingTexture.wrapMode = TextureWrapMode.Clamp;
 
         pixels = new Color[drawingTexture.width * drawingTexture.height];
-        ClearCanvas();
+        ClearCanvasAndHistory(); // 初始时清空画布和历史记录
         drawingImage.texture = drawingTexture;
     }
 
@@ -94,6 +100,10 @@ public class DrawingBoard : MonoBehaviour,
     /// </summary>
     public void OnPointerDown(PointerEventData eventData)
     {
+        // --- 撤销功能 ---
+        // 在开始新的笔画之前，保存当前画布状态
+        SaveHistory();
+
         isDrawing = true;
 
         // 清空上一笔的点
@@ -115,6 +125,8 @@ public class DrawingBoard : MonoBehaviour,
         DrawCircle(coord, brushSize);
         UpdateTexture();
     }
+
+
 
     /// <summary>
     ///     抬起时，结束笔画并处理最后一段曲线
@@ -141,6 +153,45 @@ public class DrawingBoard : MonoBehaviour,
 
         strokePoints.Clear();
     }
+    
+    // --- 撤销功能 ---
+    /// <summary>
+    /// 撤销上一步操作
+    /// </summary>
+    public void Undo()
+    {
+        if (history.Count > 0)
+        {
+            // 从栈中弹出上一个状态的像素数据
+            var previousPixels = history.Pop();
+            
+            // 将当前像素数组恢复到上一个状态
+            // System.Array.Copy 比 for 循环更快
+            System.Array.Copy(previousPixels, pixels, previousPixels.Length);
+            
+            // 更新纹理以显示变化
+            UpdateTexture();
+        }
+        else
+        {
+            Debug.Log("没有更多历史记录可供撤销。");
+        }
+    }
+
+    // --- 撤销功能 ---
+    /// <summary>
+    /// 保存当前画布状态到历史记录
+    /// </summary>
+    private void SaveHistory()
+    {
+        // 创建当前像素数组的副本
+        var pixelsCopy = new Color[pixels.Length];
+        System.Array.Copy(pixels, pixelsCopy, pixels.Length);
+        
+        // 将副本压入栈中
+        history.Push(pixelsCopy);
+    }
+
 
     /// <summary>
     ///     绘制一段 Catmull-Rom 样条曲线（从 p1 到 p2）
@@ -163,12 +214,6 @@ public class DrawingBoard : MonoBehaviour,
     /// <summary>
     ///     Catmull-Rom 样条插值函数
     /// </summary>
-    /// <param name="t">插值因子，范围 [0, 1]</param>
-    /// <param name="p0">起始点的前一个点（控制点）</param>
-    /// <param name="p1">起始点</param>
-    /// <param name="p2">结束点</param>
-    /// <param name="p3">结束点的后一个点（控制点）</param>
-    /// <returns>在 p1 和 p2 之间的曲线上的一点</returns>
     private Vector2 GetCatmullRomPosition(float t, Vector2 p0, Vector2 p1, Vector2 p2, Vector2 p3)
     {
         // Catmull-Rom样条公式
@@ -180,7 +225,7 @@ public class DrawingBoard : MonoBehaviour,
         return 0.5f * (a + b * t + c * t * t + d * t * t * t);
     }
 
-    // --- 以下是基本绘图和坐标转换函数，与原版类似，但做了一些小优化 ---
+    // --- 以下是基本绘图和坐标转换函数 ---
 
     private void DrawLine(Vector2 start, Vector2 end)
     {
@@ -239,19 +284,16 @@ public class DrawingBoard : MonoBehaviour,
             var w = rect.width;
             var h = rect.height;
 
-            // 将 localPoint 转换到 UV 坐标 (0-1范围)
             var uv = new Vector2(
                 (localPoint.x + w * 0.5f) / w,
                 (localPoint.y + h * 0.5f) / h
             );
 
-            // 检查是否在 UV 范围内
             if (uv.x >= 0 && uv.x <= 1 && uv.y >= 0 && uv.y <= 1)
-                // 将 UV 坐标转换为纹理像素坐标
                 return new Vector2(uv.x * drawingTexture.width, uv.y * drawingTexture.height);
         }
 
-        return new Vector2(-1, -1); // 表示无效坐标
+        return new Vector2(-1, -1);
     }
 
     private bool IsValidCoordinate(Vector2 coord)
@@ -262,11 +304,30 @@ public class DrawingBoard : MonoBehaviour,
     private void UpdateTexture()
     {
         drawingTexture.SetPixels(pixels);
-        drawingTexture.Apply(false); // 使用 false 参数避免不必要的 Mipmap 更新，性能更好
+        drawingTexture.Apply(false);
     }
-
+    
+    /// <summary>
+    /// 清空画布（此操作可被撤销）
+    /// </summary>
     public void ClearCanvas()
     {
+        // --- 撤销功能 ---
+        // 保存清除前的状态，这样清除操作本身也可以被撤销
+        SaveHistory();
+
+        var fillColor = Color.white;
+        for (var i = 0; i < pixels.Length; i++) pixels[i] = fillColor;
+        UpdateTexture();
+    }
+    
+    // --- 撤销功能 --- 
+    /// <summary>
+    /// 清空画布并重置所有历史记录
+    /// </summary>
+    public void ClearCanvasAndHistory()
+    {
+        history.Clear();
         var fillColor = Color.white;
         for (var i = 0; i < pixels.Length; i++) pixels[i] = fillColor;
         UpdateTexture();
