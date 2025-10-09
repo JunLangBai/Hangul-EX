@@ -9,7 +9,9 @@ public class CanvasDragHandle : MonoBehaviour
     
     [Header("UI 组件（Inspector 绑定）")]
     public CanvasGroup panelCanvasGroup;
+    public CanvasGroup penCanvasGroup;
     public Button toggleButton; // 请确保这个按钮不是 panel 的子对象（或至少在外面可以点击）
+    public Button penButton;
 
     [Header("动画设置")]
     public float duration = 0.35f;
@@ -19,6 +21,7 @@ public class CanvasDragHandle : MonoBehaviour
     public bool useSetActiveWhenHidden = false;
 
     private bool isShown = false;
+    private bool isPen = false;
 
     private void Awake()
     {
@@ -35,7 +38,16 @@ public class CanvasDragHandle : MonoBehaviour
         }
         else
         {
-            toggleButton.onClick.AddListener(TogglePanel);
+            toggleButton.onClick.AddListener(ToggleToolPanel);
+        }
+        
+        if (penButton == null)
+        {
+            Debug.LogWarning("[DragHandle] penButton 未绑定，请在 Inspector 绑定。");
+        }
+        else
+        {
+            penButton.onClick.AddListener(TogglePenPanel);
         }
 
         // 初始隐藏（不把 panel 彻底 SetActive(false)，以免按钮也被禁用）
@@ -44,21 +56,37 @@ public class CanvasDragHandle : MonoBehaviour
         panelCanvasGroup.interactable = false;
         panelCanvasGroup.blocksRaycasts = false;
         isShown = false;
+        
+        penCanvasGroup.gameObject.SetActive(true);
+        penCanvasGroup.alpha = 0f;
+        penCanvasGroup.interactable = false;
+        penCanvasGroup.blocksRaycasts = false;
+        isShown = false;
 
         Debug.Log($"[DragHandle] Awake: panelActive={panelCanvasGroup.gameObject.activeSelf}, alpha={panelCanvasGroup.alpha}, isShown={isShown}");
     }
 
-    private void TogglePanel()
+    private void ToggleToolPanel()
     {
         Debug.Log($"[DragHandle] TogglePanel called. isShown={isShown}, panelActive={panelCanvasGroup.gameObject.activeSelf}, alpha={panelCanvasGroup.alpha}");
-        if (isShown) HidePanel();
-        else ShowPanel();
+        if (isShown) HideToolPanel();
+        else ShowToolPanel();
 
         // 保持原来的翻转逻辑（也可以改成在动画完成时设置）
         isShown = !isShown;
     }
+    
+    private void TogglePenPanel()
+    {
+        Debug.Log($"[DragHandle] TogglePanel called. isShown={isPen}, panelActive={penCanvasGroup.gameObject.activeSelf}, alpha={penCanvasGroup.alpha}");
+        if (isPen) HidePenPanel();
+        else ShowPenPanel();
 
-    private void ShowPanel()
+        // 保持原来的翻转逻辑（也可以改成在动画完成时设置）
+        isPen = !isPen;
+    }
+
+    private void ShowToolPanel()
     {
         panelCanvasGroup.DOKill();
         if (!panelCanvasGroup.gameObject.activeSelf) panelCanvasGroup.gameObject.SetActive(true);
@@ -75,8 +103,10 @@ public class CanvasDragHandle : MonoBehaviour
             .OnComplete(() => Debug.Log("[DragHandle] ShowPanel OnComplete"));
     }
 
-    private void HidePanel()
+    private void HideToolPanel()
     {
+        HidePenPanel();
+        isPen = false;
         panelCanvasGroup.DOKill();
         panelCanvasGroup.DOFade(0f, duration)
             .SetEase(easeType)
@@ -92,6 +122,43 @@ public class CanvasDragHandle : MonoBehaviour
                 }
                 Debug.Log("[DragHandle] HidePanel OnComplete");
             });
+        
     }
     
+    private void ShowPenPanel()
+    {
+        penCanvasGroup.DOKill();
+        if (!penCanvasGroup.gameObject.activeSelf) penCanvasGroup.gameObject.SetActive(true);
+        // 确保从 0 开始动画
+        penCanvasGroup.alpha = 0f;
+        penCanvasGroup.DOFade(1f, duration)
+            .SetEase(easeType)
+            .OnStart(() =>
+            {
+                penCanvasGroup.interactable = true;
+                penCanvasGroup.blocksRaycasts = true;
+                Debug.Log("[DragHandle] ShowPanel OnStart");
+            })
+            .OnComplete(() => Debug.Log("[DragHandle] ShowPanel OnComplete"));
+        
+    }
+
+    private void HidePenPanel()
+    {
+        penCanvasGroup.DOKill();
+        penCanvasGroup.DOFade(0f, duration)
+            .SetEase(easeType)
+            .OnStart(() => Debug.Log("[DragHandle] HidePanel OnStart"))
+            .OnComplete(() =>
+            {
+                penCanvasGroup.interactable = false;
+                penCanvasGroup.blocksRaycasts = false;
+                if (useSetActiveWhenHidden)
+                {
+                    penCanvasGroup.gameObject.SetActive(false);
+                    Debug.Log("[DragHandle] HidePanel SetActive(false)");
+                }
+                Debug.Log("[DragHandle] HidePanel OnComplete");
+            });
+    }
 }

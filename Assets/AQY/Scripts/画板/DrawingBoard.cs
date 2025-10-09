@@ -3,6 +3,17 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
+// --- 橡皮功能 ---
+/// <summary>
+/// 定义画笔的模式：绘画或橡皮
+/// </summary>
+public enum DrawingMode
+{
+    Draw,
+    Erase
+}
+
+
 /// <summary>
 ///     在 RawImage 上实现带笔迹平滑（抖动修正）的画板功能
 ///     重构亮点：
@@ -11,6 +22,7 @@ using UnityEngine.UI;
 ///     - 添加“线段细分”参数，可以控制曲线的平滑程度。
 ///     - 优化了数据结构和绘制逻辑，只在需要时才绘制新的曲线段。
 ///     - 新增了撤销功能 (Undo)。
+///     - 新增了橡皮功能 (Eraser)。
 /// </summary>
 public class DrawingBoard : MonoBehaviour,
     IPointerDownHandler, IPointerUpHandler,
@@ -28,6 +40,12 @@ public class DrawingBoard : MonoBehaviour,
 
     [Tooltip("每个曲线段的细分程度，数值越高，曲线越平滑，但计算量也越大。")] [Range(2, 20)]
     public int lineSubdivisions = 10;
+    
+    // --- 橡皮功能 ---
+    // 私有字段，用于控制当前是绘画还是橡皮模式
+    private DrawingMode currentMode;
+    private Color currentColor; // 当前使用的颜色（画笔颜色或橡皮颜色）
+    private readonly Color eraserColor = Color.white; // 橡皮的颜色（全透明）
 
     // 私有字段
     private Texture2D drawingTexture;
@@ -53,7 +71,40 @@ public class DrawingBoard : MonoBehaviour,
         pixels = new Color[drawingTexture.width * drawingTexture.height];
         ClearCanvasAndHistory(); // 初始时清空画布和历史记录
         drawingImage.texture = drawingTexture;
+        
+        // --- 橡皮功能 ---
+        // 默认启动时为绘画模式
+        SetBrushMode(DrawingMode.Draw);
     }
+    
+    // --- 橡皮功能 ---
+    /// <summary>
+    /// 设置当前的画笔模式（绘画或橡皮）。
+    /// 你可以从 UI 按钮的 OnClick() 事件中调用此方法。
+    /// </summary>
+    /// <param name="mode">要设置的模式 (0 for Draw, 1 for Erase)</param>
+    public void SetBrushMode(DrawingMode mode)
+    {
+        currentMode = mode;
+        if (currentMode == DrawingMode.Draw)
+        {
+            currentColor = brushColor;
+        }
+        else if (currentMode == DrawingMode.Erase)
+        {
+            currentColor = eraserColor;
+        }
+    }
+    
+    // --- 橡皮功能 ---
+    /// <summary>
+    /// 公开一个int版本，方便Unity Editor中的UI事件直接调用 (0=Draw, 1=Erase)
+    /// </summary>
+    public void SetBrushMode(int mode)
+    {
+        SetBrushMode((DrawingMode)mode);
+    }
+
 
     /// <summary>
     ///     拖拽时，持续添加点并绘制平滑曲线
@@ -272,7 +323,9 @@ public class DrawingBoard : MonoBehaviour,
         for (var y = startY; y < endY; y++)
         for (var x = startX; x < endX; x++)
             if ((x - cx) * (x - cx) + (y - cy) * (y - cy) <= rSq)
-                pixels[y * drawingTexture.width + x] = brushColor;
+                // --- 橡皮功能 ---
+                // 使用 currentColor 而不是 brushColor, 这样画笔和橡皮可以共用此函数
+                pixels[y * drawingTexture.width + x] = currentColor;
     }
 
     private Vector2 GetTextureCoord(Vector2 screenPoint, Camera cam)
@@ -331,6 +384,15 @@ public class DrawingBoard : MonoBehaviour,
         var fillColor = Color.white;
         for (var i = 0; i < pixels.Length; i++) pixels[i] = fillColor;
         UpdateTexture();
+    }
+    
+    /// <summary>
+    /// 由滑动条控制的笔刷大小调整方法
+    /// </summary>
+    /// <param name="value">滑动条传来的值</param>
+    public void SetBrushSize(float value)
+    {
+        brushSize = value;
     }
 
     public Texture2D GetDrawingTexture()
