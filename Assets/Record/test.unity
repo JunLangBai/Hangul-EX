@@ -372,8 +372,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: start
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 3949d331f3833e340a2575a0496ff63d, type: 2}
+  m_sharedMaterial: {fileID: 6280683387203250435, guid: 3949d331f3833e340a2575a0496ff63d, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -984,8 +984,8 @@ MonoBehaviour:
   transcriptionTextOutput: {fileID: 1176146043}
   recordButton: {fileID: 972688985}
   buttonText: {fileID: 624745218}
-  startRecordingText: Record
-  stopRecordingText: Stop and Play
+  startRecordingText: "\u8BD5\u7740\u5BF9\u8BDD\u5427"
+  stopRecordingText: "\u67E5\u770B\u81EA\u5DF1\u7684\u53D1\u97F3"
   savingText: "\u4FDD\u5B58\u4E2D..."
   idleColor: {r: 1, g: 1, b: 1, a: 1}
   recordingColor: {r: 1, g: 0, b: 0, a: 1}

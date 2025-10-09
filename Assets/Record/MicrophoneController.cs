@@ -55,8 +55,8 @@ public class MicrophoneController : MonoBehaviour
     // --- Start 方法（已修正格式） ---
     void Start()
     {
-        if (rawAsrTextOutput != null) rawAsrTextOutput.text = "ASR原始识别结果将显示在这里...";
-        if (transcriptionTextOutput != null) transcriptionTextOutput.text = "Gemini润色后结果将显示在这里...";
+        if (rawAsrTextOutput != null) rawAsrTextOutput.text = "自己的结果将显示在这里...";
+        if (transcriptionTextOutput != null) transcriptionTextOutput.text = "AI老师给的反馈结果将显示在这里...";
 
         if (Microphone.devices.Length == 0)
         {
@@ -130,7 +130,7 @@ public class MicrophoneController : MonoBehaviour
                 if (response.status == "pending")
                 {
                     if (rawAsrTextOutput != null)
-                        rawAsrTextOutput.text = "【ASR原始结果】\n" + response.raw_transcription;
+                        rawAsrTextOutput.text = "【查看自己都发音】\n" + response.raw_transcription;
                     StartCoroutine(PollForResult(response.task_id));
                 }
                 else
@@ -152,7 +152,7 @@ public class MicrophoneController : MonoBehaviour
         float elapsedTime = 0f;
 
         if (transcriptionTextOutput != null)
-            transcriptionTextOutput.text = "正在获取Gemini润色结果...";
+            transcriptionTextOutput.text = "等待AI教师的反馈...";
 
         while (elapsedTime < timeout)
         {
@@ -170,7 +170,7 @@ public class MicrophoneController : MonoBehaviour
                     if (response.status == "success")
                     {
                         if (transcriptionTextOutput != null)
-                            transcriptionTextOutput.text = "【Gemini润色结果】\n" + response.transcription;
+                            transcriptionTextOutput.text = "【检测发音是否准确】\n" + response.transcription;
                         
                         isSaving = false;
                         UpdateUI();
@@ -188,7 +188,7 @@ public class MicrophoneController : MonoBehaviour
 
         Debug.LogError("获取最终结果超时！");
         if (transcriptionTextOutput != null)
-            transcriptionTextOutput.text = "获取Gemini结果超时！";
+            transcriptionTextOutput.text = "获取结果超时！";
         
         isSaving = false;
         UpdateUI();
