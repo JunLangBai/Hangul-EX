@@ -76,7 +76,7 @@ public class CanvasDragHandle : MonoBehaviour
         isShown = !isShown;
     }
     
-    private void TogglePenPanel()
+    public void TogglePenPanel()
     {
         Debug.Log($"[DragHandle] TogglePanel called. isShown={isPen}, panelActive={penCanvasGroup.gameObject.activeSelf}, alpha={penCanvasGroup.alpha}");
         if (isPen) HidePenPanel();

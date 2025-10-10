@@ -18,9 +18,14 @@ namespace BookCurlPro
         float elapsedTime = 0;
         float nextPageCountDown = 0;
         bool isBookInteractable;
+
+        public GameObject leftBtn;
+        public GameObject rightBtn;
+        
         // Use this for initialization
         void Start()
         {
+            leftBtn.SetActive(false);
             if (!ControledBook)
                 ControledBook = GetComponent<BookPro>();
 
@@ -29,15 +34,35 @@ namespace BookCurlPro
         }
         public void FlipRightPage()
         {
+            rightBtn.SetActive(true);
+            leftBtn.SetActive(true);
+            
             if (isPageFlipping) return;
-            if (ControledBook.CurrentPaper >= ControledBook.papers.Length) return;
+            if (rightBtn != null && ControledBook.CurrentPaper >= ControledBook.papers.Length-1)
+            {
+                rightBtn.SetActive(false);
+            }
+            if (ControledBook.CurrentPaper >= ControledBook.papers.Length)
+            {
+                return;
+            }
             isPageFlipping = true;
             PageFlipper.FlipPage(ControledBook, PageFlipTime, FlipMode.RightToLeft, () => { isPageFlipping = false; });
         }
         public void FlipLeftPage()
         {
+            rightBtn.SetActive(true);
+            leftBtn.SetActive(true);
+            
             if (isPageFlipping) return;
-            if (ControledBook.CurrentPaper <= 0) return;
+            if (leftBtn != null && ControledBook.CurrentPaper <= 1)
+            {
+                leftBtn.SetActive(false);
+            }
+            if (ControledBook.CurrentPaper <= 0)
+            {
+                return;
+            }
             isPageFlipping = true;
             PageFlipper.FlipPage(ControledBook, PageFlipTime, FlipMode.LeftToRight, () => { isPageFlipping = false; });
         }
