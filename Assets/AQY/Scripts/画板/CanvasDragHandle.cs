@@ -3,7 +3,6 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-[RequireComponent(typeof(Image))] // 确保这个物体上一定有Image组件，可以接收UI事件
 public class CanvasDragHandle : MonoBehaviour
 {
     
