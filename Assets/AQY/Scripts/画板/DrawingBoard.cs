@@ -11,6 +11,15 @@ public enum DrawingMode
     Erase
 }
 
+public enum BrushColor
+{
+   red,
+   yellow,
+   green,
+   cyan,
+   black,
+}
+
 /// <summary>
 ///     通过一个3D物体在另一个3D物体（白板）上实现带笔迹平滑的画板功能。
 ///     从原始的 DrawingBoard 脚本重构而来。
@@ -26,16 +35,16 @@ public class DrawingBoard : MonoBehaviour
     [Header("场景对象")] 
     [Tooltip("代表笔尖的3D物体。它的Z轴（蓝色箭头）应指向绘画方向。")]
     public Transform brushTip;
-    
+        
     [Tooltip("从笔尖向前发射射线的最大距离，用于检测与白板的接触。")]
-    public float brushRaycastDistance = 0.1f;
+    public float brushRaycastDistance = 0.135f;
 
     [Header("画布纹理设置")] 
     public int textureWidth = 1024;
     public int textureHeight = 1024;
 
     [Header("基础绘图设置")] 
-    public float brushSize = 10f;
+    public float brushSize = 2f;
     public Color brushColor = Color.black;
 
     [Header("笔迹平滑 (抖动修正)")] 
@@ -107,6 +116,10 @@ public class DrawingBoard : MonoBehaviour
             out RaycastHit hit, 
             brushRaycastDistance);
 
+        // 在Scene视图中绘制射线（运行时在Scene视图可见）
+        Debug.DrawRay(brushTip.position, brushTip.forward * brushRaycastDistance, 
+            hitWhiteboard ? Color.green : Color.red);
+        
         // 检查射线是否击中了我们这个白板物体
         if (hitWhiteboard && hit.collider == boardCollider)
         {
@@ -197,6 +210,38 @@ public class DrawingBoard : MonoBehaviour
             UpdateTexture();
         }
         strokePoints.Clear();
+    }
+
+    //( 0=red,1=yellow,2=green,3=cyan,4=black)
+    public void ChangeColor(int a)
+    {
+        // 将整数转换为对应的枚举值
+        BrushColor selectedColor = (BrushColor)a;
+    
+        // 根据选中的颜色枚举进行相应的颜色设置
+        switch (selectedColor)
+        {
+            case BrushColor.red:
+                // 设置为红色的逻辑
+                brushColor = Color.red;
+                break;
+            case BrushColor.yellow:
+                // 设置为黄色的逻辑
+                brushColor = Color.yellow;
+                break;
+            case BrushColor.green:
+                // 设置为绿色的逻辑
+                brushColor = Color.green;
+                break;
+            case BrushColor.cyan:
+                // 设置为青色的逻辑
+                brushColor = Color.cyan;
+                break;
+            case BrushColor.black:
+                // 设置为紫色的逻辑
+                brushColor = Color.black;
+                break;
+        }
     }
 
 
@@ -337,7 +382,7 @@ public class DrawingBoard : MonoBehaviour
             if ((x - cx) * (x - cx) + (y - cy) * (y - cy) <= rSq)
             {
                 // 使用Alpha混合，使橡皮擦（透明色）能正确地与现有颜色混合
-                pixels[y * textureWidth + x] = BlendAlpha(pixels[y * textureWidth + x], currentColor);
+                pixels[y * textureWidth + x] = BlendAlpha(pixels[y * textureWidth + x],brushColor);
             }
     }
 

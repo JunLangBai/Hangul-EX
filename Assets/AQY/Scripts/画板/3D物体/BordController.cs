@@ -15,12 +15,11 @@ public class BordController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        // HideBord();
+        HideBook();
     }
 
     public void ShowBord()
     {
-        mixBord.SetActive(true);
         mixBordGroup.alpha = 1;
         mixBordGroup.interactable = true;
         mixBordGroup.blocksRaycasts = true;
@@ -28,7 +27,6 @@ public class BordController : MonoBehaviour
 
     public void HideBord()
     {
-        mixBord.SetActive(false);
         mixBordGroup.alpha = 0;
         mixBordGroup.interactable = false;
         mixBordGroup.blocksRaycasts = false;
@@ -50,5 +48,15 @@ public class BordController : MonoBehaviour
         bookGroup.alpha = 0;
         bookGroup.interactable = false;
         bookGroup.blocksRaycasts = false;
+    }
+
+    public void HideCanvas()
+    {
+        mixBord.SetActive(false);
+    }
+
+    public void ShowCanvas()
+    {
+        mixBord.SetActive(true);
     }
 }
