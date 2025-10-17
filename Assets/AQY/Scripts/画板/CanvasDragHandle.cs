@@ -9,7 +9,6 @@ public class CanvasDragHandle : MonoBehaviour
     [Header("UI 组件（Inspector 绑定）")]
     public CanvasGroup panelCanvasGroup;
     public CanvasGroup penCanvasGroup;
-    public Button toggleButton; // 请确保这个按钮不是 panel 的子对象（或至少在外面可以点击）
     public Button penButton;
 
     [Header("动画设置")]
@@ -29,15 +28,6 @@ public class CanvasDragHandle : MonoBehaviour
             Debug.LogError("[DragHandle] panelCanvasGroup 未绑定！(Inspector)");
             enabled = false;
             return;
-        }
-
-        if (toggleButton == null)
-        {
-            Debug.LogWarning("[DragHandle] toggleButton 未绑定，请在 Inspector 绑定。");
-        }
-        else
-        {
-            toggleButton.onClick.AddListener(ToggleToolPanel);
         }
         
         if (penButton == null)
@@ -65,7 +55,7 @@ public class CanvasDragHandle : MonoBehaviour
         Debug.Log($"[DragHandle] Awake: panelActive={panelCanvasGroup.gameObject.activeSelf}, alpha={panelCanvasGroup.alpha}, isShown={isShown}");
     }
 
-    private void ToggleToolPanel()
+    public void ToggleToolPanel()
     {
         Debug.Log($"[DragHandle] TogglePanel called. isShown={isShown}, panelActive={panelCanvasGroup.gameObject.activeSelf}, alpha={panelCanvasGroup.alpha}");
         if (isShown) HideToolPanel();
