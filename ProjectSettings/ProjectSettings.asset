@@ -141,7 +141,10 @@ PlayerSettings:
   visionOSBundleVersion: 1.0
   tvOSBundleVersion: 1.0
   bundleVersion: 0.1
-  preloadedAssets: []
+  preloadedAssets:
+  - {fileID: -292912593587541338, guid: 4511e63384a688c449daeba5f01a4ea5, type: 2}
+  - {fileID: 11400000, guid: 98425c8dc65ea194cb414aea71d49afb, type: 2}
+  - {fileID: 1353825646510112431, guid: c73af8963bdb9804980bfff02dd5f7fb, type: 2}
   metroInputSource: 0
   wsaTransparentSwapchain: 0
   m_HolographicPauseOnTrackingLoss: 1
@@ -743,7 +746,7 @@ PlayerSettings:
   webGLMemoryGeometricGrowthCap: 96
   webGLPowerPreference: 2
   scriptingDefineSymbols:
-    Android: USE_INPUT_SYSTEM_POSE_CONTROL;USE_STICK_CONTROL_THUMBSTICKS;USE_ROKID_OPENXR;DOTWEEN
+    Android: USE_INPUT_SYSTEM_POSE_CONTROL;USE_STICK_CONTROL_THUMBSTICKS;USE_ROKID_OPENXR;DOTWEEN;PUBLISHING_TOOLS_ASSET_STORE_RELEASE;INFINITE_SCROLL_ASSET_STORE_RELEASE
     EmbeddedLinux: DOTWEEN
     GameCoreScarlett: DOTWEEN
     GameCoreXboxOne: DOTWEEN

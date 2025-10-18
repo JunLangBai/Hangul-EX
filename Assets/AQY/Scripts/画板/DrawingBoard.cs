@@ -60,7 +60,7 @@ public class DrawingBoard : MonoBehaviour
     private DrawingMode currentMode;
     private Color currentColor;
     // 橡皮使用完全透明的白色，这样可以擦除任何颜色
-    private readonly Color eraserColor = new Color(1, 1, 1, 0); 
+    private readonly Color eraserColor = Color.white; 
 
     // --- 私有字段 ---
     private Texture2D drawingTexture;
@@ -210,6 +210,12 @@ public class DrawingBoard : MonoBehaviour
             UpdateTexture();
         }
         strokePoints.Clear();
+    }
+
+    public void DefaultPen()
+    {
+        brushColor = Color.black;
+        brushSize = 2f;
     }
 
     //( 0=red,1=yellow,2=green,3=cyan,4=black)

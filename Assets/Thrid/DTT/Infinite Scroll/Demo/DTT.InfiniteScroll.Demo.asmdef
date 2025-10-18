@@ -1,0 +1,16 @@
+{
+    "name": "DTT.InfiniteScroll.Demo",
+    "rootNamespace": "DTT.InfiniteScroll.Demo",
+    "references": [
+        "GUID:6dc3085f6ec1b434d9f0ffc081e9c055"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
