@@ -5,9 +5,32 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Collections;
 using UnityEngine.Networking;
-using OpenapiDemo;
+using OpenapiDemo; // 如果您有这个命名空间的话
 
-// ... (UploadResponse 和 ResultResponse 类定义保持不变)
+// 新增：用于在Inspector中集中管理所有UI文本的类
+[System.Serializable]
+public class CustomizableUITexts
+{
+    [Header("初始状态文本")]
+    public string initialRawAsrText = "ASR原始识别结果将显示在这里...";
+    public string initialTranscriptionText = "Gemini润色后结果将显示在这里...";
+    public string noMicrophoneFound = "无麦克风";
+
+    [Header("过程状态文本")]
+    public string recording = "正在录音...";
+    public string uploading = "正在上传并获取原始文本...";
+    public string waitingForFinalResult = "等待最终结果...";
+    public string fetchingFinalResult = "正在获取Gemini润色结果...";
+
+    [Header("结果/错误提示前缀或全文")]
+    public string rawAsrResultPrefix = "【ASR原始结果】\n";
+    public string finalResultPrefix = "【Gemini润色结果】\n";
+    public string uploadFailedPrefix = "上传失败: ";
+    public string serverErrorPrefix = "服务器处理失败: ";
+    public string timeoutError = "获取Gemini结果超时！";
+}
+
+
 [System.Serializable]
 public class UploadResponse { public string status; public string task_id; public string raw_transcription; }
 [System.Serializable]
@@ -38,27 +61,31 @@ public class MicrophoneController : MonoBehaviour
     public string savingText = "处理中...";
     public Color idleColor = Color.white;
     public Color recordingColor = Color.red;
-    
-    // ######## 移除音频文件设置，因为我们将在代码中固定文件名 ########
 
+    // ######## 新增：所有UI显示文本的集合 ########
+    [Header("自定义UI文本")]
+    public CustomizableUITexts uiTexts;
+    
     private AudioSource audioSource;
     private bool isRecording = false;
     private bool isSaving = false;
     private string microphoneDeviceName;
-    private const string TempAudioFileName = "latest_recording.wav"; // 固定文件名
+    private const string TempAudioFileName = "latest_recording.wav"; 
 
     void Start()
     {
         if (ttsManager == null) Debug.LogWarning("TtsManager未在Inspector中指定，TTS功能将不可用。");
-        if (rawAsrTextOutput != null) rawAsrTextOutput.text = "ASR原始识别结果将显示在这里...";
-        if (transcriptionTextOutput != null) transcriptionTextOutput.text = "Gemini润色后结果将显示在这里...";
+        // 使用自定义文本
+        if (rawAsrTextOutput != null) rawAsrTextOutput.text = uiTexts.initialRawAsrText;
+        if (transcriptionTextOutput != null) transcriptionTextOutput.text = uiTexts.initialTranscriptionText;
 
         if (Microphone.devices.Length == 0)
         {
             if (recordButton != null)
             {
                 recordButton.interactable = false;
-                if (buttonText != null) buttonText.text = "无麦克风";
+                // 使用自定义文本
+                if (buttonText != null) buttonText.text = uiTexts.noMicrophoneFound;
             }
             Debug.LogError("未找到麦克风设备！");
             return;
@@ -84,8 +111,9 @@ public class MicrophoneController : MonoBehaviour
 
     private void StartRecording() 
     { 
-        if (rawAsrTextOutput != null) rawAsrTextOutput.text = "正在录音..."; 
-        if (transcriptionTextOutput != null) transcriptionTextOutput.text = "正在录音..."; 
+        // 使用自定义文本
+        if (rawAsrTextOutput != null) rawAsrTextOutput.text = uiTexts.recording; 
+        if (transcriptionTextOutput != null) transcriptionTextOutput.text = uiTexts.recording; 
         audioSource.clip = Microphone.Start(microphoneDeviceName, true, 300, 44100); 
         isRecording = true; 
         UpdateUI(); 
@@ -100,6 +128,9 @@ public class MicrophoneController : MonoBehaviour
         if (lastSamplePosition <= 0) 
         { 
             Debug.LogWarning("录音时间过短或没有录到声音。");
+            // 恢复初始文本
+            if (rawAsrTextOutput != null) rawAsrTextOutput.text = uiTexts.initialRawAsrText;
+            if (transcriptionTextOutput != null) transcriptionTextOutput.text = uiTexts.initialTranscriptionText;
             UpdateUI(); 
             return; 
         } 
@@ -114,21 +145,15 @@ public class MicrophoneController : MonoBehaviour
         await SaveAndUploadAsync(audioData, originalClip.channels, originalClip.frequency);
     }
     
-    // ######## 修改后的保存和上传逻辑 ########
     private async Task SaveAndUploadAsync(float[] samples, int channels, int frequency) 
     { 
-        // 构造一个在 Editor 和设备上都有效的标准路径
         string savePath = Application.persistentDataPath;
         string fullFilePath = Path.Combine(savePath, TempAudioFileName);
-
-        // 在后台线程调用您提供的 SavWav.Save 方法
         bool success = await Task.Run(() => SavWav.Save(fullFilePath, samples, frequency, channels)); 
         
-        // 回到主线程
         if (success) 
         { 
             Debug.Log($"临时录音文件已成功保存到: {fullFilePath}");
-            // 确认保存成功后，再开始上传
             StartCoroutine(UploadAudio(fullFilePath)); 
         } 
         else 
@@ -141,7 +166,6 @@ public class MicrophoneController : MonoBehaviour
 
     IEnumerator UploadAudio(string filePath)
     {
-        // 增加一道保险检查，确保文件真的存在
         if (!File.Exists(filePath))
         {
             Debug.LogError($"严重错误: 文件在 {filePath} 未找到，上传中止。");
@@ -156,15 +180,16 @@ public class MicrophoneController : MonoBehaviour
         
         using (UnityWebRequest www = UnityWebRequest.Post(uploadURL, form))
         {
-            if (rawAsrTextOutput != null) rawAsrTextOutput.text = "正在上传并获取原始文本...";
-            if (transcriptionTextOutput != null) transcriptionTextOutput.text = "等待最终结果...";
+            // 使用自定义文本
+            if (rawAsrTextOutput != null) rawAsrTextOutput.text = uiTexts.uploading;
+            if (transcriptionTextOutput != null) transcriptionTextOutput.text = uiTexts.waitingForFinalResult;
 
             yield return www.SendWebRequest();
-
-            // ... (上传成功或失败的后续处理逻辑，与之前版本相同)
+            
             if (www.result != UnityWebRequest.Result.Success)
             {
-                string errorText = "上传失败: " + www.error;
+                // 使用自定义文本
+                string errorText = uiTexts.uploadFailedPrefix + www.error;
                 Debug.LogError(errorText);
                 if (rawAsrTextOutput != null) rawAsrTextOutput.text = errorText;
                 isSaving = false;
@@ -172,7 +197,6 @@ public class MicrophoneController : MonoBehaviour
             }
             else
             {
-                // ... (解析服务器响应，与之前版本相同)
                 string jsonResponse = www.downloadHandler.text;
                 Debug.Log("第一次响应成功！服务器响应: " + jsonResponse);
                 UploadResponse response = JsonUtility.FromJson<UploadResponse>(jsonResponse);
@@ -180,12 +204,14 @@ public class MicrophoneController : MonoBehaviour
                 if (response != null && response.status == "pending")
                 {
                     if (rawAsrTextOutput != null)
-                        rawAsrTextOutput.text = "【ASR原始结果】\n" + response.raw_transcription;
+                        // 使用自定义文本
+                        rawAsrTextOutput.text = uiTexts.rawAsrResultPrefix + response.raw_transcription;
                     StartCoroutine(PollForResult(response.task_id));
                 }
                 else
                 {
-                    string errorText = "服务器处理失败: " + jsonResponse;
+                    // 使用自定义文本
+                    string errorText = uiTexts.serverErrorPrefix + jsonResponse;
                     Debug.LogError(errorText);
                     if (rawAsrTextOutput != null) rawAsrTextOutput.text = errorText;
                     isSaving = false;
@@ -195,14 +221,14 @@ public class MicrophoneController : MonoBehaviour
         }
     }
     
-    // ... (PollForResult 和 UpdateUI 方法保持不变)
     IEnumerator PollForResult(string taskId)
     {
         float timeout = 30f;
         float elapsedTime = 0f;
 
         if (transcriptionTextOutput != null)
-            transcriptionTextOutput.text = "正在获取Gemini润色结果...";
+            // 使用自定义文本
+            transcriptionTextOutput.text = uiTexts.fetchingFinalResult;
 
         while (elapsedTime < timeout)
         {
@@ -220,7 +246,8 @@ public class MicrophoneController : MonoBehaviour
                     {
                         string finalText = response.transcription;
                         if (transcriptionTextOutput != null)
-                            transcriptionTextOutput.text = "【Gemini润色结果】\n" + finalText;
+                            // 使用自定义文本
+                            transcriptionTextOutput.text = uiTexts.finalResultPrefix + finalText;
                         
                         if (ttsManager != null)
                         {
@@ -239,7 +266,8 @@ public class MicrophoneController : MonoBehaviour
 
         Debug.LogError("获取最终结果超时！");
         if (transcriptionTextOutput != null)
-            transcriptionTextOutput.text = "获取Gemini结果超时！";
+            // 使用自定义文本
+            transcriptionTextOutput.text = uiTexts.timeoutError;
         
         isSaving = false;
         UpdateUI();

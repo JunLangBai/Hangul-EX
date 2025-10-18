@@ -990,6 +990,19 @@ MonoBehaviour:
   savingText: "\u4FDD\u5B58\u4E2D..."
   idleColor: {r: 1, g: 1, b: 1, a: 1}
   recordingColor: {r: 1, g: 0, b: 0, a: 1}
+  uiTexts:
+    initialRawAsrText: "\u8BC6\u522B\u7ED3\u679C\u662F\uFF1A"
+    initialTranscriptionText: "\u97E9\u6613\u6A59\u56DE\u590D\u7684\u662F\uFF1A"
+    noMicrophoneFound: "\u65E0\u9EA6\u514B\u98CE"
+    recording: "\u6B63\u5728\u5F55\u97F3..."
+    uploading: "\u6B63\u5728\u4E0A\u4F20\u5E76\u83B7\u53D6\u539F\u59CB\u6587\u672C..."
+    waitingForFinalResult: "\u7B49\u5F85\u6700\u7EC8\u7ED3\u679C..."
+    fetchingFinalResult: "\u97E9\u6613\u6A59\u56DE\u590D\u7684\u662F\uFF1A"
+    rawAsrResultPrefix: "\u3010\u8BC6\u522B\u7ED3\u679C\u3011\n"
+    finalResultPrefix: "\u3010\u97E9\u6613\u6A59\u5B50\u7ED3\u679C\u3011\n"
+    uploadFailedPrefix: "\u4E0A\u4F20\u5931\u8D25: "
+    serverErrorPrefix: "\u670D\u52A1\u5668\u5904\u7406\u5931\u8D25: "
+    timeoutError: "\u83B7\u53D6\u7ED3\u679C\u8D85\u65F6\uFF01"
 --- !u!4 &1369579999
 Transform:
   m_ObjectHideFlags: 0
