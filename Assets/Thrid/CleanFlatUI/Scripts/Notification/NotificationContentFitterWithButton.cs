@@ -131,7 +131,7 @@ namespace RainbowArt.CleanFlatUI
         [SerializeField]   
         NotificationEvent onCancel = new NotificationEvent();     
 
-        float disableTime = 1.0f;
+        float disableTime = 0f;
         List<Canvas> tempCanvasList = new List<Canvas>();   
         IEnumerator transitionCoroutine;
         IEnumerator diableCoroutine;
@@ -336,52 +336,52 @@ namespace RainbowArt.CleanFlatUI
             float canvasMinY = canvasCornerLeftBottom.y;
             float canvasMaxY = canvasCornerRightTop.y;
             
-            switch (origin)
-            {                
-                case Origin.TopCenter:
-                {
-                    pos.x = (canvasMinX + canvasMaxX) / 2 + offsetX;
-                    pos.y = canvasMaxY - rectTrans.rect.height/2 + offsetY; 
-                    break;
-                }
-                case Origin.BottomCenter:
-                {
-                    pos.x = (canvasMinX + canvasMaxX) / 2 + offsetX;
-                    pos.y = canvasMinY + rectTrans.rect.height/2 + offsetY;
-                    break;
-                }
-                case Origin.TopLeft:
-                {                    
-                    pos.x = canvasMinX + rectTrans.rect.width/2 + offsetX; 
-                    pos.y = canvasMaxY - rectTrans.rect.height/2 + offsetY; 
-                    break;
-                }
-                case Origin.BottomLeft:
-                {
-                    pos.x = canvasMinX + rectTrans.rect.width/2 + offsetX; 
-                    pos.y = canvasMinY + rectTrans.rect.height/2 + offsetY;
-                    break;
-                }
-                case Origin.TopRight:
-                {
-                    pos.x = canvasMaxX - rectTrans.rect.width/2 + offsetX; 
-                    pos.y = canvasMaxY - rectTrans.rect.height/2 + offsetY; 
-                    break;
-                }
-                case Origin.BottomRight:
-                {
-                    pos.x = canvasMaxX - rectTrans.rect.width/2 + offsetX; 
-                    pos.y = canvasMinY + rectTrans.rect.height/2 + offsetY;
-                    break;
-                }
-            }
-            float minX = canvasMinX + rectTrans.rect.width/2;
-            float maxX = canvasMaxX - rectTrans.rect.width/2;
-            float minY = canvasMinY + rectTrans.rect.height/2;
-            float maxY = canvasMaxY - rectTrans.rect.height/2;
-            pos.x = Mathf.Clamp(pos.x, minX, maxX);
-            pos.y = Mathf.Clamp(pos.y, minY, maxY);
-            rectTrans.localPosition = pos;     
+            // switch (origin)
+            // {                
+            //     case Origin.TopCenter:
+            //     {
+            //         pos.x = (canvasMinX + canvasMaxX) / 2 + offsetX;
+            //         pos.y = canvasMaxY - rectTrans.rect.height/2 + offsetY; 
+            //         break;
+            //     }
+            //     case Origin.BottomCenter:
+            //     {
+            //         pos.x = (canvasMinX + canvasMaxX) / 2 + offsetX;
+            //         pos.y = canvasMinY + rectTrans.rect.height/2 + offsetY;
+            //         break;
+            //     }
+            //     case Origin.TopLeft:
+            //     {                    
+            //         pos.x = canvasMinX + rectTrans.rect.width/2 + offsetX; 
+            //         pos.y = canvasMaxY - rectTrans.rect.height/2 + offsetY; 
+            //         break;
+            //     }
+            //     case Origin.BottomLeft:
+            //     {
+            //         pos.x = canvasMinX + rectTrans.rect.width/2 + offsetX; 
+            //         pos.y = canvasMinY + rectTrans.rect.height/2 + offsetY;
+            //         break;
+            //     }
+            //     case Origin.TopRight:
+            //     {
+            //         pos.x = canvasMaxX - rectTrans.rect.width/2 + offsetX; 
+            //         pos.y = canvasMaxY - rectTrans.rect.height/2 + offsetY; 
+            //         break;
+            //     }
+            //     case Origin.BottomRight:
+            //     {
+            //         pos.x = canvasMaxX - rectTrans.rect.width/2 + offsetX; 
+            //         pos.y = canvasMinY + rectTrans.rect.height/2 + offsetY;
+            //         break;
+            //     }
+            // }
+            // float minX = canvasMinX + rectTrans.rect.width/2;
+            // float maxX = canvasMaxX - rectTrans.rect.width/2;
+            // float minY = canvasMinY + rectTrans.rect.height/2;
+            // float maxY = canvasMaxY - rectTrans.rect.height/2;
+            // pos.x = Mathf.Clamp(pos.x, minX, maxX);
+            // pos.y = Mathf.Clamp(pos.y, minY, maxY);
+            // rectTrans.localPosition = pos;     
         }
 
         void InitAnimation()
