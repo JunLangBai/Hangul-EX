@@ -269,6 +269,7 @@ namespace DTT.InfiniteScroll
 
             if (_scrollTarget != null && Application.isPlaying)
             {
+                
                 // Centre is half of the viewport size.
                 Vector2 centerViewport = viewport.rect.size / 2;
                 // Have to flip y-axis, since it's otherwise pointing in the wrong direction.
@@ -398,6 +399,7 @@ namespace DTT.InfiniteScroll
         /// <param name="index">The index to move the scroll to.</param>
         public void SetTarget(int index)
         {
+            Debug.Log($"SetTarget,Index{index}");
             // Clamp input, to make sure no invalid index is used.
             index = Mathf.Clamp(index, 0, content.childCount - 1);
             _scrollTarget = content.GetChild(index);
