@@ -47,10 +47,13 @@ public class OverrideAnimationManager : MonoBehaviour
         if (timer >= randomTime)
         {
             characterAnimator.SetTrigger("RandomWait");
+            randomTime = Random.Range(10f, 25f);
             timer = 0f;
         }
     }
 
+    
+    
     /// <summary>
     /// 根据Trigger名称，从其对应的集合中随机播放一个动画。
     /// </summary>

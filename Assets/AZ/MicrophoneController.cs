@@ -71,6 +71,9 @@ public class MicrophoneController : MonoBehaviour
 
     [Header("动画控制器")] [Tooltip("将带有 OverrideAnimationManager 脚本的角色对象拖拽到这里")]
     public OverrideAnimationManager animationManager;
+    
+    [Header("对话框")]
+    public ChatManager chatManager;
 
     [Header("自定义按钮外观")] public string startRecordingText = "开始录音";
 
@@ -211,7 +214,15 @@ public class MicrophoneController : MonoBehaviour
                 {
                     //用户录音输出结果显示
                     if (rawAsrTextOutput != null)
+                    {
+                        if (chatManager != null)
+                        {
+                            chatManager.AddUserChat(response.raw_transcription);
+                        }
+                        
                         rawAsrTextOutput.text = uiTexts.rawAsrResultPrefix + response.raw_transcription;
+                    }
+
                     StartCoroutine(PollForResult(response.task_id));
                 }
                 else
@@ -271,7 +282,15 @@ public class MicrophoneController : MonoBehaviour
                         // 3. 使用【干净的文本】来更新UI
                         //大模型对话结果显示
                         if (transcriptionTextOutput != null)
+                        {
+                            if (chatManager != null)
+                            {
+                                chatManager.AddLLMChat(cleanedText);
+                            }
+
                             transcriptionTextOutput.text = uiTexts.finalResultPrefix + cleanedText;
+                        }
+                            
 
                         // 4. 使用【干净的文本】来播放TTS
                         if (ttsManager != null) ttsManager.SynthesizeAndPlay(cleanedText);
@@ -305,13 +324,13 @@ public class MicrophoneController : MonoBehaviour
         {
             recordButton.interactable = true;
             buttonText.text = stopRecordingText;
-            recordButton.GetComponent<Image>().color = recordingColor;
+            // recordButton.GetComponent<Image>().color = recordingColor;
         }
         else
         {
             recordButton.interactable = true;
             buttonText.text = startRecordingText;
-            recordButton.GetComponent<Image>().color = idleColor;
+            // recordButton.GetComponent<Image>().color = idleColor;
         }
     }
 }
