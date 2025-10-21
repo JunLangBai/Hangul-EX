@@ -209,6 +209,7 @@ public class MicrophoneController : MonoBehaviour
                 var response = JsonUtility.FromJson<UploadResponse>(jsonResponse);
                 if (response != null && response.status == "pending")
                 {
+                    //用户录音输出结果显示
                     if (rawAsrTextOutput != null)
                         rawAsrTextOutput.text = uiTexts.rawAsrResultPrefix + response.raw_transcription;
                     StartCoroutine(PollForResult(response.task_id));
@@ -268,6 +269,7 @@ public class MicrophoneController : MonoBehaviour
                         }
 
                         // 3. 使用【干净的文本】来更新UI
+                        //大模型对话结果显示
                         if (transcriptionTextOutput != null)
                             transcriptionTextOutput.text = uiTexts.finalResultPrefix + cleanedText;
 
