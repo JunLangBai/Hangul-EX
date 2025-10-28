@@ -5,15 +5,18 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/MainMenu.unity
     guid: e1f2d2a047867294cb8dfa0dc425d5ab
   - enabled: 0
     path: Assets/Scenes/BordCanvas.unity
     guid: 9646ad535a339ca47a72b31bf884f3ef
-  - enabled: 0
+  - enabled: 1
     path: Assets/AQY/Scenes/test.unity
     guid: ac5a5773f0e47d74b9799e90887f0c1b
+  - enabled: 0
+    path: "Assets/AQY/Scenes/\u957F\u9F13.unity"
+    guid: a416deceb66741c46af19575b24c4386
   m_configObjects:
     com.unity.xr.arfoundation.simulation_settings: {fileID: 11400000, guid: 98425c8dc65ea194cb414aea71d49afb, type: 2}
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 4511e63384a688c449daeba5f01a4ea5, type: 2}
