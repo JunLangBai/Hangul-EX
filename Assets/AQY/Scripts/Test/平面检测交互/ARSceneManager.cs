@@ -16,6 +16,9 @@ public class ARSceneManager : MonoBehaviour
 
     //要生成的物体
     public GameObject generatePrefab;
+    
+    // (新添加) 要替换成的新预制体
+    public GameObject replacementPrefab;
 
     // 目标手
     public HandType targetHand = HandType.RightHand; // 可以根据需要选择 LeftHand 或 RightHand
@@ -28,7 +31,7 @@ public class ARSceneManager : MonoBehaviour
     
     //UI
     private GameObject pointableUI;
-    // 用于存储食指指尖的位置
+    // 用于存储手掌的位置
     private Vector3 indexHandPosition;
     
     // 手掌朝前角度阈值：判断手掌的向上方向与世界Vector3.up的接近程度
@@ -47,7 +50,9 @@ public class ARSceneManager : MonoBehaviour
     
     //是否为捏合手势
     private bool isPinching;
+    //当前场景的物体
     private GameObject SceneObj;
+    //捏合手势中食指位置
     private Vector3 pinchVector3;
     
     //事件系统
@@ -271,8 +276,57 @@ public class ARSceneManager : MonoBehaviour
         if (isPinching)
         {
             SceneObj.transform.position = pinchVector3;
+            SceneObj.transform.rotation = Quaternion.Euler(0, 0, 0);
+            
             testTxt.text = "正在移动物体...";
         }
+    }
+    
+    /// <summary>
+    /// (新方法) 将当前场景物体替换为指定的预制体，保持位置、旋转和父节点不变
+    /// </summary>
+    /// <param name="newPrefab">要实例化的新预制体</param>
+    public void ChangeSceneObject(GameObject newPrefab)
+    {
+        // 1. 检查新预制体是否有效
+        if (newPrefab == null)
+        {
+            Debug.LogError("ChangeSceneObject: 传入的 newPrefab 为 null！");
+            return;
+        }
+
+        // 2. 检查当前物体是否存在
+        if (SceneObj == null)
+        {
+            Debug.LogError("ChangeSceneObject: 场景中没有 SceneObj (null)，无法替换。");
+            return;
+        }
+
+        // 3. 保存当前物体的变换信息
+        Vector3 currentPosition = SceneObj.transform.position;
+        Quaternion currentRotation = SceneObj.transform.rotation;
+        Transform currentParent = SceneObj.transform.parent; // 保存父节点
+
+        // 4. 销毁旧物体
+        Destroy(SceneObj);
+
+        // 5. 在相同位置和旋转下生成新物体
+        // 我们先在世界坐标生成，然后再设置父节点，以确保世界坐标正确
+        SceneObj = Instantiate(newPrefab, currentPosition, currentRotation);
+        
+        // 6. 恢复父节点（如果存在）
+        if (currentParent != null)
+        {
+            SceneObj.transform.SetParent(currentParent);
+        }
+        
+        Debug.Log($"物体已成功替换为 {newPrefab.name}。");
+    }
+
+    //测试代码
+    public void ChangeObj()
+    {
+        ChangeSceneObject(replacementPrefab);
     }
 
     public void GetGesture()
@@ -330,6 +384,7 @@ public class ARSceneManager : MonoBehaviour
             indexHandPosition = palmPose.position;
             
             pointableUI.transform.position = indexHandPosition;
+            pointableUI.transform.rotation = Quaternion.Euler(0, 0, 0);
         }
         // --- 取消/禁用逻辑 ---
         else if (isPalmUpActive)

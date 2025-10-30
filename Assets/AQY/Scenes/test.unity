@@ -1881,6 +1881,7 @@ MonoBehaviour:
   promptGrad: {fileID: 1514805277}
   testTxt: {fileID: 294615275}
   generatePrefab: {fileID: 4328732336591669093, guid: 3347a467e7319524589555e0d404f6c3, type: 3}
+  replacementPrefab: {fileID: 8781618039042800947, guid: 4015e899b1412f742bba881da7fbb5a4, type: 3}
   targetHand: 1
   angleThreshold: 45
 --- !u!1 &1724888835
@@ -2290,6 +2291,34 @@ PrefabInstance:
     - target: {fileID: 3819659328204209445, guid: 9060a035bde5b9e4c8e5d8b59228658c, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7108783257659566035, guid: 9060a035bde5b9e4c8e5d8b59228658c, type: 3}
+      propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7108783257659566035, guid: 9060a035bde5b9e4c8e5d8b59228658c, type: 3}
+      propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7108783257659566035, guid: 9060a035bde5b9e4c8e5d8b59228658c, type: 3}
+      propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1724509198}
+    - target: {fileID: 7108783257659566035, guid: 9060a035bde5b9e4c8e5d8b59228658c, type: 3}
+      propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7108783257659566035, guid: 9060a035bde5b9e4c8e5d8b59228658c, type: 3}
+      propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: ChangeObj
+      objectReference: {fileID: 0}
+    - target: {fileID: 7108783257659566035, guid: 9060a035bde5b9e4c8e5d8b59228658c, type: 3}
+      propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: ARSceneManager, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 7108783257659566035, guid: 9060a035bde5b9e4c8e5d8b59228658c, type: 3}
+      propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
