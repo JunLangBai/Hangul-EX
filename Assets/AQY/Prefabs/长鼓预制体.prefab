@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 7830918264033794707}
   m_Layer: 0
   m_Name: "\u8303\u56F4 (1)"
-  m_TagString: Untagged
+  m_TagString: ARObj
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -117,7 +117,7 @@ GameObject:
   - component: {fileID: 5215874841595191360}
   m_Layer: 0
   m_Name: "\u97F3\u7B26"
-  m_TagString: Untagged
+  m_TagString: ARObj
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -219,7 +219,7 @@ GameObject:
   - component: {fileID: 440103388367756609}
   m_Layer: 0
   m_Name: "\u5DE6\u4FA7\u8303\u56F4"
-  m_TagString: Untagged
+  m_TagString: ARObj
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -252,7 +252,7 @@ GameObject:
   - component: {fileID: 1979492164357444751}
   m_Layer: 0
   m_Name: "\u8303\u56F4 (5)"
-  m_TagString: Untagged
+  m_TagString: ARObj
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -356,7 +356,7 @@ GameObject:
   - component: {fileID: 9013815566668483635}
   m_Layer: 0
   m_Name: "\u97F3\u7B26"
-  m_TagString: Untagged
+  m_TagString: ARObj
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -460,7 +460,7 @@ GameObject:
   - component: {fileID: 3896660489902491972}
   m_Layer: 0
   m_Name: "\u8303\u56F4 (3)"
-  m_TagString: Untagged
+  m_TagString: ARObj
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -564,7 +564,7 @@ GameObject:
   - component: {fileID: 3896656062164125551}
   m_Layer: 0
   m_Name: "\u8303\u56F4 (4)"
-  m_TagString: Untagged
+  m_TagString: ARObj
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -666,7 +666,7 @@ GameObject:
   - component: {fileID: 2204195497131223989}
   m_Layer: 0
   m_Name: "\u957F\u9F13\u9884\u5236\u4F53"
-  m_TagString: Untagged
+  m_TagString: ARObj
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -703,7 +703,7 @@ GameObject:
   - component: {fileID: 1680174942041947117}
   m_Layer: 0
   m_Name: "\u5DE6\u4FA7\u78B0\u649E\u4F53"
-  m_TagString: Untagged
+  m_TagString: ARObj
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -808,7 +808,7 @@ GameObject:
   - component: {fileID: 7809488590032215045}
   m_Layer: 0
   m_Name: "\u53F3\u4FA7\u78B0\u649E\u4F53"
-  m_TagString: Untagged
+  m_TagString: ARObj
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -912,7 +912,7 @@ GameObject:
   - component: {fileID: 317608701496371657}
   m_Layer: 0
   m_Name: "\u8303\u56F4 (2)"
-  m_TagString: Untagged
+  m_TagString: ARObj
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1014,7 +1014,7 @@ GameObject:
   - component: {fileID: 2925250414375758587}
   m_Layer: 0
   m_Name: "\u53F3\u4FA7\u8303\u56F4"
-  m_TagString: Untagged
+  m_TagString: ARObj
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1047,7 +1047,7 @@ GameObject:
   - component: {fileID: 9155636660557993007}
   m_Layer: 0
   m_Name: "\u8303\u56F4"
-  m_TagString: Untagged
+  m_TagString: ARObj
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1205,6 +1205,14 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 6aabfa3c9f16ae84ba06bf9fd18fdb81, type: 3}
       propertyPath: m_Name
       value: "\u6241\u957F\u68D2\u5B50\u5E26\u8D34\u56FE"
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 6aabfa3c9f16ae84ba06bf9fd18fdb81, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 6aabfa3c9f16ae84ba06bf9fd18fdb81, type: 3}
+      propertyPath: m_TagString
+      value: ARObj
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1461,6 +1469,14 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: be2c402878513db468f546acac212b94, type: 3}
       propertyPath: m_Name
       value: "\u5706\u5934\u68D2\u5B50\u5E26\u8D34\u56FE"
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: be2c402878513db468f546acac212b94, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: be2c402878513db468f546acac212b94, type: 3}
+      propertyPath: m_TagString
+      value: ARObj
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1719,8 +1735,16 @@ PrefabInstance:
       value: "\u671D\u9C9C\u65CF\u7684\u957F\u9F13\u5B8C\u6574\u7248\u5E26\u8D34\u56FE(1)"
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: bbabdfe02779a494795ac30d19475c2c, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: bbabdfe02779a494795ac30d19475c2c, type: 3}
       propertyPath: m_IsActive
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: bbabdfe02779a494795ac30d19475c2c, type: 3}
+      propertyPath: m_TagString
+      value: ARObj
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

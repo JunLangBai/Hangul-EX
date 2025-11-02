@@ -20,43 +20,66 @@ public class BordController : MonoBehaviour
 
     public void ShowBord()
     {
-        mixBordGroup.alpha = 1;
-        mixBordGroup.interactable = true;
-        mixBordGroup.blocksRaycasts = true;
+        if (mixBordGroup != null)
+        {
+            mixBordGroup.alpha = 1;
+            mixBordGroup.interactable = true;
+            mixBordGroup.blocksRaycasts = true;
+        }
     }
 
     public void HideBord()
     {
-        mixBordGroup.alpha = 0;
-        mixBordGroup.interactable = false;
-        mixBordGroup.blocksRaycasts = false;
-    
+        if (mixBordGroup != null)
+        {
+            mixBordGroup.alpha = 0;
+            mixBordGroup.interactable = false;
+            mixBordGroup.blocksRaycasts = false;
+        }
+
         Debug.Log("[DragHandle] HidePanel Complete");
     }
 
     public void ShowBook()
     {
-        mixBord.SetActive(true);
-        bookGroup.alpha = 1;
-        bookGroup.interactable = true;
-        bookGroup.blocksRaycasts = true;
+        if (mixBordGroup != null)
+        {
+            mixBord.SetActive(true);
+        }
+
+        if (bookGroup != null)
+        {
+            bookGroup.alpha = 1;
+            bookGroup.interactable = true;
+            bookGroup.blocksRaycasts = true;
+        }
+
     }
 
     public void HideBook()
     {
-        // mixBord.SetActive(false);
-        bookGroup.alpha = 0;
-        bookGroup.interactable = false;
-        bookGroup.blocksRaycasts = false;
+        if (bookGroup != null)
+        {
+            // mixBord.SetActive(false);
+            bookGroup.alpha = 0;
+            bookGroup.interactable = false;
+            bookGroup.blocksRaycasts = false;
+        }
     }
 
     public void HideCanvas()
     {
-        mixBord.SetActive(false);
+        if (mixBord != null)
+        {
+            mixBord.SetActive(false);
+        }
     }
 
     public void ShowCanvas()
     {
-        mixBord.SetActive(true);
+        if (mixBord != null)
+        {
+            mixBord.SetActive(true);
+        }
     }
 }

@@ -72,6 +72,39 @@ public class DrawingBoard : MonoBehaviour
     // --- 撤销功能 ---
     private readonly Stack<Color[]> history = new Stack<Color[]>();
 
+    
+    #region 订阅事件 (收音机调台)
+    
+    private void OnEnable()
+    {
+        // "开机并调台"，订阅所有我们关心的“节目”
+        // 当 DrawingActions 广播 OnUndoClicked 时，请执行我自己的 Undo() 方法。
+        DrawingActions.OnUndoClicked += Undo;
+        DrawingActions.OnClearCanvasClicked += ClearCanvas;
+        DrawingActions.OnClearAllClicked += ClearCanvasAndHistory;
+        DrawingActions.OnDefaultPenClicked += DefaultPen;
+        DrawingActions.OnColorChanged += ChangeColor;
+        DrawingActions.OnBrushSizeChanged += SetBrushSize;
+        DrawingActions.OnModeChanged += SetBrushMode;
+    }
+
+    private void OnDisable()
+    {
+        // **!!! 极其重要 !!!**
+        // “关机”，必须取消所有订阅！
+        // 如果不这样做，当事件被触发时，“电台”会试图联系一个
+        // 已经被销毁的“收音机”（DrawingBoard），导致内存泄漏和错误！
+        DrawingActions.OnUndoClicked -= Undo;
+        DrawingActions.OnClearCanvasClicked -= ClearCanvas;
+        DrawingActions.OnClearAllClicked -= ClearCanvasAndHistory;
+        DrawingActions.OnDefaultPenClicked -= DefaultPen;
+        DrawingActions.OnColorChanged -= ChangeColor;
+        DrawingActions.OnBrushSizeChanged -= SetBrushSize;
+        DrawingActions.OnModeChanged -= SetBrushMode;
+    }
+    
+    #endregion
+    
     private void Start()
     {
         // 1. 获取白板的碰撞体，用于射线检测
