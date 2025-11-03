@@ -31,6 +31,8 @@ public class ARSceneManager : MonoBehaviour
     
     //UI
     private GameObject pointableUI;
+    //Canvas
+    private Transform canvasTransform;
     // 用于存储手掌的位置
     private Vector3 indexHandPosition;
     
@@ -58,7 +60,8 @@ public class ARSceneManager : MonoBehaviour
     
     //事件系统
     private ARGradEvent gameManager;
-    
+    private Camera _camera;
+
     private void Awake()
     {
         // 尝试获取 ARPlaneManager 实例
@@ -77,10 +80,15 @@ public class ARSceneManager : MonoBehaviour
         ARPlaneManager.OnPlaneRemoved += HandlePlaneRemoved;
         
         pointableUI = GameObject.Find("PointableUI");
+        if (pointableUI != null)
+        {
+            canvasTransform = pointableUI.transform.Find("Canvas").transform;
+        }
     }
 
     private void Start()
     {
+        _camera = Camera.main;
         gameManager = FindObjectOfType<ARGradEvent>();
 
         if (gameManager != null)
@@ -99,6 +107,7 @@ public class ARSceneManager : MonoBehaviour
         }
         
         pointableUI.SetActive(false);
+        
     }
     
     private void Update()
@@ -351,7 +360,34 @@ public class ARSceneManager : MonoBehaviour
             indexHandPosition = palmPose.position;
             
             pointableUI.transform.position = indexHandPosition;
-            pointableUI.transform.rotation = Quaternion.LookRotation(new Vector3(0,0,0));
+            if (Camera.main != null && canvasTransform != null) // 确保 CanvasTransform 有效
+            {
+                // 获取 PointableUI 的位置 (这是我们希望 Canvas 看起来像是在“发射”的位置)
+                Vector3 uiPosition = pointableUI.transform.position;
+
+                // 获取相机的位置
+                Vector3 cameraPosition = _camera.transform.position;
+    
+                // 计算从UI到相机的方向向量
+                Vector3 lookDirection = cameraPosition - uiPosition;
+
+                // *** 关键步骤：将Y轴分量清零，实现水平旋转 ***
+                lookDirection.y = 0;
+
+                // (可选但推荐) 检查向量是否为零
+                if (lookDirection != Vector3.zero)
+                {
+                    // *** 解决方案核心：将方向向量反转 ***
+                    // 这样 LookRotation 会指向远离相机的方向 (即 UI 的正面朝向相机)
+                    Vector3 awayFromCameraDirection = -lookDirection; 
+
+                    // 基于“扁平化”的反转向量创建旋转
+                    Quaternion targetRotation = Quaternion.LookRotation(awayFromCameraDirection);
+
+                    // 应用旋转到 Canvas 子物体
+                    canvasTransform.transform.rotation = targetRotation;
+                }
+            }
         }
         // --- 取消/禁用逻辑 ---
         else if (isPalmUpActive)

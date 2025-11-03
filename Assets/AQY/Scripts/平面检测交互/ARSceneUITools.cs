@@ -7,6 +7,8 @@ public class ARSceneUITools : MonoBehaviour
 {
     public ARObjectList ARObj;
     
+    public List<CanvasGroup> ARObjCanvasGroups;
+    
     //事件系统
     private ARGradEvent gameManager;
     //手势模块
@@ -20,14 +22,62 @@ public class ARSceneUITools : MonoBehaviour
     {
         gameManager = FindObjectOfType<ARGradEvent>();
         sceneManager = FindObjectOfType<ARSceneManager>();
+        ChangeSceneUI(0);
     }
 
     public void ChangeObj(int i)
     {
+        ChangeSceneUI(i+1);
         ChangeSceneObject(ARObj.objectList[i]);
     }
-    
-   public void ChangeSceneObject(GameObject newPrefab)
+
+    public void ChangeSceneUI(int i)
+    {
+        // 1. 安全检查：确保列表已分配
+        if (ARObjCanvasGroups == null)
+        {
+            Debug.LogError("ChangeSceneUI: ARObjCanvasGroups 列表未在 Inspector 中分配！");
+            return;
+        }
+
+        // 2. 安全检查：确保索引在有效范围内
+        if (i < 0 || i >= ARObjCanvasGroups.Count)
+        {
+            Debug.LogError($"ChangeSceneUI: 传入的索引 {i} 超出范围。列表大小为 {ARObjCanvasGroups.Count}。");
+            return;
+        }
+
+        // 3. 遍历列表中的所有 CanvasGroup
+        for (int j = 0; j < ARObjCanvasGroups.Count; j++)
+        {
+            CanvasGroup currentGroup = ARObjCanvasGroups[j];
+            
+            // 安全检查：跳过列表中未分配的空元素
+            if (currentGroup == null)
+            {
+                Debug.LogWarning($"ChangeSceneUI: ARObjCanvasGroups[{j}] 的元素为 null。已跳过。");
+                continue;
+            }
+
+            // 4. 检查当前循环索引 j 是否等于我们想要的索引 i
+            if (j == i)
+            {
+                // 这是我们想要显示的UI
+                currentGroup.alpha = 1f;            // 设为不透明
+                currentGroup.interactable = true;   // 允许交互 (如按钮点击)
+                currentGroup.blocksRaycasts = true; // 阻挡射线 (允许点击)
+            }
+            else
+            {
+                // 这是我们想要隐藏的其他UI
+                currentGroup.alpha = 0f;              // 设为完全透明
+                currentGroup.interactable = false;    // 禁止交互
+                currentGroup.blocksRaycasts = false;  // 不阻挡射线 (允许穿透点击)
+            }
+        }
+    }
+
+    public void ChangeSceneObject(GameObject newPrefab)
     {
         // 1. 检查新预制体是否有效
         if (newPrefab == null)
