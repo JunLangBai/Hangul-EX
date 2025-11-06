@@ -1,4 +1,4 @@
-using System; // <-- 新增，为了使用 Action
+using System;
 using System.Collections;
 using System.IO;
 using System.Threading.Tasks;
@@ -8,9 +8,6 @@ using UnityEngine.Networking;
 using UnityEngine.UI;
 using MemoryGameTools; 
 
-/// <summary>
-/// ASR 服务器返回的初步响应
-/// </summary>
 [System.Serializable]
 public class ASRUploadResponse
 {
@@ -20,49 +17,47 @@ public class ASRUploadResponse
 }
 
 /// <summary>
+/// 【已修改】
 /// 负责录音、上传到ASR服务器，并获取原始识别结果。
+/// 现在使用 "点击-开始 / 点击-停止" 逻辑。
 /// </summary>
 [RequireComponent(typeof(AudioSource))]
 public class ASRManager : MonoBehaviour
 {
-    // --- 【新增】事件 ---
-    // 当 ASR 成功获取到结果时，会触发此事件
-    // MemoryGameManager 将会订阅这个事件
     public event Action<string> OnASRResultReady;
-    // --------------------
 
     private const string TempAudioFileName = "latest_recording.wav";
 
-    [Header("网络设置")]
-    [Tooltip("你的 app.py 服务器地址, 例如: http://192.168.1.10:5001/upload")]
+    [Header("网络设置 (Network Settings)")]
+    [Tooltip("你的 app.py 服务器地址 (Your app.py server URL)")]
     public string uploadURL = "http://your_server_ip:5001/upload";
 
-    [Header("UI 元素")]
-    [Tooltip("用于显示 ASR 原始结果 (例如 '一', '二')")]
+    [Header("UI 元素 (UI Elements)")]
+    [Tooltip("用于显示 ASR 原始结果 (ASR raw result text)")]
     public TextMeshProUGUI asrResultText;
     
-    [Tooltip("点击开始/停止录音的按钮")]
+    [Tooltip("点击开始/停止录音的按钮 (Record button)")]
     public Button recordButton;
     
-    [Tooltip("按钮上显示的文本 (例如 '开始录音')")]
+    [Tooltip("按钮上显示的文本 (Button text)")]
     public TextMeshProUGUI buttonText;
 
-    [Header("UI 状态文本")]
-    public string text_StartRecording = "按住说话"; // 修改了提示
-    public string text_StopRecording = "松开识别"; // 修改了提示
+    [Header("UI 状态文本 (UI State Texts)")]
+    // --- 【修改】更新了UI提示文本 ---
+    public string text_StartRecording = "点击录音"; 
+    public string text_StopRecording = "停止录音"; 
     public string text_Processing = "处理中...";
     public string text_Ready = "准备就绪";
     public string text_UploadFailed = "上传失败: ";
 
-    // 内部状态
+    // 内部状态 (Internal State)
     private AudioSource audioSource;
     private bool isRecording;
-    private bool isProcessing; // 是否正在保存或上传
+    private bool isProcessing; 
     private string microphoneDeviceName;
 
     private void Start()
     {
-        // 1. 检查麦克风
         if (Microphone.devices.Length == 0)
         {
             Debug.LogError("未找到麦克风设备！");
@@ -74,41 +69,50 @@ public class ASRManager : MonoBehaviour
         microphoneDeviceName = Microphone.devices[0];
         audioSource = GetComponent<AudioSource>();
 
-        // 2. 绑定按钮事件
         if (recordButton == null || buttonText == null || asrResultText == null)
         {
             Debug.LogError("请在 Inspector 中关联所有 UI 元素！");
             return;
         }
-
-        // ---【修改】使用 EventTrigger 来处理“按下”和“抬起”---
-        // 你需要在 Unity 编辑器中为 recordButton 添加 EventTrigger 组件
-        // 并添加 PointerDown 和 PointerUp 事件
         
-        // recordButton.onClick.AddListener(OnRecordButtonPressed); // 旧的点击逻辑不再适用
-        
-        // 更好的方式是让 MemoryGameManager 来控制按钮是否可用
-        // 我们只在这里更新文本
+        // --- 【核心修改】 ---
+        // 绑定到常规的 onClick 事件，而不是 EventTrigger
+        recordButton.onClick.AddListener(OnRecordButtonPressed);
+        // ------------------
         
         asrResultText.text = text_Ready;
         UpdateUI();
     }
     
-    // --- 【修改】你需要将这两个方法绑定到 EventTrigger ---
-    // 1. 在 Unity 编辑器中，选中你的 recordButton
-    // 2. 添加 "Event Trigger" 组件
-    // 3. 点击 "Add New Event Type" -> "PointerDown" (按下)
-    // 4. 拖拽 ASRManager 组件到 OnClick() 列表，选择 ASRManager -> OnPointerDownRecord
-    // 5. 点击 "Add New Event Type" -> "PointerUp" (抬起)
-    // 6. 拖拽 ASRManager 组件到 OnClick() 列表，选择 ASRManager -> OnPointerUpRecord
+
+    // --- 【新增】点击事件处理器 ---
+    /// <summary>
+    /// 当录音按钮被点击时调用
+    /// </summary>
+    public void OnRecordButtonPressed()
+    {
+        // 如果正在上传，不允许任何操作
+        if (isProcessing) return; 
+
+        // 如果正在录音，则停止
+        if (isRecording)
+        {
+            StopRecordingAndProcess();
+        }
+        // 否则，开始录音
+        else
+        {
+            StartRecording();
+        }
+    }
 
     /// <summary>
-    /// 当手指/鼠标按下录音按钮时调用 (需在 EventTrigger 中绑定)
+    /// 开始录音
     /// </summary>
-    public void OnPointerDownRecord()
+    private void StartRecording()
     {
-        if (isProcessing || !recordButton.interactable) return;
-        
+        if (!recordButton.interactable) return;
+
         asrResultText.text = "正在录音...";
         audioSource.clip = Microphone.Start(microphoneDeviceName, true, 300, 44100);
         isRecording = true;
@@ -116,15 +120,13 @@ public class ASRManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 当手指/鼠标松开录音按钮时调用 (需在 EventTrigger 中绑定)
+    /// 停止录音、处理并上传
     /// </summary>
-    public void OnPointerUpRecord()
+    private void StopRecordingAndProcess()
     {
-        if (!isRecording) return;
-        
         var lastSamplePosition = Microphone.GetPosition(microphoneDeviceName);
         Microphone.End(microphoneDeviceName);
-        isRecording = false;
+        isRecording = false; // 立刻设置状态
 
         if (lastSamplePosition <= 0)
         {
@@ -141,19 +143,16 @@ public class ASRManager : MonoBehaviour
         isProcessing = true;
         UpdateUI();
         
-        // 使用 async void 启动异步任务
+        // 异步处理
         ProcessAndUploadAsync(audioData, originalClip.channels, originalClip.frequency);
     }
+    // ---------------------------------
 
-    /// <summary>
-    /// 异步保存并上传 (从 OnPointerUpRecord 中分离出来)
-    /// </summary>
     private async void ProcessAndUploadAsync(float[] audioData, int channels, int frequency)
     {
         await SaveAndUploadAsync(audioData, channels, frequency);
     }
 
-    // (此方法已重命名为 private)
     private async Task SaveAndUploadAsync(float[] samples, int channels, int frequency)
     {
         var savePath = Application.persistentDataPath;
@@ -207,13 +206,8 @@ public class ASRManager : MonoBehaviour
 
                 if (response != null && (response.status == "pending" || response.status == "success"))
                 {
-                    // *** 成功获取 ASR 原始结果 ***
                     asrResultText.text = "识别结果: " + response.raw_transcription;
-
-                    // --- 【核心修改】 ---
-                    // 广播这个结果给 MemoryGameManager
                     OnASRResultReady?.Invoke(response.raw_transcription);
-                    // --------------------
                 }
                 else
                 {
@@ -234,24 +228,22 @@ public class ASRManager : MonoBehaviour
     {
         if (recordButton == null || buttonText == null) return;
 
+        // --- 【修改】更新UI逻辑以匹配开关状态 ---
         if (isProcessing)
         {
-            // recordButton.interactable = false; // 由 GameManager 控制
             buttonText.text = text_Processing;
         }
         else if (isRecording)
         {
-            // recordButton.interactable = true;
             buttonText.text = text_StopRecording;
         }
         else
         {
-            // recordButton.interactable = true;
             buttonText.text = text_StartRecording;
         }
+        // ------------------------------------
     }
     
-    // --- 【新增】 ---
     /// <summary>
     /// 允许 MemoryGameManager 从外部控制此按钮是否可用
     /// </summary>
@@ -262,9 +254,14 @@ public class ASRManager : MonoBehaviour
             recordButton.interactable = isActive;
             if (!isActive)
             {
+                // 如果游戏结束（按钮被禁用），确保重置录音状态
+                if (isRecording)
+                {
+                    Microphone.End(microphoneDeviceName);
+                    isRecording = false;
+                }
                 buttonText.text = text_StartRecording;
             }
         }
     }
-    // ----------------
 }

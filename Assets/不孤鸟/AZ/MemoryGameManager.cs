@@ -6,285 +6,388 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-/// <summary>
-/// 游戏的核心逻辑管理器 (Game's core logic manager)
-/// 负责：出题、播放音频、接收按键输入、接收ASR结果、判断对错
-/// (Handles: creating questions, playing audio, receiving button input, receiving ASR results, judging correctness)
-/// </summary>
 [RequireComponent(typeof(AudioSource))]
 public class MemoryGameManager : MonoBehaviour
 {
     [Header("游戏核心引用 (Core References)")]
-    [Tooltip("将场景中的 ASRManager 脚本组件拖到这里 (Drag the ASRManager script component here)")]
     public ASRManager asrManager;
-    
-    [Tooltip("用于播放0-9数字音频的 AudioSource 组件 (AudioSource for playing 0-9 digits)")]
     private AudioSource audioSource;
     
     [Header("UI 元素 (UI Elements)")]
-    public Button startGameButton;
-    [Tooltip("“顺序”模式按钮 (Order Mode Button)")]
-    public Button orderModeButton;
-    [Tooltip("“逆序”模式按钮 (Reverse Mode Button)")]
-    public Button reverseModeButton;
-    [Tooltip("用于显示 '正确' 或 '错误，答案是...' 的文本框 (Feedback text)")]
+    [Tooltip("“下一轮”按钮 (原 'startGameButton')")]
+    public Button nextRoundButton; // 已重命名，原 'startGameButton'
+    [Tooltip("用于显示模式、反馈 ('正确', '错误') 的文本框 (Feedback text)")]
     public TextMeshProUGUI feedbackText;
     
     [Header("游戏按钮 (0-9) (Number Buttons)")]
-    [Tooltip("请按 0 到 9 的顺序拖入10个按钮 (Drag 10 buttons here, in 0-9 order)")]
     public Button[] numberButtons;
 
-    [Header("音频资源 (0-9) (Audio Clips)")]
-    [Tooltip("请按 0 到 9 的顺序拖入10个音频文件 (Drag 10 audio clips here, in 0-9 order)")]
+    [Header("数字音频 (0-9) (Digit Audio)")]
     public AudioClip[] digitAudioClips;
+
+    [Header("游戏提示音频 (Gameplay Audio Cues)")]
+    public AudioClip audioClipOrder;
+    public AudioClip audioClipReverse;
+    public AudioClip audioClipCorrect;
+    public AudioClip audioClipWrong;
+    public AudioClip audioClipRest;
     
     // --- 内部游戏状态 (Internal Game State) ---
-    private bool isOrderMode = true;
-    private List<int> currentSequence = new List<int>(); // 当前的题目序列 (Current question sequence), e.g., [1, 5, 2]
-    private string currentAnswerString; // 当前的正确答案 (Current correct answer), e.g., "一五二"
-    private string playerInputString = ""; // 玩家通过按键输入的字符串 (Player's input string via buttons)
-    private bool gameInProgress = false; // 标记游戏是否正在进行 (Is game in progress?)
+    private bool isOrderMode = true; 
+    private int consecutiveCorrectAnswers = 0; 
+    private Coroutine restTimerCoroutine = null; 
 
-    // 用于清理 ASR 结果中的标点符号 (Regex for cleaning ASR punctuation)
+    private List<int> currentSequence = new List<int>(); 
+    private string currentAnswerString; 
+    private string playerInputString = ""; 
+    private bool gameInProgress = false; 
+
     private readonly Regex punctuationRegex = new Regex("[,.，。？！ ]");
-    // 数字到汉字的映射 (Map for numbers to Chinese characters)
     private readonly string[] chineseNumbers = { "零", "一", "二", "三", "四", "五", "六", "七", "八", "九" };
+
+    // --- [修改] ---
+    // GameSettingsManager 会在游戏开始时调用它
+    // 我们不需要在这里自动绑定它，而是让 GameSettingsManager 来控制
+    private bool isNormalModeGame = true; // 标记当前是否为“常规模式”
 
     void Start()
     {
-        // 1. 获取必要的组件 (Get required components)
+        // 1. 获取组件
         audioSource = GetComponent<AudioSource>();
 
-        // 2. 检查引用是否完整 (Check references)
-        if (asrManager == null)
-        {
-            Debug.LogError("ASRManager 未在 Inspector 中指定！");
-            return;
-        }
-        if (numberButtons.Length != 10 || digitAudioClips.Length != 10)
-        {
-            Debug.LogError("数字按钮或音频剪辑必须正好为10个！");
-            return;
-        }
+        // 2. 检查引用
+        if (asrManager == null) Debug.LogError("ASRManager 未在 Inspector 中指定！");
+        if (numberButtons.Length != 10 || digitAudioClips.Length != 10) Debug.LogError("数字按钮或音频剪辑必须正好为10个！");
 
-        // 3. 绑定 UI 事件 (Bind UI events)
-        startGameButton.onClick.AddListener(StartGame);
-        orderModeButton.onClick.AddListener(() => SetMode(true));
-        reverseModeButton.onClick.AddListener(() => SetMode(false));
+        // 3. 绑定 UI 事件
+        // [修改] "开始游戏"按钮(现在是"下一轮"按钮)的逻辑被移到了 ProcessAnswer 中
+        // 我们希望这个按钮只在答题结束后才可用
+        if (nextRoundButton == null) Debug.LogError("NextRoundButton (原 startGameButton) 未指定!");
+        
+        // [修改] 我们让 "下一轮" 按钮在常规模式下调用 StartGame()
+        // 在自定义模式下，它会做什么？... 让我们重新思考一下。
+        // 更好的逻辑：
+        // 1. GameSettingsManager 调用 StartGame() 或 StartCustomGame()
+        // 2. 游戏运行 -> ProcessAnswer()
+        // 3. ProcessAnswer() 启用 "nextRoundButton"
+        // 4. "nextRoundButton" 被点击时，需要知道是继续 "常规模式" 还是 "自定义模式"
+        
+        // 让我们简化一下：
+        // 1. "nextRoundButton" (原 startGameButton) 只在 *常规模式* 下使用。
+        // 2. 在 *自定义模式* 下，答完一题后，你需要返回菜单或重新开始自定义游戏。
+        // 
+        // 为了实现你的要求，我们假设 "下一轮" 按钮总是启动 *常规模式*
+        // 因此，我们将它重命名为 nextRoundButton，并在 Start() 中绑定它
+        
+        nextRoundButton.onClick.AddListener(StartGame); // 这个按钮现在总是启动“常规模式”
 
-        // 循环绑定10个数字按钮的点击事件 (Loop to bind all 10 number buttons)
+        // 循环绑定10个数字按钮
         for (int i = 0; i < numberButtons.Length; i++)
         {
-            int number = i; // 必须在闭包中捕获变量 (Must capture variable in closure)
+            int number = i; 
             numberButtons[i].onClick.AddListener(() => OnNumberButtonPressed(number));
         }
 
-        // 4. 订阅 ASRManager 的结果事件 (Subscribe to ASRManager's event)
-        // 当 ASRManager 收到结果时，它会调用 OnASRResultReceived 方法
+        // 4. 订阅 ASR 事件
         asrManager.OnASRResultReady += OnASRResultReceived;
 
-        // 初始化 (Initialize)
-        SetMode(true);
-        feedbackText.text = "请点击开始游戏";
-        SetInputActive(false); // 游戏未开始时禁用输入 (Disable input before game starts)
+        // 5. 初始化
+        feedbackText.text = "请从主菜单开始游戏";
+        SetInputActive(false); 
+        nextRoundButton.interactable = false; // 游戏开始前（在菜单时）禁用
+        // GameSettingsManager 会在切换面板时启用它（如果它绑定的是 StartNormalGame）
+        // 让我们在 Start() 中禁用它，然后在 ShowGamePanel() (在 SettingsManager 中) 再启用它。
+        
+        // *** 重要 ***
+        // 你需要修改 GameSettingsManager.cs 中的 ShowGamePanel() 方法
+        // 添加: gameManager.nextRoundButton.interactable = true;
+        // 并且在 GameSettingsManager 的 Start() 中设置:
+        // gameManager.nextRoundButton.interactable = false;
+        //
+        // 为了简单起见，我将假设 "nextRoundButton" 在游戏面板上，并且 *总是* 可见的。
+        // 让我们修改 GameSettingsManager 的逻辑。
+
+        // --- 让我们采用更简单的逻辑 ---
+        // 1. 你原来的 'startGameButton' 现在改名为 'nextRoundButton'。
+        // 2. 它在 Start() 中绑定到 StartGame()。
+        // 3. 它只在 ProcessAnswer() (回答完毕) 和 Start() (游戏初始) 时启用。
+        // 4. GameSettingsManager 不再需要 'startNormalGameButton'，它只需要 'startCustomGameButton'。
+        // 5. 你原来的 'startGameButton' (现在是 'nextRoundButton') 就是用来玩“常规模式”的。
+
+        // --- 好的，我们回到上面的代码，它基本是正确的 ---
+        // Start()
+        // ... (绑定 nextRoundButton.onClick.AddListener(StartGame)) ...
+        // feedbackText.text = "请点击开始常规游戏";
+        // SetInputActive(false); 
+        // nextRoundButton.interactable = true; // 初始状态，允许开始常规游戏
+        
+        // (在 Start() 中...)
+        feedbackText.text = "请点击'开始游戏'或从菜单自定义";
+        SetInputActive(false); 
+        nextRoundButton.interactable = true; // 初始状态，允许开始
     }
 
     /// <summary>
-    /// 设置游戏模式（顺序/逆序） (Set game mode)
+    /// [修改] "常规模式" 的入口点
+    /// (由 'nextRoundButton' 或 'startNormalGameButton' 调用)
     /// </summary>
-    void SetMode(bool isOrder)
-    {
-        if (gameInProgress) return; // 游戏中不允许切换模式 (Don't allow switching mode mid-game)
-        
-        isOrderMode = isOrder;
-        feedbackText.text = isOrderMode ? "模式: 顺序" : "模式: 逆序";
-        
-        // 更新按钮视觉效果 (Update button visuals)
-        orderModeButton.GetComponent<Image>().color = isOrderMode ? Color.green : Color.white;
-        reverseModeButton.GetComponent<Image>().color = isOrderMode ? Color.white : Color.green;
-    }
-
-    /// <summary>
-    /// 开始新一轮游戏 (Start a new game round)
-    /// </summary>
-    void StartGame()
+    public void StartGame()
     {
         if (gameInProgress) return;
-        gameInProgress = true;
-
-        feedbackText.text = "请仔细听...";
-        SetInputActive(false); // 播放时禁用所有输入 (Disable input during playback)
         
-        // 1. 清理上一轮状态 (Clear previous state)
+        isNormalModeGame = true; // 标记为常规模式
+
+        // --- 核心逻辑：决定本轮模式 ---
+        if (consecutiveCorrectAnswers >= 3)
+        {
+            isOrderMode = false;
+            consecutiveCorrectAnswers = 0; 
+        }
+        else
+        {
+            isOrderMode = true;
+        }
+        
+        // 随机难度
+        int difficulty = Random.Range(2, 6); // (2, 3, 4, 5)
+
+        // 调用核心准备方法
+        PrepareAndStartGame(difficulty, isOrderMode);
+    }
+
+    /// <summary>
+    /// [新增] "自定义模式" 的入口点
+    /// (由 GameSettingsManager 调用)
+    /// </summary>
+    /// <param name="difficulty">指定的难度 (e.g., 2, 3, 4, 5)</param>
+    /// <param name="isOrder">指定的模式 (true=顺序)</param>
+    public void StartCustomGame(int difficulty, bool isOrder)
+    {
+        if (gameInProgress) return;
+        
+        isNormalModeGame = false; // 标记为自定义模式
+        consecutiveCorrectAnswers = 0; // 自定义模式不计入连续答对
+
+        // 使用传入的参数
+        PrepareAndStartGame(difficulty, isOrder);
+    }
+
+    /// <summary>
+    /// [新增] 真正准备并开始游戏的核心方法
+    /// </summary>
+    private void PrepareAndStartGame(int difficulty, bool isOrder)
+    {
+        gameInProgress = true;
+        nextRoundButton.interactable = false; // 游戏开始，禁用"下一轮"
+
+        // 启动休息计时器（如果尚未启动）
+        if (restTimerCoroutine == null)
+        {
+            restTimerCoroutine = StartCoroutine(RestTimerCoroutine());
+            Debug.Log("[GameManager] 休息计时器已启动。");
+        }
+
+        SetInputActive(false); // 播放时禁用所有输入
+        
         currentSequence.Clear();
         playerInputString = "";
 
-        // 2. 随机难度 (2-5个数字) (Randomize difficulty)
-        int difficulty = Random.Range(2, 6); // (2, 3, 4, 5)
+        // 设置模式和UI
+        this.isOrderMode = isOrder; // 保存当前模式
+        feedbackText.text = isOrderMode ? "模式: 顺序" : "模式: 逆序";
+        Debug.Log($"[GameManager] 新回合开始。难度: {difficulty}, 模式: {(isOrderMode ? "顺序" : "逆序")}");
 
-        // 3. 随机生成题目序列 (Generate random sequence)
+        // 3. 生成题目序列
         for (int i = 0; i < difficulty; i++)
         {
             currentSequence.Add(Random.Range(0, 10)); // 0-9
         }
         
-        // 4. 根据模式生成正确答案字符串 (Generate answer string based on mode)
+        // 4. 生成答案字符串
         currentAnswerString = GenerateAnswerString();
         Debug.Log($"[GameManager] 题目已生成 (Question): {string.Join(",", currentSequence)}");
         Debug.Log($"[GameManager] 正确答案 (Answer): {currentAnswerString}");
 
-        // 5. 开始播放音频序列 (Play audio sequence)
+        // 5. 开始播放
         StartCoroutine(PlaySequence());
     }
 
-    /// <summary>
-    /// 协程：按顺序播放音频 (Coroutine: Play sequence)
-    /// </summary>
+
     IEnumerator PlaySequence()
     {
-        yield return new WaitForSeconds(0.5f); // 准备时间 (Prep time)
+        // 1. 播放模式提示音
+        AudioClip modeClip = isOrderMode ? audioClipOrder : audioClipReverse;
+        if (modeClip != null)
+        {
+            audioSource.PlayOneShot(modeClip);
+            yield return new WaitForSeconds(modeClip.length);
+        }
+        else
+        {
+            yield return new WaitForSeconds(0.5f); 
+        }
 
+        // 2. 提示“请仔细听”
+        feedbackText.text = "请仔细听...";
+        yield return new WaitForSeconds(0.5f); // 准备时间
+
+        // 3. 播放数字序列
         foreach (int num in currentSequence)
         {
             audioSource.PlayOneShot(digitAudioClips[num]);
-            // 等待当前音频播放完毕 + 0.2秒间隔 (Wait for clip to finish + 0.2s gap)
             yield return new WaitForSeconds(digitAudioClips[num].length + 0.2f);
         }
 
-        // 播放完毕 (Playback finished)
+        // 4. 播放完毕
         feedbackText.text = "请回答 (按键或语音)";
-        SetInputActive(true); // 允许玩家输入 (Allow player input)
+        SetInputActive(true); // 允许玩家输入
         gameInProgress = false; 
     }
 
-    /// <summary>
-    /// 当玩家按下 0-9 按钮时调用 (Called when 0-9 button is pressed)
-    /// </summary>
-    void OnNumberButtonPressed(int number)
+    IEnumerator RestTimerCoroutine()
     {
-        if (!gameInProgress) // 只有在播放完毕后才接收按键 (Only accept input after playback)
+        while (true)
         {
-            playerInputString += NumberToChinese(number);
-            feedbackText.text = "已输入: " + playerInputString;
-
-            // 检查玩家输入是否已达到答案长度 (Check if input length matches answer length)
-            if (playerInputString.Length == currentAnswerString.Length)
+            yield return new WaitForSeconds(300f); // 5分钟
+            Debug.Log("[GameManager] 5分钟提醒：请休息。");
+            if (audioClipRest != null)
             {
-                CheckButtonAnswer();
+                audioSource.PlayOneShot(audioClipRest);
             }
         }
     }
 
-    /// <summary>
-    /// 检查按键输入的答案 (Check button-based answer)
-    /// </summary>
-    void CheckButtonAnswer()
+    void OnNumberButtonPressed(int number)
     {
-        if (playerInputString == currentAnswerString)
+        if (gameInProgress) return; 
+        if (string.IsNullOrEmpty(currentAnswerString)) return; 
+
+        playerInputString += NumberToChinese(number);
+        feedbackText.text = "已输入: " + playerInputString;
+
+        if (playerInputString.Length == currentAnswerString.Length)
         {
-            feedbackText.text = "正确！";
+            CheckButtonAnswer();
         }
-        else
-        {
-            feedbackText.text = $"错误。正确答案是: {currentAnswerString}";
-        }
-        
-        playerInputString = ""; 
-        SetInputActive(false); // 答题完毕，禁用输入 (Answered, disable input)
     }
 
-    /// <summary>
-    /// 当 ASRManager 广播 ASR 结果时调用 (Called when ASRManager broadcasts a result)
-    /// </summary>
+    void CheckButtonAnswer()
+    {
+        bool isCorrect = (playerInputString == currentAnswerString);
+        string feedback = isCorrect ? "正确！" : $"错误。正确答案是: {currentAnswerString}";
+        ProcessAnswer(isCorrect, feedback);
+        playerInputString = ""; 
+    }
+
     void OnASRResultReceived(string rawASRResult)
     {
-        if (string.IsNullOrEmpty(currentAnswerString)) return; // 游戏还没出题 (Game hasn't started)
+        if (gameInProgress) return; 
+        if (string.IsNullOrEmpty(currentAnswerString)) return; 
 
         Debug.Log($"[GameManager] 收到 ASR 原始结果 (Raw ASR): {rawASRResult}");
-        
-        // 1. 清理标点符号 (Clean punctuation)
         string cleanedResult = CleanASRString(rawASRResult);
         Debug.Log($"[GameManager] 清理后结果 (Cleaned): {cleanedResult}");
 
-        // 2. 判断对错 (Check answer)
-        if (cleanedResult == currentAnswerString)
+        bool isCorrect = (cleanedResult == currentAnswerString);
+        string feedback = isCorrect ? "正确！" : $"错误。识别到: {cleanedResult}。正确答案是: {currentAnswerString}";
+        
+        ProcessAnswer(isCorrect, feedback);
+    }
+
+    /// <summary>
+    /// [修改] 统一处理答案
+    /// </summary>
+    private void ProcessAnswer(bool isCorrect, string feedbackMessage)
+    {
+        feedbackText.text = feedbackMessage;
+        SetInputActive(false); // 答题完毕，禁用输入
+        
+        // [修改] 只有在常规模式下才启用 "下一轮" 按钮
+        // 在自定义模式下，玩家需要返回主菜单
+        if (isNormalModeGame)
         {
-            feedbackText.text = "正确！";
+            nextRoundButton.interactable = true; // 允许开始下一轮（常规）
         }
         else
         {
-            feedbackText.text = $"错误。识别到: {cleanedResult}。正确答案是: {currentAnswerString}";
+            feedbackText.text += "\n(自定义模式结束，请返回菜单)";
+            // 此时，GameSettingsManager 应该提供一个"返回"按钮
+        }
+
+
+        if (isCorrect)
+        {
+            Debug.Log("[GameManager] 回答正确。");
+            if (audioClipCorrect != null) audioSource.PlayOneShot(audioClipCorrect);
+            
+            // [修改] 只有在“常规模式”下才计数
+            if (isNormalModeGame && isOrderMode)
+            {
+                consecutiveCorrectAnswers++;
+            }
+        }
+        else
+        {
+            Debug.Log("[GameManager] 回答错误。");
+            if (audioClipWrong != null) audioSource.PlayOneShot(audioClipWrong);
+            
+            // 答错，重置计数（仅在常规模式下有意义）
+            if (isNormalModeGame)
+            {
+                consecutiveCorrectAnswers = 0;
+            }
         }
         
-        SetInputActive(false); // 答题完毕 (Answered)
+        Debug.Log($"[GameManager] 连续答对次数: {consecutiveCorrectAnswers}");
     }
-    
-    // --- 辅助方法 (Helper Methods) ---
 
-    /// <summary>
-    /// 激活或禁用所有输入按钮 (Enable/Disable all input)
-    /// </summary>
+    
+    // --- 辅助方法 (无需修改) ---
+
     void SetInputActive(bool isActive)
     {
-        // 激活/禁用 0-9 按钮 (0-9 buttons)
         foreach (var btn in numberButtons)
         {
             btn.interactable = isActive;
         }
-        
-        // 激活/禁用录音按钮 (Record button)
         asrManager.SetRecordButtonActive(isActive);
     }
 
-    /// <summary>
-    /// 根据当前模式和序列生成答案字符串 (Generate answer string)
-    /// </summary>
     string GenerateAnswerString()
     {
         StringBuilder sb = new StringBuilder();
         if (isOrderMode)
         {
-            // 顺序 (Order)
-            foreach (int num in currentSequence)
-            {
-                sb.Append(NumberToChinese(num));
-            }
+            foreach (int num in currentSequence) sb.Append(NumberToChinese(num));
         }
         else
         {
-            // 逆序 (Reverse)
-            for (int i = currentSequence.Count - 1; i >= 0; i--)
-            {
-                sb.Append(NumberToChinese(currentSequence[i]));
-            }
+            for (int i = currentSequence.Count - 1; i >= 0; i--) sb.Append(NumberToChinese(currentSequence[i]));
         }
         return sb.ToString();
     }
 
-    /// <summary>
-    /// 辅助：将 ASR 结果中的标点符号移除 (Helper: Clean ASR string)
-    /// </summary>
     string CleanASRString(string raw)
     {
         if (string.IsNullOrEmpty(raw)) return "";
         return punctuationRegex.Replace(raw, "");
     }
 
-    /// <summary>
-    /// 辅助：将 0-9 整数转换为汉字 (Helper: Convert int 0-9 to Chinese char)
-    /// </summary>
     string NumberToChinese(int num)
     {
         if (num < 0 || num > 9) return "";
         return chineseNumbers[num];
     }
 
-    // 确保在对象销毁时取消订阅事件 (Unsubscribe on destroy)
     private void OnDestroy()
     {
         if (asrManager != null)
         {
             asrManager.OnASRResultReady -= OnASRResultReceived;
+        }
+        if (restTimerCoroutine != null)
+        {
+            StopCoroutine(restTimerCoroutine);
         }
     }
 }
