@@ -5,12 +5,16 @@ using UnityEngine.UI;
 using TMPro;
 
 /// <summary>
-/// 【无需修改】
-/// 一个可选的设置菜单，允许康复师手动覆盖下一轮的难度和模式。
-/// (An optional settings menu that allows a therapist to manually override the next round's difficulty and mode.)
+/// 【单例版本】
+/// 负责存储跨场景的游戏设置。
+/// (Singleton version: Stores game settings across scenes.)
 /// </summary>
-public class MemoryManager : MonoBehaviour
+public class GameSettingsMenu : MonoBehaviour
 {
+    // --- [新] 单例模式 ---
+    public static GameSettingsMenu Instance { get; private set; }
+    // --- [新结束] ---
+
     [Header("UI 元素 (UI Elements)")]
     [Tooltip("用于选择难度的 Dropdown (Difficulty Dropdown)")]
     public TMP_Dropdown difficultyDropdown; // (0=随机, 1=2个, 2=3个, 3=4个, 4=5个)
@@ -23,47 +27,63 @@ public class MemoryManager : MonoBehaviour
 
     [Tooltip("用于显示当前设置的文本 (Display for current settings)")]
     public TextMeshProUGUI settingsDisplay;
-    
+
     // 内部存储 (Internal storage)
     private int selectedDifficulty = 0; // 0 = 随机 (Random)
     private int selectedMode = 0; // 0 = 自动 (Auto)
 
     private const string SETTING_PREFIX = "手动设置: ";
 
+    // --- [新] Awake 用于单例和跨场景 ---
+    void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject); // 核心：使其跨场景
+            Debug.Log("GameSettingsMenu Singleton created.");
+        }
+        else
+        {
+            Debug.LogWarning("Duplicate GameSettingsMenu found. Destroying new one.");
+            Destroy(gameObject); // 销毁重复的实例
+        }
+    }
+    // --- [新结束] ---
+
     void Start()
     {
         // 1. 初始化 Dropdowns (Initialize Dropdowns)
-        // (确保在 Unity 编辑器中已设置好选项)
         if (difficultyDropdown != null)
         {
             difficultyDropdown.onValueChanged.AddListener(OnDifficultyChanged);
-            selectedDifficulty = difficultyDropdown.value;
+            // 确保我们读取的是当前值（在场景加载时）
+            OnDifficultyChanged(difficultyDropdown.value); 
         }
 
         if (modeDropdown != null)
         {
             modeDropdown.onValueChanged.AddListener(OnModeChanged);
-            selectedMode = modeDropdown.value;
+            // 确保我们读取的是当前值
+            OnModeChanged(modeDropdown.value);
         }
         
         // 2. 绑定应用按钮 (Bind Apply Button)
         if (applyButton != null)
         {
-            // 在这个演示中，我们假设 "Apply" 只是为了更新显示文本
-            // 真正的 "Apply" 逻辑在 MemoryGameManager 中通过 Get...() 方法实现
             applyButton.onClick.AddListener(UpdateDisplay);
         }
 
         // 3. 初始化显示 (Initialize display)
         UpdateDisplay();
+        
+        // 4. [已移除] 计数器相关代码
     }
 
     // --- Dropdown 事件监听 ---
 
     void OnDifficultyChanged(int index)
     {
-        // Dropdown index (0="随机", 1="2个", 2="3个", 3="4个", 4="5个")
-        // 我们将其转换为数字 (0=随机, 2, 3, 4, 5)
         if (index == 0)
         {
             selectedDifficulty = 0; // 0 代表随机
@@ -77,7 +97,6 @@ public class MemoryManager : MonoBehaviour
 
     void OnModeChanged(int index)
     {
-        // Dropdown index (0="自动", 1="顺序", 2="逆序")
         selectedMode = index;
         UpdateDisplay();
     }
@@ -111,7 +130,6 @@ public class MemoryManager : MonoBehaviour
     /// <summary>
     /// MemoryGameManager 调用此方法来获取手动设置的难度。
     /// </summary>
-    /// <returns>0=随机, 2-5=指定数量</returns>
     public int GetManualDifficulty()
     {
         return selectedDifficulty;
@@ -120,9 +138,10 @@ public class MemoryManager : MonoBehaviour
     /// <summary>
     /// MemoryGameManager 调用此方法来获取手动设置的模式。
     /// </summary>
-    /// <returns>0=自动, 1=顺序 (Order), 2=逆序 (Reverse)</returns>
     public int GetManualMode()
     {
         return selectedMode;
     }
+    
+    // --- [已移除] 计数器相关方法 ---
 }
