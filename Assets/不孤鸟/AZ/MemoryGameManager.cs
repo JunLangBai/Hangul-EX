@@ -14,7 +14,7 @@ public class MemoryGameManager : MonoBehaviour
     public ASRManager asrManager;
 
     // [已修改] 不再需要 public 引用，将自动查找单例
-    private GameSettingsMenu gameSettingsMenu; 
+    private MemorySettingsMenu _memorySettingsMenu; 
     
     [Tooltip("用于播放0-9数字和提示音的 AudioSource")]
     private AudioSource audioSource;
@@ -64,12 +64,12 @@ public class MemoryGameManager : MonoBehaviour
         audioSource = GetComponent<AudioSource>();
 
         // 2. [已修改] 查找单例
-        gameSettingsMenu = GameSettingsMenu.Instance; 
+        _memorySettingsMenu = MemorySettingsMenu.Instance; 
         
         // 3. 检查引用
         if (asrManager == null) Debug.LogError("ASRManager 未在 Inspector 中指定！");
         if (numberButtons.Length != 10 || digitAudioClips.Length != 10) Debug.LogError("数字按钮或音频剪辑必须正好为10个！");
-        if (gameSettingsMenu == null) Debug.LogWarning("GameSettingsMenu.Instance 未找到，将使用自动模式。");
+        if (_memorySettingsMenu == null) Debug.LogWarning("GameSettingsMenu.Instance 未找到，将使用自动模式。");
         if (counterDisplay == null) Debug.LogWarning("CounterDisplay (计数器文本) 未在 Inspector 中指定！");
 
         // 4. 绑定 UI 事件
@@ -117,10 +117,10 @@ public class MemoryGameManager : MonoBehaviour
         int manualDifficulty = 0;
         int manualMode = 0; // 0=Auto, 1=Order, 2=Reverse
 
-        if (gameSettingsMenu != null) // 检查是否成功找到了单例
+        if (_memorySettingsMenu != null) // 检查是否成功找到了单例
         {
-            manualDifficulty = gameSettingsMenu.GetManualDifficulty();
-            manualMode = gameSettingsMenu.GetManualMode();
+            manualDifficulty = _memorySettingsMenu.GetManualDifficulty();
+            manualMode = _memorySettingsMenu.GetManualMode();
         }
 
         // --- 决定模式 ---
