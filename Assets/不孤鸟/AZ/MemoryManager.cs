@@ -9,7 +9,7 @@ using TMPro;
 /// 一个可选的设置菜单，允许康复师手动覆盖下一轮的难度和模式。
 /// (An optional settings menu that allows a therapist to manually override the next round's difficulty and mode.)
 /// </summary>
-public class GameSettingsMenu : MonoBehaviour
+public class MemoryManager : MonoBehaviour
 {
     [Header("UI 元素 (UI Elements)")]
     [Tooltip("用于选择难度的 Dropdown (Difficulty Dropdown)")]
