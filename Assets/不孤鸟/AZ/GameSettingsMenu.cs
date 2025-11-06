@@ -1,178 +1,128 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro; 
-using System.Collections.Generic;
+using TMPro;
 
 /// <summary>
-/// [新版本] 负责管理游戏设置菜单 (使用独立的按钮平铺选项)
+/// 【无需修改】
+/// 一个可选的设置菜单，允许康复师手动覆盖下一轮的难度和模式。
+/// (An optional settings menu that allows a therapist to manually override the next round's difficulty and mode.)
 /// </summary>
-public class GameSettingsManager : MonoBehaviour
+public class GameSettingsMenu : MonoBehaviour
 {
-    [Header("核心引用 (Core References)")]
-    [Tooltip("拖入场景中的 MemoryGameManager 脚本")]
-    public MemoryGameManager gameManager;
-
-    [Header("菜单 UI 元素 (Menu UI)")]
-    [Tooltip("“开始自定义游戏”按钮")]
-    public Button startCustomGameButton;
+    [Header("UI 元素 (UI Elements)")]
+    [Tooltip("用于选择难度的 Dropdown (Difficulty Dropdown)")]
+    public TMP_Dropdown difficultyDropdown; // (0=随机, 1=2个, 2=3个, 3=4个, 4=5个)
     
-    [Tooltip("“开始常规游戏”按钮")]
-    public Button startNormalGameButton;
-    
-    [Tooltip("设置菜单的父物体 (Panel)")]
-    public GameObject settingsMenuPanel;
-    
-    [Tooltip("主游戏界面的父物体 (Panel)")]
-    public GameObject gamePanel;
-    
-    [Header("自定义设置 - 模式 (Custom Mode)")]
-    public Button modeOrderButton; // "顺序" 按钮
-    public Button modeReverseButton; // "逆序" 按钮
+    [Tooltip("用于选择模式的 Dropdown (Mode Dropdown)")]
+    public TMP_Dropdown modeDropdown; // (0=自动, 1=顺序, 2=逆序)
 
-    [Header("自定义设置 - 难度 (Custom Difficulty)")]
-    public Button difficulty2Button; // "2个数字" 按钮
-    public Button difficulty3Button; // "3个数字" 按钮
-    public Button difficulty4Button; // "4个数字" 按钮
-    public Button difficulty5Button; // "5个数字" 按钮
+    [Tooltip("用于应用设置的按钮 (Apply Settings Button)")]
+    public Button applyButton;
 
-    [Header("视觉反馈 (Visuals)")]
-    [Tooltip("按钮被选中时高亮的颜色")]
-    public Color selectedColor = Color.green;
-    [Tooltip("按钮未选中时的默认颜色")]
-    public Color defaultColor = Color.white;
+    [Tooltip("用于显示当前设置的文本 (Display for current settings)")]
+    public TextMeshProUGUI settingsDisplay;
     
-    // 用 List 来管理按钮组，方便切换颜色
-    private List<Button> modeButtons;
-    private List<Button> difficultyButtons;
+    // 内部存储 (Internal storage)
+    private int selectedDifficulty = 0; // 0 = 随机 (Random)
+    private int selectedMode = 0; // 0 = 自动 (Auto)
 
-    // --- 内部设置状态 ---
-    private bool currentIsOrder = true; // 默认"顺序"
-    private int currentDifficulty = 2; // 默认"2个数字"
-
+    private const string SETTING_PREFIX = "手动设置: ";
 
     void Start()
     {
-        // 1. 检查引用
-        if (gameManager == null)
+        // 1. 初始化 Dropdowns (Initialize Dropdowns)
+        // (确保在 Unity 编辑器中已设置好选项)
+        if (difficultyDropdown != null)
         {
-            Debug.LogError("GameSettingsManager: MemoryGameManager 未指定！");
-            return;
+            difficultyDropdown.onValueChanged.AddListener(OnDifficultyChanged);
+            selectedDifficulty = difficultyDropdown.value;
         }
 
-        // 2. 绑定 "开始游戏" 按钮
-        if (startCustomGameButton != null)
+        if (modeDropdown != null)
         {
-            startCustomGameButton.onClick.AddListener(OnStartCustomGameClicked);
+            modeDropdown.onValueChanged.AddListener(OnModeChanged);
+            selectedMode = modeDropdown.value;
         }
         
-        if (startNormalGameButton != null)
+        // 2. 绑定应用按钮 (Bind Apply Button)
+        if (applyButton != null)
         {
-            startNormalGameButton.onClick.AddListener(OnStartNormalGameClicked);
+            // 在这个演示中，我们假设 "Apply" 只是为了更新显示文本
+            // 真正的 "Apply" 逻辑在 MemoryGameManager 中通过 Get...() 方法实现
+            applyButton.onClick.AddListener(UpdateDisplay);
         }
 
-        // 3. [新] 绑定所有设置按钮
-        BindSettingsButtons();
+        // 3. 初始化显示 (Initialize display)
+        UpdateDisplay();
+    }
 
-        // 4. 初始化 UI 状态
-        if (settingsMenuPanel != null) settingsMenuPanel.SetActive(true);
-        if (gamePanel != null) gamePanel.SetActive(false);
-        
-        // 5. [新] 初始化默认选项和视觉效果
-        UpdateVisuals();
+    // --- Dropdown 事件监听 ---
+
+    void OnDifficultyChanged(int index)
+    {
+        // Dropdown index (0="随机", 1="2个", 2="3个", 3="4个", 4="5个")
+        // 我们将其转换为数字 (0=随机, 2, 3, 4, 5)
+        if (index == 0)
+        {
+            selectedDifficulty = 0; // 0 代表随机
+        }
+        else
+        {
+            selectedDifficulty = index + 1; // 1->2, 2->3, 3->4, 4->5
+        }
+        UpdateDisplay();
+    }
+
+    void OnModeChanged(int index)
+    {
+        // Dropdown index (0="自动", 1="顺序", 2="逆序")
+        selectedMode = index;
+        UpdateDisplay();
     }
 
     /// <summary>
-    /// [新] 绑定所有设置按钮的点击事件
+    /// 更新设置显示文本
     /// </summary>
-    void BindSettingsButtons()
+    void UpdateDisplay()
     {
-        // --- 模式按钮 ---
-        modeButtons = new List<Button> { modeOrderButton, modeReverseButton };
-        
-        modeOrderButton.onClick.AddListener(() => {
-            currentIsOrder = true;
-            UpdateVisuals();
-        });
-        
-        modeReverseButton.onClick.AddListener(() => {
-            currentIsOrder = false;
-            UpdateVisuals();
-        });
+        if (settingsDisplay == null) return;
 
-        // --- 难度按钮 ---
-        difficultyButtons = new List<Button> { difficulty2Button, difficulty3Button, difficulty4Button, difficulty5Button };
+        string diffText;
+        if (selectedDifficulty == 0)
+            diffText = "随机难度";
+        else
+            diffText = $"{selectedDifficulty}个数字";
 
-        difficulty2Button.onClick.AddListener(() => {
-            currentDifficulty = 2;
-            UpdateVisuals();
-        });
-        
-        difficulty3Button.onClick.AddListener(() => {
-            currentDifficulty = 3;
-            UpdateVisuals();
-        });
+        string modeText;
+        if (selectedMode == 0)
+            modeText = "自动模式";
+        else if (selectedMode == 1)
+            modeText = "固定顺序";
+        else
+            modeText = "固定逆序";
 
-        difficulty4Button.onClick.AddListener(() => {
-            currentDifficulty = 4;
-            UpdateVisuals();
-        });
+        settingsDisplay.text = $"{SETTING_PREFIX}{diffText}, {modeText}";
+    }
 
-        difficulty5Button.onClick.AddListener(() => {
-            currentDifficulty = 5;
-            UpdateVisuals();
-        });
+    // --- 【核心】供 GameManager 调用的公共方法 ---
+
+    /// <summary>
+    /// MemoryGameManager 调用此方法来获取手动设置的难度。
+    /// </summary>
+    /// <returns>0=随机, 2-5=指定数量</returns>
+    public int GetManualDifficulty()
+    {
+        return selectedDifficulty;
     }
 
     /// <summary>
-    /// [新] 根据当前选择，更新所有按钮的颜色
+    /// MemoryGameManager 调用此方法来获取手动设置的模式。
     /// </summary>
-    void UpdateVisuals()
+    /// <returns>0=自动, 1=顺序 (Order), 2=逆序 (Reverse)</returns>
+    public int GetManualMode()
     {
-        // 更新模式按钮颜色
-        modeOrderButton.GetComponent<Image>().color = currentIsOrder ? selectedColor : defaultColor;
-        modeReverseButton.GetComponent<Image>().color = !currentIsOrder ? selectedColor : defaultColor;
-        
-        // 更新难度按钮颜色
-        difficulty2Button.GetComponent<Image>().color = (currentDifficulty == 2) ? selectedColor : defaultColor;
-        difficulty3Button.GetComponent<Image>().color = (currentDifficulty == 3) ? selectedColor : defaultColor;
-        difficulty4Button.GetComponent<Image>().color = (currentDifficulty == 4) ? selectedColor : defaultColor;
-        difficulty5Button.GetComponent<Image>().color = (currentDifficulty == 5) ? selectedColor : defaultColor;
-    }
-
-
-    /// <summary>
-    /// 当点击“开始自定义游戏”按钮时调用
-    /// </summary>
-    void OnStartCustomGameClicked()
-    {
-        // 1. 从内部变量读取设置
-        Debug.Log($"[SettingsManager] 启动自定义游戏。难度: {currentDifficulty}, 模式: {(currentIsOrder ? "顺序" : "逆序")}");
-
-        // 2. 隐藏菜单, 显示游戏
-        ShowGamePanel();
-        
-        // 3. 调用 MemoryGameManager 的方法
-        gameManager.StartCustomGame(currentDifficulty, currentIsOrder);
-    }
-
-    /// <summary>
-    /// 当点击“开始常规游戏”按钮时调用
-    /// </summary>
-    void OnStartNormalGameClicked()
-    {
-        Debug.Log("[SettingsManager] 启动常规游戏。");
-        ShowGamePanel();
-        
-        // 调用常规游戏启动（保留3次答对换模式的逻辑）
-        gameManager.StartGame(); 
-    }
-
-    /// <summary>
-    /// 切换UI面板
-    /// </summary>
-    void ShowGamePanel()
-    {
-        if (settingsMenuPanel != null) settingsMenuPanel.SetActive(false);
-        if (gamePanel != null) gamePanel.SetActive(true);
+        return selectedMode;
     }
 }
