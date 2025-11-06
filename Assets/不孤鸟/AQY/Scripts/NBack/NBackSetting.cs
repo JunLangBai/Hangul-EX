@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -24,6 +25,8 @@ public class NBackSetting : MonoBehaviour
     [Range(0.1f, 0.9f)]
     public float matchProbability = 0.33f;
 
+    private bool isOneBlockMode = false;
+    
     // 2. Awake方法，用于实现单例模式
     private void Awake()
     {
@@ -39,5 +42,32 @@ public class NBackSetting : MonoBehaviour
         
         // 3. 最关键的一行：告诉Unity不要销毁这个GameObject
         DontDestroyOnLoad(this.gameObject);
+    }
+
+    public void OneBlockMode(bool b)
+    {
+        if (b)
+        {
+            nValue = 0;
+            isOneBlockMode = true;
+        }
+        else
+        {
+            nValue = 1;
+            isOneBlockMode = false;
+        }
+    }
+
+    public void TotalTrials(float i)
+    {
+        totalTrials = (int)i;
+    }
+    
+    public void Nvalue(float i)
+    {
+        if(!isOneBlockMode)
+        {
+            nValue = (int)i;
+        }
     }
 }
