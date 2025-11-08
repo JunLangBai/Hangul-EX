@@ -1112,38 +1112,6 @@ PrefabInstance:
       propertyPath: m_hasFontAssetChanged
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 3179657176549653291, guid: 6541d7671ed40de48b11dbf7f0bd2430, type: 3}
-      propertyPath: onConfirm.m_PersistentCalls.m_Calls.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3179657176549653291, guid: 6541d7671ed40de48b11dbf7f0bd2430, type: 3}
-      propertyPath: onConfirm.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 3179657176549653291, guid: 6541d7671ed40de48b11dbf7f0bd2430, type: 3}
-      propertyPath: onConfirm.m_PersistentCalls.m_Calls.Array.data[0].m_Target
-      value: 
-      objectReference: {fileID: 1755024322}
-    - target: {fileID: 3179657176549653291, guid: 6541d7671ed40de48b11dbf7f0bd2430, type: 3}
-      propertyPath: onConfirm.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 3179657176549653291, guid: 6541d7671ed40de48b11dbf7f0bd2430, type: 3}
-      propertyPath: onConfirm.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: SceneChange
-      objectReference: {fileID: 0}
-    - target: {fileID: 3179657176549653291, guid: 6541d7671ed40de48b11dbf7f0bd2430, type: 3}
-      propertyPath: onConfirm.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: ScenesChange, Assembly-CSharp
-      objectReference: {fileID: 0}
-    - target: {fileID: 3179657176549653291, guid: 6541d7671ed40de48b11dbf7f0bd2430, type: 3}
-      propertyPath: onConfirm.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_StringArgument
-      value: NBack
-      objectReference: {fileID: 0}
-    - target: {fileID: 3179657176549653291, guid: 6541d7671ed40de48b11dbf7f0bd2430, type: 3}
-      propertyPath: onConfirm.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
-      value: UnityEngine.Object, UnityEngine
-      objectReference: {fileID: 0}
     - target: {fileID: 4354765094893715898, guid: 6541d7671ed40de48b11dbf7f0bd2430, type: 3}
       propertyPath: m_Name
       value: "NBack\u786E\u8BA4"
@@ -1799,7 +1767,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1547695011501492505, guid: bb395c4516e27ad48bf409d9413a4f00, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1547695011501492505, guid: bb395c4516e27ad48bf409d9413a4f00, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
@@ -5433,38 +5401,6 @@ PrefabInstance:
       propertyPath: m_hasFontAssetChanged
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3179657176549653291, guid: 6541d7671ed40de48b11dbf7f0bd2430, type: 3}
-      propertyPath: onConfirm.m_PersistentCalls.m_Calls.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3179657176549653291, guid: 6541d7671ed40de48b11dbf7f0bd2430, type: 3}
-      propertyPath: onConfirm.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 3179657176549653291, guid: 6541d7671ed40de48b11dbf7f0bd2430, type: 3}
-      propertyPath: onConfirm.m_PersistentCalls.m_Calls.Array.data[0].m_Target
-      value: 
-      objectReference: {fileID: 1755024322}
-    - target: {fileID: 3179657176549653291, guid: 6541d7671ed40de48b11dbf7f0bd2430, type: 3}
-      propertyPath: onConfirm.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 3179657176549653291, guid: 6541d7671ed40de48b11dbf7f0bd2430, type: 3}
-      propertyPath: onConfirm.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: SceneChange
-      objectReference: {fileID: 0}
-    - target: {fileID: 3179657176549653291, guid: 6541d7671ed40de48b11dbf7f0bd2430, type: 3}
-      propertyPath: onConfirm.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: ScenesChange, Assembly-CSharp
-      objectReference: {fileID: 0}
-    - target: {fileID: 3179657176549653291, guid: 6541d7671ed40de48b11dbf7f0bd2430, type: 3}
-      propertyPath: onConfirm.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_StringArgument
-      value: Memory
-      objectReference: {fileID: 0}
-    - target: {fileID: 3179657176549653291, guid: 6541d7671ed40de48b11dbf7f0bd2430, type: 3}
-      propertyPath: onConfirm.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
-      value: UnityEngine.Object, UnityEngine
-      objectReference: {fileID: 0}
     - target: {fileID: 4354765094893715898, guid: 6541d7671ed40de48b11dbf7f0bd2430, type: 3}
       propertyPath: m_Name
       value: "\u6570\u5B57\u5E7F\u5EA6\u786E\u8BA4"
@@ -6251,7 +6187,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1547695011501492505, guid: bb395c4516e27ad48bf409d9413a4f00, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1547695011501492505, guid: bb395c4516e27ad48bf409d9413a4f00, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
