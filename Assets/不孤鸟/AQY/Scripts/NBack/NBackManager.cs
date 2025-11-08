@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,19 +14,25 @@ public class NBackManager : MonoBehaviour
 {
     [Header("游戏对象引用")]
     public GameObject[] gridCells;
-    public Color normalColor = Color.gray;
-    public Color stimulusColor = Color.green;
+    
+    // --- 修改 1: 添加对3D刺激物的引用 ---
+    public GameObject stimulus3DObject; // 将您想显示的3D对象拖到这里
+
+    // --- 已删除: 不再需要颜色变量 ---
+    // public Color normalColor = Color.gray;
+    // public Color stimulusColor = Color.green;
     
     [Header("UI 引用")]
-    public Text scoreText;
+    public TextMeshPro scoreText;
     public Button matchButton;
-    public Text feedbackText; // 用于显示游戏结束等信息
+    public TextMeshProUGUI buttonText;
+    public TextMeshProUGUI feedbackText;
 
     private List<Trial> trialSequence = new List<Trial>();
     private int currentTrialIndex = 0;
     private int score = 0;
     private bool hasRespondedThisTrial = false;
-    // 创建私有变量来存储从 GameSettings 读取的值
+    
     private int nValue;
     private float stimulusDuration;
     private float interStimulusInterval;
@@ -34,13 +41,10 @@ public class NBackManager : MonoBehaviour
     private float matchProbability;
     
 
-    // 在 Start 或 Awake 中读取设置
     void Awake()
     {
-        // 检查 GameSettings 实例是否存在
         if (NBackSetting.Instance != null)
         {
-            // 从单例中加载所有设置
             nValue = NBackSetting.Instance.nValue;
             stimulusDuration = NBackSetting.Instance.stimulusDuration;
             interStimulusInterval = NBackSetting.Instance.interStimulusInterval;
@@ -53,7 +57,6 @@ public class NBackManager : MonoBehaviour
         else
         {
             Debug.LogError("NBackSetting 实例未找到! 请确保设置场景已首先加载。");
-            // 在这里可以设置一些默认值以防万一
             nValue = 2;
             stimulusDuration = 2.0f;
             interStimulusInterval = 2.5f;
@@ -64,11 +67,16 @@ public class NBackManager : MonoBehaviour
     
     void Start()
     {
-        if (feedbackText != null) feedbackText.text = "";
+            if (feedbackText != null) feedbackText.text = "↓↓ 向下低头看向平面进行游戏 ↓↓";
         
-        foreach (var cell in gridCells)
+        // --- 修改 2: 确保3D对象在游戏开始时是隐藏的 ---
+        if (stimulus3DObject != null)
         {
-            SetCellColor(cell, normalColor);
+            stimulus3DObject.SetActive(false);
+        }
+        else
+        {
+            Debug.LogError("刺激物3D对象 (stimulus3DObject) 未在检视器中设置!");
         }
 
         matchButton.onClick.AddListener(OnMatchButtonPressed);
@@ -78,7 +86,7 @@ public class NBackManager : MonoBehaviour
         StartCoroutine(RunGame());
     }
 
-    // 1. 根据N值分发任务序列的生成
+    // ... (GenerateTrialSequence, GenerateN0Sequence, GenerateN1AndAboveSequence 函数保持不变)
     void GenerateTrialSequence()
     {
         switch (nValue)
@@ -92,7 +100,6 @@ public class NBackManager : MonoBehaviour
         }
     }
 
-    // 为 N=0 (Go/No-Go) 生成序列
     void GenerateN0Sequence()
     {
         trialSequence.Clear();
@@ -104,13 +111,11 @@ public class NBackManager : MonoBehaviour
         {
             Trial newTrial = new Trial();
             newTrial.positionIndex = rand.Next(0, 9);
-            // 匹配条件：当前亮起的方块是否是预设的目标方块
             newTrial.isMatch = (newTrial.positionIndex == targetIndexN0);
             trialSequence.Add(newTrial);
         }
     }
 
-    // 为 N >= 1 生成序列 (原始逻辑)
     void GenerateN1AndAboveSequence()
     {
         trialSequence.Clear();
@@ -142,7 +147,7 @@ public class NBackManager : MonoBehaviour
         }
     }
 
-    // 2. 运行游戏循环的协程 (基本不变)
+
     IEnumerator RunGame()
     {
         matchButton.interactable = false;
@@ -154,34 +159,40 @@ public class NBackManager : MonoBehaviour
             hasRespondedThisTrial = false;
             Trial currentTrial = trialSequence[currentTrialIndex];
             
+            // 获取当前试次应该显示刺激物的位置
             GameObject currentCell = gridCells[currentTrial.positionIndex];
-            SetCellColor(currentCell, stimulusColor);
 
+            // --- 修改 3: 将3D对象移动到目标位置并显示它 ---
+            stimulus3DObject.transform.position = currentCell.transform.position;
+            stimulus3DObject.SetActive(true);
+
+            // 等待刺激持续时间
             yield return new WaitForSeconds(stimulusDuration);
             
-            SetCellColor(currentCell, normalColor);
+            // --- 修改 4: 隐藏3D对象 ---
+            stimulus3DObject.SetActive(false);
             
             if (currentTrial.isMatch && !hasRespondedThisTrial)
             {
                 Debug.Log("Missed! 错过了一个匹配项。");
             }
             
+            // 等待试次间隔
             yield return new WaitForSeconds(interStimulusInterval);
         }
         
         Debug.Log("游戏结束！最终得分: " + score);
-        if (feedbackText != null) feedbackText.text = "游戏结束!\n最终得分: " + score;
+        if (feedbackText != null) feedbackText.text = $"游戏结束!分数为:{score}\n点击返回按钮回到主界面";
+        
         matchButton.interactable = false;
     }
-
-    // 3. 当玩家按下 "Match" 按钮时调用
-    // 这个函数无需修改，因为isMatch标志在生成时已经正确设置了
+    
+    // ... (OnMatchButtonPressed, UpdateScoreUI 函数保持不变)
     public void OnMatchButtonPressed()
     {
         if (hasRespondedThisTrial) return;
         hasRespondedThisTrial = true;
         
-        // 检查索引是否有效，防止在协程间隙或结束后按键导致错误
         if (currentTrialIndex >= trialSequence.Count) return;
 
         Trial currentTrial = trialSequence[currentTrialIndex];
@@ -189,11 +200,12 @@ public class NBackManager : MonoBehaviour
         if (currentTrial.isMatch)
         {
             score++;
+            buttonText.text = "正确!";
             Debug.Log("Correct! 正确匹配! 得分: " + score);
         }
         else
         {
-            score--;
+            buttonText.text = "错误!";
             Debug.Log("Incorrect! 错误匹配! 得分: " + score);
         }
         UpdateScoreUI();
@@ -203,10 +215,12 @@ public class NBackManager : MonoBehaviour
     {
         if (scoreText != null)
         {
-            scoreText.text = "Score: " + score;
+            scoreText.text =  currentTrialIndex + "/" + trialSequence.Count;
         }
     }
 
+    // --- 修改 5: SetCellColor 函数不再需要，可以安全删除 ---
+    /*
     void SetCellColor(GameObject cell, Color color)
     {
         Image image = cell.GetComponent<Image>();
@@ -222,4 +236,5 @@ public class NBackManager : MonoBehaviour
             renderer.material.color = color;
         }
     }
+    */
 }
