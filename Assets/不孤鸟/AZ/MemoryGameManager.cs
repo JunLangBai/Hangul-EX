@@ -298,7 +298,7 @@ public class MemoryGameManager : MonoBehaviour
     {
         if (counterDisplay != null)
         {
-            counterDisplay.text = $"你已经做了 {completedRoundsCounter} 道题，非常努力了";
+            counterDisplay.text = $"你已经做了 {completedRoundsCounter} 道题！";
         }
     }
 
