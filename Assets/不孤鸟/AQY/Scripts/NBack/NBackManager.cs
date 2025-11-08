@@ -67,7 +67,7 @@ public class NBackManager : MonoBehaviour
     
     void Start()
     {
-        if (feedbackText != null) feedbackText.text = "↓↓ 向下低头看向平面进行游戏 ↓↓";
+            if (feedbackText != null) feedbackText.text = "↓↓ 向下低头看向平面进行游戏 ↓↓";
         
         // --- 修改 2: 确保3D对象在游戏开始时是隐藏的 ---
         if (stimulus3DObject != null)
