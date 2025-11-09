@@ -50,6 +50,20 @@ public class GestureManager : MonoBehaviour
 
     void Start()
     {
+        AttentionSetting attentionSetting = AttentionSetting.Instance;
+        if (attentionSetting != null)
+        {
+            gesturesPerMinute = attentionSetting.GesturesPerMinute;
+            targetCount = attentionSetting.TargetCount;
+            flashDuration = attentionSetting.FlashDuration;
+        }
+        else
+        {
+            gesturesPerMinute = 40;
+            targetCount = 1;
+            flashDuration = 0.1f;
+        }
+        
         stimulusInterval = 60f / gesturesPerMinute;
         StartInstructionPhase();
     }
