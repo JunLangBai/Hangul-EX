@@ -32,9 +32,12 @@ EditorBuildSettings:
   - enabled: 1
     path: "Assets/\u4E0D\u5B64\u9E1F/AZ/Memory.unity"
     guid: de41d98e81f3d764bbcc6934f59eb4b8
-  - enabled: 0
-    path: "Assets/\u4E0D\u5B64\u9E1F/AZ/Direction/MemoryReady.unity"
-    guid: 4dca4ab8fa3f13547911d408fe939a0b
+  - enabled: 1
+    path: "Assets/\u4E0D\u5B64\u9E1F/AZ/Direction/Direction.unity"
+    guid: 50f4da842700dd04691f987175622bf0
+  - enabled: 1
+    path: "Assets/\u4E0D\u5B64\u9E1F/AQY/Scenes/\u6BCF\u7AE0\u8BBE\u7F6E/ExcutiveReady.unity"
+    guid: eef8d495aa08ac94491a6b91d9f3a4ab
   m_configObjects:
     com.unity.xr.arfoundation.simulation_settings: {fileID: 11400000, guid: 98425c8dc65ea194cb414aea71d49afb, type: 2}
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 4511e63384a688c449daeba5f01a4ea5, type: 2}
