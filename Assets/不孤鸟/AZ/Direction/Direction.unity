@@ -958,7 +958,7 @@ GameObject:
   - component: {fileID: 1267072061}
   - component: {fileID: 1267072060}
   m_Layer: 0
-  m_Name: GameObject
+  m_Name: DirectionMgr
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -983,9 +983,13 @@ MonoBehaviour:
   cueLeftRight: {fileID: 978429282}
   cueRightLeft: {fileID: 1580576083}
   cueRightRight: {fileID: 661069454}
-  gameStartSound: {fileID: 8300000, guid: 977f48a5055176247a76e5dcae5baa28, type: 3}
-  correctSound: {fileID: 8300000, guid: d01de851079ee934c854e0171d37ab90, type: 3}
-  incorrectSound: {fileID: 8300000, guid: 40f82e324cf9b4c408083f6b04e47586, type: 3}
+  gameStartSound: {fileID: 0}
+  correctSound: {fileID: 0}
+  incorrectSound: {fileID: 0}
+  gameDuration: 10
+  gameRound: 40
+  isRandomMode: 0
+  feedbackDelay: 2
 --- !u!82 &1267072061
 AudioSource:
   m_ObjectHideFlags: 0
@@ -1484,8 +1488,8 @@ RectTransform:
   m_GameObject: {fileID: 2014287830}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.41, y: 0.41, z: 0.41}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 1409882953}
   - {fileID: 978429281}

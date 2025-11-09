@@ -1,17 +1,19 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.SceneManagement; 
 
-public class DirectionSettings : MonoBehaviour
+public class AttentionSetting : MonoBehaviour
 {
     // 1. 单例实例
-    public static DirectionSettings Instance { get; private set; }
+    public static AttentionSetting Instance { get; private set; }
     
     // 2. 公共实例变量（带有默认值）
-    //    其他场景将通过 DirectionSettings.Instance.GameDuration 访问
-    public float GameDuration { get; private set; } = 10f;
-    public bool IsRandomMode  = false;
-    public float GameRound { get; private set; } = 40f;
+    //    其他场景将通过 AttentionSetting.Instance.GameDuration 访问
+    public int GesturesPerMinute = 40;
+    public int TargetCount = 1;
+    public float FlashDuration = 0.1f; // 闪烁持续时间;
+    
 
     void Awake()
     {
@@ -31,26 +33,22 @@ public class DirectionSettings : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
     
-
     // 当 Slider 值改变时
-    public void OnTimeSliderChanged(float value)
+    public void OnPerSliderChanged(float value)
     {
         // 只更新内存中的实例变量
-        GameDuration = Mathf.RoundToInt(value); 
-    }
-
-    // 当 Toggle 值改变时
-    public void OnRandomToggleChanged(bool value)
-    {
-        // 只更新内存中的实例变量
-        IsRandomMode = value;
+        GesturesPerMinute = Mathf.RoundToInt(value); 
     }
     
     // 当 Slider 值改变时
-    public void OnGroundSliderChanged(float value)
+    public void OnTargetSliderChanged(float value)
     {
         // 只更新内存中的实例变量
-        GameRound = Mathf.RoundToInt(value); 
+        TargetCount = Mathf.RoundToInt(value); 
     }
-    
+
+    public void OnFlashSliderChanged(float value)
+    {
+        FlashDuration = (float)Math.Round(value, 1);
+    }
 }
