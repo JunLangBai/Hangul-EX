@@ -20,16 +20,16 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/ARUpgrad.unity
     guid: f6d30eaa574b3a84295fc0510c654d7b
-  - enabled: 0
+  - enabled: 1
     path: "Assets/\u4E0D\u5B64\u9E1F/AQY/Scenes/Main.unity"
     guid: c7f27c361b3f5a446ba7dc70566732fb
-  - enabled: 0
+  - enabled: 1
     path: "Assets/\u4E0D\u5B64\u9E1F/AQY/Scenes/\u6BCF\u7AE0\u8BBE\u7F6E/MemoryReady.unity"
     guid: 56f2d17fda0874046a5a7ab4068e6a3f
-  - enabled: 0
+  - enabled: 1
     path: "Assets/\u4E0D\u5B64\u9E1F/AQY/Scenes/\u5404\u7AE0\u8282/NBack.unity"
     guid: c586daf812e38e64dbd1c30c519fb97e
-  - enabled: 0
+  - enabled: 1
     path: "Assets/\u4E0D\u5B64\u9E1F/AZ/Memory.unity"
     guid: de41d98e81f3d764bbcc6934f59eb4b8
   - enabled: 1
@@ -38,6 +38,12 @@ EditorBuildSettings:
   - enabled: 1
     path: "Assets/\u4E0D\u5B64\u9E1F/AZ/Direction/Direction.unity"
     guid: 50f4da842700dd04691f987175622bf0
+  - enabled: 1
+    path: "Assets/\u4E0D\u5B64\u9E1F/AQY/Scenes/\u6BCF\u7AE0\u8BBE\u7F6E/AttentionReady.unity"
+    guid: 42e9abaab177c254781c5dfda1d1d25d
+  - enabled: 1
+    path: "Assets/\u4E0D\u5B64\u9E1F/AQY/Scenes/\u5404\u7AE0\u8282/RVP.unity"
+    guid: c018412af74cdb84f962e8508235e657
   m_configObjects:
     com.unity.xr.arfoundation.simulation_settings: {fileID: 11400000, guid: 98425c8dc65ea194cb414aea71d49afb, type: 2}
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 4511e63384a688c449daeba5f01a4ea5, type: 2}

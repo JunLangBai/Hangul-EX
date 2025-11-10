@@ -12,7 +12,6 @@ using TMPro;
 public class MemorySettingsMenu : MonoBehaviour
 {
     // --- 单例模式 ---
-    public static MemorySettingsMenu Instance { get; private set; }
     
     [Header("UI 元素 (UI Elements)")]
     [Tooltip("用于显示当前设置的文本 (Display for current settings)")]
@@ -42,19 +41,12 @@ public class MemorySettingsMenu : MonoBehaviour
     private int selectedMode = 0; // 0=自动, 1=顺序, 2=逆序
 
     private const string SETTING_PREFIX = "手动设置: ";
+    
+    private AllSettingCtr allSettingCtr;
 
     void Awake()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
-        
+       
         // 遍历所有 Toggle，并将它们分配给同一个 ToggleGroup
         foreach (Toggle toggle in toggles)
         {
@@ -101,11 +93,11 @@ public class MemorySettingsMenu : MonoBehaviour
         // 将滑动条的值 (0, 1, 2, 3, 4) 映射到实际的难度值 (0, 2, 3, 4, 5)
         if (sliderValue == 0)
         {
-            selectedDifficulty = 0; // "随机"
+            allSettingCtr.memoryDifficulty = 0; // "随机"
         }
         else
         {
-            selectedDifficulty = sliderValue + 1; // 1->2, 2->3, ...
+            allSettingCtr.memoryDifficulty = sliderValue + 1; // 1->2, 2->3, ...
         }
         
     }
@@ -117,11 +109,11 @@ public class MemorySettingsMenu : MonoBehaviour
     {
         if (value <= 2 && value >= 0)
         {
-            selectedMode = (int)value;
+            allSettingCtr.memoryMode = (int)value;
         }
         else
         {
-            selectedMode = 0;
+            allSettingCtr.memoryMode = 0;
         }
     }
 
@@ -140,15 +132,4 @@ public class MemorySettingsMenu : MonoBehaviour
         }
     }
     
-    // --- 【核心】供 GameManager 调用的公共方法 (无需修改) ---
-
-    public int GetManualDifficulty()
-    {
-        return selectedDifficulty;
-    }
-
-    public int GetManualMode()
-    {
-        return selectedMode;
-    }
 }

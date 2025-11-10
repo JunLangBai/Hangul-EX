@@ -40,17 +40,20 @@ public class NBackManager : MonoBehaviour
     private int targetIndexN0;
     private float matchProbability;
     
-
+    private AllSettingCtr  allSettingCtr;
+    
     void Awake()
     {
-        if (NBackSetting.Instance != null)
+        allSettingCtr = AllSettingCtr.Instance;
+        
+        if (allSettingCtr != null)
         {
-            nValue = NBackSetting.Instance.nValue;
-            stimulusDuration = NBackSetting.Instance.stimulusDuration;
-            interStimulusInterval = NBackSetting.Instance.interStimulusInterval;
-            totalTrials = NBackSetting.Instance.totalTrials;
-            targetIndexN0 = NBackSetting.Instance.targetIndexN0;
-            matchProbability = NBackSetting.Instance.matchProbability;
+            nValue = allSettingCtr.nValue;
+            stimulusDuration = allSettingCtr.stimulusDuration;
+            interStimulusInterval = allSettingCtr.interStimulusInterval;
+            totalTrials = allSettingCtr.totalTrials;
+            targetIndexN0 = allSettingCtr.targetIndexN0;
+            matchProbability = allSettingCtr.matchProbability;
             
             Debug.Log($"设置已加载: N={nValue}, 时长={stimulusDuration}");
         }

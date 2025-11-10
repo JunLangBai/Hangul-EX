@@ -51,12 +51,12 @@ public class DirectionManager : MonoBehaviour
 
     void Start()
     {
-        var direction = DirectionSettings.Instance;
+        var direction = AllSettingCtr.Instance;
         if (direction != null)
         {
-           gameDuration =  direction.GameDuration;
-           gameRound = (int)direction.GameRound;
-           isRandomMode = direction.IsRandomMode;
+           gameDuration =  direction. directionGameDuration;
+           gameRound = (int)direction. directionGameRounds;
+           isRandomMode = direction. directionIsRandomMode;
            
         }
 

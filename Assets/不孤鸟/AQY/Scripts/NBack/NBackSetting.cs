@@ -5,8 +5,6 @@ using UnityEngine;
 
 public class NBackSetting : MonoBehaviour
 {
-    // 1. 创建一个公共的、静态的实例，以便任何脚本都可以访问它
-    public static NBackSetting Instance;
 
     [Header("N-Back 游戏设置")]
     [Range(0, 5)]
@@ -27,47 +25,37 @@ public class NBackSetting : MonoBehaviour
 
     private bool isOneBlockMode = false;
     
-    // 2. Awake方法，用于实现单例模式
+    private AllSettingCtr allSettingCtr;
+
     private void Awake()
     {
-        // 如果已经有一个实例存在了，就销毁这个新的，保证唯一性
-        if (Instance != null && Instance != this)
-        {
-            Destroy(this.gameObject);
-            return; // 退出，不执行后面的代码
-        }
-
-        // 如果还没有实例，就将自己设为实例
-        Instance = this;
-        
-        // 3. 最关键的一行：告诉Unity不要销毁这个GameObject
-        DontDestroyOnLoad(this.gameObject);
+        allSettingCtr = AllSettingCtr.Instance;
     }
 
     public void OneBlockMode(bool b)
     {
         if (b)
         {
-            nValue = 0;
-            isOneBlockMode = true;
+            allSettingCtr.nValue = 0;
+            allSettingCtr.isOneBlockMode = true;
         }
         else
         {
-            nValue = 1;
-            isOneBlockMode = false;
+            allSettingCtr.nValue = 1;
+            allSettingCtr.isOneBlockMode = false;
         }
     }
 
     public void TotalTrials(float i)
     {
-        totalTrials = (int)i;
+        allSettingCtr.totalTrials = (int)i;
     }
     
     public void Nvalue(float i)
     {
-        if(!isOneBlockMode)
+        if(!allSettingCtr.isOneBlockMode)
         {
-            nValue = (int)i;
+            allSettingCtr.nValue = (int)i;
         }
     }
 }
