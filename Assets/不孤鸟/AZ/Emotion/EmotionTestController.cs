@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -18,13 +19,37 @@ public class EmotionTestController : MonoBehaviour
 
     [Header("UI 元素")]
     public Button[] emotionButtons; // 拖入四个情绪按钮
+    
+    public GameObject startPanel;
+    public GameObject gamePanel;
+    public GameObject overPanel;
+    
+    public TextMeshProUGUI resultText;
 
+
+    private int correct;
+    private int incorrect;
+    
     private int currentQuestionIndex = 0;
     private string currentEmotion;
     private List<string> emotions = new List<string> { "smiling", "sad", "angry", "Fear" }; // 与您的动画状态名称对应
 
     void Start()
     {
+        startPanel.SetActive(true);
+        gamePanel.SetActive(false);
+        overPanel.SetActive(false);
+        characterModel.SetActive(false);
+    }
+
+    public void StartGame()
+    {
+        
+        startPanel.SetActive(false);
+        gamePanel.SetActive(true);
+        overPanel.SetActive(false);
+        characterModel.SetActive(true);
+        
         // 禁用按钮，防止重复作答
         SetButtonsInteractable(false);
         // 【修改点】
@@ -42,6 +67,13 @@ public class EmotionTestController : MonoBehaviour
         else
         {
             Debug.Log("测试完成!");
+            
+            characterModel.SetActive(false);
+            startPanel.SetActive(false);
+            gamePanel.SetActive(false);
+            overPanel.SetActive(true);
+
+            resultText.text = $"测试结束!请点击返回按钮\n\n正确: {correct}\n错误: {incorrect}";
             // 在这里可以添加测试结束的逻辑，例如显示最终得分
         }
     }
@@ -75,10 +107,12 @@ public class EmotionTestController : MonoBehaviour
         if (selectedEmotion == currentEmotion)
         {
             Debug.Log("回答正确!");
+            correct++;
         }
         else
         {
             Debug.Log("回答错误!");
+            incorrect++;
         }
 
         SetButtonsInteractable(false);
