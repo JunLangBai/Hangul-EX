@@ -2783,6 +2783,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7ceb47c929461434d8a48afbb98b4ad4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  allSettingCtr: {fileID: 0}
   GesturesPerMinute: 20
   TargetCount: 1
   FlashDuration: 1

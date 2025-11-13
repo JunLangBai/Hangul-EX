@@ -19,8 +19,13 @@ public class GestureManager : MonoBehaviour
     [Tooltip("在切换到下一张图片前，图片消失的空白时间（秒）")]
     public float flashDuration = 0.1f; // 闪烁持续时间
 
+    [Header("UI组件")] 
+    public GameObject rvpPrefabs;
+    public Transform contentPanel;
+    public TextMeshProUGUI tfHint;
+    // 用来保存当前正在运行的协程的引用
+    private Coroutine tfTextCoroutine;
     
-    [Header("UI组件")]
     public Image stimulusImage;     // 用于显示手势图片的UI Image组件。
     public TextMeshProUGUI instructionText;    // 用于在指令阶段显示提示文字的UI Text组件。
     public TextMeshProUGUI resultText;         // 用于在结果阶段显示分数的UI Text组件。
@@ -90,10 +95,17 @@ public class GestureManager : MonoBehaviour
         GenerateSequences();
 
         // TODO: 在UI上优雅地展示 targetGestures
-        string targets = "以下手势图片出现时模仿手势: \n\n";
+        string targets = "以下图片出现时\n模仿手势:";
         foreach(var target in targetGestures)
         {
-            targets += $"{target.gestureName}\n";
+            // 实例化预制体
+            GameObject newUIElement = Instantiate(rvpPrefabs, contentPanel);
+            Image image = newUIElement.GetComponent<Image>();
+            if (image != null)
+            {
+                image.sprite = target.gestureImage;
+            }
+            
         }
         instructionText.text = targets;
 
@@ -162,6 +174,7 @@ public class GestureManager : MonoBehaviour
                 hits++;
                 reactionTimes.Add(reactionTimer);
                 Debug.Log($"命中! 反应时间: {reactionTimer}");
+                ShowTemporaryText("正确！",Color.green);
             }
             // 如果是目标但做错了，也算作漏报（在切换刺激时处理）
         }
@@ -171,6 +184,7 @@ public class GestureManager : MonoBehaviour
             {
                  falseAlarms++;
                  Debug.Log("虚报!");
+                 ShowTemporaryText("错误！",Color.red);
             }
         }
     }
@@ -205,6 +219,7 @@ public class GestureManager : MonoBehaviour
                 {
                     misses++; // ...则记为一次“漏报”。
                     Debug.Log("漏报!");
+                    ShowTemporaryText("漏掉了！",Color.red);
                 }
             }
 
@@ -253,5 +268,37 @@ public class GestureManager : MonoBehaviour
     bool IsTarget(GestureData gesture)
     {
         return targetGestures.Contains(gesture);
+    }
+    
+    // 一个公开的方法，可以从其他脚本中调用
+    public void ShowTemporaryText(string message, Color textColor)
+    {
+        // 如果当前有正在运行的协程，先将它停止
+        if (tfTextCoroutine != null)
+        {
+            StopCoroutine(tfTextCoroutine);
+        }
+
+        // 启动新的协程，并保存它的引用
+        tfTextCoroutine = StartCoroutine(ShowTextCoroutine(message, textColor));
+    }
+
+    private IEnumerator ShowTextCoroutine(string message, Color textColor)
+    {
+        // 清除文本
+        tfHint.text = string.Empty;
+        
+        // 设置 TextMeshPro 组件的文本和颜色
+        tfHint.text = message;
+        tfHint.color = textColor;
+
+        // 等待 1 秒
+        yield return new WaitForSeconds(1.2f);
+
+        // 清除文本
+        tfHint.text = string.Empty;
+        
+        // 协程执行完毕，清空引用
+        tfTextCoroutine = null;
     }
 }
