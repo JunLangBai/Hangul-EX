@@ -46,6 +46,7 @@ public class MemorySettingsMenu : MonoBehaviour
 
     void Awake()
     {
+        allSettingCtr = AllSettingCtr.Instance;
        
         // 遍历所有 Toggle，并将它们分配给同一个 ToggleGroup
         foreach (Toggle toggle in toggles)
@@ -86,7 +87,7 @@ public class MemorySettingsMenu : MonoBehaviour
     /// <summary>
     /// 当难度滑动条的值发生变化时调用
     /// </summary>
-    void OnDifficultyChanged(float value)
+    public void OnDifficultyChanged(float value)
     {
         int sliderValue = (int)value;
         
@@ -107,14 +108,7 @@ public class MemorySettingsMenu : MonoBehaviour
     /// </summary>
     public void UpdateMode(float value)
     {
-        if (value <= 2 && value >= 0)
-        {
-            allSettingCtr.memoryMode = (int)value;
-        }
-        else
-        {
-            allSettingCtr.memoryMode = 0;
-        }
+        allSettingCtr.memoryMode = (int)value;
     }
 
     private void OnToggleChanged(Toggle changedToggle, bool isOn)

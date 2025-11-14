@@ -976,7 +976,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1194875955}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1954348933}
+        m_TargetAssemblyTypeName: ScenesChange, Assembly-CSharp
+        m_MethodName: SceneChange
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: EmotionReady
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &1216447151 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 196484407731009342, guid: 21a6fe16444053b46936dc7dd462b792, type: 3}
@@ -2199,6 +2211,8 @@ MonoBehaviour:
   attentionGesturesPerMinute: 20
   attentionTargetCount: 1
   attentionFlashDuration: 1
+  emotionCount: 20
+  emotionDisplayTime: 3
 --- !u!4 &1992341491
 Transform:
   m_ObjectHideFlags: 0

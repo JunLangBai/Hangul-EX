@@ -34,6 +34,10 @@ public class AllSettingCtr : MonoBehaviour
     public int attentionTargetCount = 1;
     public float attentionFlashDuration = 1.0f;
 
+    [Header("情感识别设置")]
+    public int emotionCount = 20;
+    public float emotionDisplayTime = 3f;
+
     // 2. Awake 方法，用于实现单例模式
     private void Awake()
     {
