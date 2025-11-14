@@ -520,7 +520,19 @@ MonoBehaviour:
   m_Value: 0
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1755024321}
+        m_TargetAssemblyTypeName: MemorySettingsMenu, Assembly-CSharp
+        m_MethodName: OnDifficultyChanged
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &101128970
 GameObject:
   m_ObjectHideFlags: 0
@@ -2419,7 +2431,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 983828709}
   toggleTransition: 1
   graphic: {fileID: 371776883}
-  m_Group: {fileID: 0}
+  m_Group: {fileID: 2139660263}
   onValueChanged:
     m_PersistentCalls:
       m_Calls:
@@ -5734,11 +5746,23 @@ PrefabInstance:
     - target: {fileID: 6388456553769840648, guid: 6541d7671ed40de48b11dbf7f0bd2430, type: 3}
       propertyPath: m_fontAsset
       value: 
-      objectReference: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+      objectReference: {fileID: 11400000, guid: 3949d331f3833e340a2575a0496ff63d, type: 2}
+    - target: {fileID: 6388456553769840648, guid: 6541d7671ed40de48b11dbf7f0bd2430, type: 3}
+      propertyPath: m_isOrthographic
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6388456553769840648, guid: 6541d7671ed40de48b11dbf7f0bd2430, type: 3}
       propertyPath: m_sharedMaterial
       value: 
-      objectReference: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+      objectReference: {fileID: 6280683387203250435, guid: 3949d331f3833e340a2575a0496ff63d, type: 2}
+    - target: {fileID: 6388456553769840648, guid: 6541d7671ed40de48b11dbf7f0bd2430, type: 3}
+      propertyPath: m_TextStyleHashCode
+      value: -1183493901
+      objectReference: {fileID: 0}
+    - target: {fileID: 6388456553769840648, guid: 6541d7671ed40de48b11dbf7f0bd2430, type: 3}
+      propertyPath: m_hasFontAssetChanged
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 9150539299725702635, guid: 6541d7671ed40de48b11dbf7f0bd2430, type: 3}
       propertyPath: m_text
       value: "\u6CE8\u610F\u4E8B\u9879"
@@ -5880,7 +5904,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2031079227}
   toggleTransition: 1
   graphic: {fileID: 1189639037}
-  m_Group: {fileID: 0}
+  m_Group: {fileID: 2139660263}
   onValueChanged:
     m_PersistentCalls:
       m_Calls:
@@ -6115,7 +6139,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1564680649}
   toggleTransition: 1
   graphic: {fileID: 1188830540}
-  m_Group: {fileID: 0}
+  m_Group: {fileID: 2139660263}
   onValueChanged:
     m_PersistentCalls:
       m_Calls:

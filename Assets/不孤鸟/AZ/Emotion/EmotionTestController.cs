@@ -25,8 +25,9 @@ public class EmotionTestController : MonoBehaviour
     public GameObject overPanel;
     
     public TextMeshProUGUI resultText;
-
-
+    
+    private AllSettingCtr allSettingCtr;
+    
     private int correct;
     private int incorrect;
     
@@ -36,6 +37,18 @@ public class EmotionTestController : MonoBehaviour
 
     void Start()
     {
+        allSettingCtr = AllSettingCtr.Instance;
+        if (allSettingCtr != null)
+        {
+            totalQuestions = allSettingCtr.emotionCount;
+            displayTime = allSettingCtr.emotionDisplayTime;
+        }
+        else
+        {
+            totalQuestions = 20; 
+            displayTime = 3.0f;
+        }
+
         startPanel.SetActive(true);
         gamePanel.SetActive(false);
         overPanel.SetActive(false);
