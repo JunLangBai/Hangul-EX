@@ -99,7 +99,6 @@ namespace TripoForUnity
             ImageToMdelPercentage.text =
                 Mathf.RoundToInt(100f * GetComponent<TripoRuntimeCore>().imageToModelProgress)
                 + "%";
-            SimpleModel.transform.Rotate(0, ModelRotationSpeed * Time.deltaTime, 0);
         }
     }
 }

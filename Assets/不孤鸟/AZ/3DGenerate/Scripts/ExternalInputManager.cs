@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using System.IO;
-using System.Collections.Generic; // <--- 确保 List 被引用
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
@@ -14,8 +14,8 @@ using TripoForUnity;
 // public class ASRUploadResponse { ... } 
 
 /// <summary>
-/// 【最终安全版】
-/// 结合使用 CanvasGroup (用于UI) 和 SetActive(false) (用于3D物体)
+/// 【修改版】
+/// 只负责 ASR (语音) 功能的管理。
 /// </summary>
 [RequireComponent(typeof(AudioSource))]
 public class ExternalInputManager : MonoBehaviour
@@ -26,18 +26,8 @@ public class ExternalInputManager : MonoBehaviour
     [Header("新的UI按钮")]
     public Button btnStartASR;
     public TMP_Text asrButtonText;
-    public Button btnStartScreenshot;
-
-    // --- 【修改】我们现在需要两个列表 ---
-    [Header("要隐藏的UI (2D)")]
-    [Tooltip("拖入所有UI面板 (每个都必须有CanvasGroup)")]
-    public List<CanvasGroup> UIsToHide; 
-
-    [Header("要隐藏的物体 (3D)")]
-    [Tooltip("拖入所有3D物体 (例如你的'画笔'模型)")]
-    public List<GameObject> objectsToHide; 
-    // --- 【修改结束】 ---
-
+    // (截图按钮已移除)
+    
     [Header("模型显示时的UI (新)")]
     [Tooltip("此按钮在模型生成后出现，点击可隐藏模型并恢复主UI")]
     public Button btnHideModelAndShowMainUI;
@@ -46,7 +36,7 @@ public class ExternalInputManager : MonoBehaviour
     public TripoSimpleUI_Manager targetUIManager;
 
     [Header("功能组件 (必须)")]
-    public BordController bordController;
+    // (截图器已移除)
     public DrawingScreenshotter screenshotter; 
 
     [Header("ASR (语音) 设置")]
@@ -68,15 +58,11 @@ public class ExternalInputManager : MonoBehaviour
     {
         audioSource = GetComponent<AudioSource>();
 
-        if (UIsToHide == null || UIsToHide.Count == 0)
+        if (GlobalUIManager.Instance == null)
         {
-            Debug.LogWarning("ExternalInputManager: 'UIsToHide' 列表为空。将无法隐藏2D UI。");
-        }
-        
-        // 【新增】检查 3D 物体列表
-        if (objectsToHide == null || objectsToHide.Count == 0)
-        {
-            Debug.LogWarning("ExternalInputManager: 'objectsToHide' 列表为空。将无法隐藏3D物体。");
+            Debug.LogError("ExternalInputManager: 场景中未找到 GlobalUIManager! ", this);
+            this.enabled = false;
+            return;
         }
         
         if (btnHideModelAndShowMainUI == null)
@@ -91,11 +77,9 @@ public class ExternalInputManager : MonoBehaviour
 
         if (targetUIManager == null)
             Debug.LogError("ExternalInputManager: 'targetUIManager' 未设置!");
-        if (bordController == null)
-            Debug.LogError("ExternalInputManager: 'bordController' 未设置!");
-        if (screenshotter == null)
-            Debug.LogError("ExternalInputManager: 'screenshotter' 未设置!");
-
+        
+        // (截图器检查已移除)
+        
         if (Microphone.devices.Length == 0)
         {
             Debug.LogError("未找到麦克风设备！");
@@ -108,11 +92,11 @@ public class ExternalInputManager : MonoBehaviour
         if (btnStartASR != null)
             btnStartASR.onClick.AddListener(OnAsrButtonPress);
             
-        if (btnStartScreenshot != null)
-            btnStartScreenshot.onClick.AddListener(OnScreenshotButtonPress);
+        // (截图按钮监听已移除)
 
         UpdateAsrButtonText();
         
+        // 此脚本负责设置API Key
         if (targetUIManager != null)
         {
             if (targetUIManager.ApiKeyInputField != null)
@@ -140,7 +124,7 @@ public class ExternalInputManager : MonoBehaviour
 
     #region ASR (语音) 逻辑
     
-    // ... (StartRecording, StopRecordingAndProcess, SaveAndUploadCoroutine 保持不变) ...
+    // (这部分代码无变化)
     
     private void OnAsrButtonPress()
     {
@@ -188,8 +172,7 @@ public class ExternalInputManager : MonoBehaviour
     
     private IEnumerator SaveAndUploadCoroutine(float[] samples, int channels, int frequency)
     {
-        var savePath = Application.persistentDataPath;
-        var fullFilePath = Path.Combine(savePath, TempAudioFileName);
+        var savePath = GetDynamicSavePath(TempAudioFileName); // <--- 使用了 GetDynamicSavePath
 
         bool success = false;
         bool isDone = false; 
@@ -198,7 +181,7 @@ public class ExternalInputManager : MonoBehaviour
         {
             try
             {
-                success = SavWav.Save(fullFilePath, samples, frequency, channels);
+                success = SavWav.Save(savePath, samples, frequency, channels);
             }
             catch (System.Exception e)
             {
@@ -218,7 +201,7 @@ public class ExternalInputManager : MonoBehaviour
         
         if (success)
         {
-            StartCoroutine(UploadAudio(fullFilePath));
+            StartCoroutine(UploadAudio(savePath));
         }
         else
         {
@@ -228,14 +211,13 @@ public class ExternalInputManager : MonoBehaviour
         }
     }
 
-
     private IEnumerator UploadAudio(string filePath)
     {
         if (!File.Exists(filePath))
         {
             isProcessing = false;
             UpdateAsrButtonText();
-            yield break;
+            yield break; 
         }
 
         var form = new WWWForm();
@@ -244,7 +226,7 @@ public class ExternalInputManager : MonoBehaviour
 
         using (var www = UnityWebRequest.Post(asrUploadURL, form))
         {
-            yield return www.SendWebRequest();
+            yield return www.SendWebRequest(); 
 
             if (www.result != UnityWebRequest.Result.Success)
             {
@@ -261,7 +243,7 @@ public class ExternalInputManager : MonoBehaviour
                         
                     if (targetUIManager != null)
                     {
-                        HideMainUI(); // <--- 调用混合隐藏
+                        GlobalUIManager.Instance.HideAllManagedItems(); // <--- 调用 GlobalUIManager
                         targetUIManager.TextPromptInputField.text = response.raw_transcription;
                         targetUIManager.btnTextToModelGenerate.onClick.Invoke();
                     }
@@ -298,113 +280,11 @@ public class ExternalInputManager : MonoBehaviour
     }
     #endregion
 
-    #region Screenshot (画板) 逻辑
-    
-    private void OnScreenshotButtonPress()
-    {
-        bordController.ShowBord();
-        StartCoroutine(TakeScreenshotAndProcessImage());
-    }
-
-    private IEnumerator TakeScreenshotAndProcessImage()
-    {
-        string screenshotPath = GetDynamicSavePath("drawing_screenshot.png");
-        yield return new WaitForEndOfFrame(); 
-
-        string capturedPath = screenshotter.CaptureAndSaveToFile(screenshotPath);
-
-        if (!string.IsNullOrEmpty(capturedPath))
-        {
-            Debug.Log("截图成功，发送到 Tripo 图生模型...");
-                
-            if (targetUIManager != null)
-            {
-                HideMainUI(); // <--- 调用混合隐藏
-                targetUIManager.ImagePathInputField.text = capturedPath;
-                targetUIManager.btnLoadImage.onClick.Invoke(); 
-                targetUIManager.btnImageToMdelGenerate.onClick.Invoke();
-            }
-        }
-        else
-        {
-            Debug.LogError("截图失败，图生模型任务中止。");
-        }
-    }
-    #endregion
+    // (截图区域已删除)
 
     #region 辅助函数
-
-    // --- 【修改】这两个方法现在会处理两种列表 ---
     
-    /// <summary>
-    /// 隐藏所有在列表中的UI和3D物体
-    /// </summary>
-    private void HideMainUI()
-    {
-        // 1. 隐藏 2D UI (CanvasGroup)
-        if (UIsToHide != null && UIsToHide.Count > 0)
-        {
-            Debug.Log($"隐藏 {UIsToHide.Count} 个UI组...");
-            foreach (CanvasGroup cg in UIsToHide) 
-            {
-                if (cg != null)
-                {
-                    cg.alpha = 0;
-                    cg.interactable = false;
-                    cg.blocksRaycasts = false;
-                }
-            }
-        }
-        
-        // 2. 隐藏 3D 物体 (GameObject)
-        if (objectsToHide != null && objectsToHide.Count > 0)
-        {
-            Debug.Log($"隐藏 {objectsToHide.Count} 个3D物体...");
-            foreach (GameObject obj in objectsToHide)
-            {
-                if (obj != null)
-                {
-                    obj.SetActive(false);
-                }
-            }
-        }
-    }
-
-    /// <summary>
-    /// 显示所有在列表中的UI和3D物体
-    /// </summary>
-    private void ShowMainUI()
-    {
-        // 1. 显示 2D UI (CanvasGroup)
-        if (UIsToHide != null && UIsToHide.Count > 0)
-        {
-            Debug.Log($"显示 {UIsToHide.Count} 个UI组...");
-            foreach (CanvasGroup cg in UIsToHide) 
-            {
-                if (cg != null)
-                {
-                    cg.alpha = 1;
-                    cg.interactable = true;
-                    cg.blocksRaycasts = true;
-                }
-            }
-        }
-        
-        // 2. 显示 3D 物体 (GameObject)
-        if (objectsToHide != null && objectsToHide.Count > 0)
-        {
-            Debug.Log($"显示 {objectsToHide.Count} 个3D物体...");
-            foreach (GameObject obj in objectsToHide)
-            {
-                if (obj != null)
-                {
-                    obj.SetActive(true);
-                }
-            }
-        }
-        
-        UpdateAsrButtonText();
-    }
+    // (这部分代码被保留，因为两个脚本都需要它)
 
     /// <summary>
     /// 当模型生成完毕时，由 TripoRuntimeCore 的事件调用
@@ -431,24 +311,22 @@ public class ExternalInputManager : MonoBehaviour
     {
         Debug.Log("隐藏模型并恢复主UI...");
         
-        // 1. 隐藏生成的模型
         if (targetUIManager != null && targetUIManager.SimpleModel != null)
         {
             targetUIManager.SimpleModel.SetActive(false);
         }
         
-        // 2. 恢复主UI和3D物体
-        ShowMainUI();
+        GlobalUIManager.Instance.ShowAllManagedItems(); 
         
-        // 3. 隐藏自己
+        // 恢复UI后，刷新一下按钮文本
+        UpdateAsrButtonText();
+        
         if (btnHideModelAndShowMainUI != null)
         {
             btnHideModelAndShowMainUI.gameObject.SetActive(false);
         }
     }
     
-    // --- 【修改结束】 ---
-
     private string GetDynamicSavePath(string fileName)
     {
         #if UNITY_EDITOR

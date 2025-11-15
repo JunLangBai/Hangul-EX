@@ -63,7 +63,7 @@ public class DrawingBoard : MonoBehaviour
     private readonly Color eraserColor = Color.white; 
 
     // --- 私有字段 ---
-    private Texture2D drawingTexture;
+    public Texture2D drawingTexture;
     private bool isDrawingOnBoard;
     private Color[] pixels;
     private readonly List<Vector2> strokePoints = new();

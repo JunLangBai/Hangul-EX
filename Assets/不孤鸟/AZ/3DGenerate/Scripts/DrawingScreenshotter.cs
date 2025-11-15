@@ -1,5 +1,9 @@
+using System;
 using UnityEngine;
 using System.IO;
+using TripoForUnity;
+using UnityEditor;
+using UnityEngine.UI;
 
 /// <summary>
 /// 【新版 - 相机过滤法】
@@ -8,69 +12,114 @@ using System.IO;
 /// </summary>
 public class DrawingScreenshotter : MonoBehaviour
 {
-    [Header("截图相机 (必须)")]
-    [Tooltip("拖入场景中你创建的那个'ScreenshotCamera'")]
-    public Camera screenshotCamera;
+    public Slider progressSlider;
+    public GameObject simpleModel;
+    
+    private DrawingBoard drawingBoard;
 
-    [Header("截图分辨率")]
-    [Tooltip("截图的宽度 (像素)")]
-    public int screenshotWidth = 1024;
-    [Tooltip("截图的高度 (像素)")]
-    public int screenshotHeight = 1024;
+    // 定义你要保存的子文件夹名
+    private string saveFolderName = "SavedImages";
+    
+    // 定义要保存的文件名（确保每次不同，或者可以覆盖）
+    private string filename = "myCapturedDrawing.png";
+    
+    bool isGenerating = false;
+
+    private TripoRuntimeCore tripoRuntime;
+    private void Start()
+    {
+        simpleModel.GetComponent<BoxCollider>().enabled = false;
+        tripoRuntime = FindObjectOfType<TripoRuntimeCore>().GetComponent<TripoRuntimeCore>();
+        drawingBoard = FindObjectOfType<DrawingBoard>().GetComponent<DrawingBoard>();
+    }
+
+    private void Update()
+    {
+        if (isGenerating)
+        {
+            progressSlider.gameObject.SetActive(true);
+            progressSlider.value = tripoRuntime.imageToModelProgress;
+        }
+        else
+        {
+            progressSlider.value = 0;
+            progressSlider.gameObject.SetActive(false);
+        }
+    }
 
     /// <summary>
     /// 捕获 screenshotCamera 的内容并保存到指定路径
     /// </summary>
     /// <param name="savePath">包含文件名的完整保存路径</param>
     /// <returns>如果成功则返回路径，否则返回 null</returns>
-    public string CaptureAndSaveToFile(string savePath)
+    public void CaptureAndSaveToFile()
     {
-        if (screenshotCamera == null)
+        string directoryPath = ""; // 存储目录路径
+        string fullFilePath = ""; // 存储完整文件路径
+
+        // 2. [关键] 使用预处理指令区分平台
+#if UNITY_EDITOR
+        // 平台：Unity编辑器
+        // 路径：Assets/SavedImages
+        directoryPath = Path.Combine(Application.dataPath, saveFolderName);
+#else
+        // 平台：安卓设备 (或 iOS, PC build 等)
+        // 路径：Application.persistentDataPath/SavedImages
+        directoryPath = Path.Combine(Application.persistentDataPath, saveFolderName);
+#endif
+
+        // 3. 检查并创建目录
+        if (!Directory.Exists(directoryPath))
         {
-            Debug.LogError("DrawingScreenshotter: 'screenshotCamera' 未设置! 无法截图。");
-            return null;
+            try
+            {
+                Directory.CreateDirectory(directoryPath);
+            }
+            catch (IOException e)
+            {
+                Debug.LogError($"创建目录失败: {e.Message}");
+                return; // 创建失败，无法继续
+            }
         }
 
+        // 4. 组合成最终的完整文件路径
+        fullFilePath = Path.Combine(directoryPath, filename);
+
+        // 5. 检查画板和贴图 (你的原始逻辑)
+        if (drawingBoard == null || drawingBoard.drawingTexture == null)
+        {
+            Debug.LogError("画板或画板贴图 (drawingTexture) 未设置！");
+            return;
+        }
+        
+        // 6. 编码并保存文件
         try
         {
-            // 1. 创建一个临时的 RenderTexture
-            // 使用 ARGB32 格式以支持可能的透明背景
-            RenderTexture rt = new RenderTexture(screenshotWidth, screenshotHeight, 24, RenderTextureFormat.ARGB32);
-
-            // 2. 将此 RenderTexture 分配给截图相机
-            screenshotCamera.targetTexture = rt;
-
-            // 3. 手动命令相机渲染这一帧 (因为它平时是禁用的)
-            // 这是关键一步：相机将只渲染它 Culling Mask 允许的图层 (即 'DrawingBoard')
-            screenshotCamera.Render();
-
-            // 4. 从 RenderTexture 中读取像素
-            RenderTexture.active = rt;
-            Texture2D tex = new Texture2D(rt.width, rt.height, TextureFormat.ARGB32, false); // 使用 ARGB32 格式
-            tex.ReadPixels(new Rect(0, 0, rt.width, rt.height), 0, 0);
-            tex.Apply();
-            RenderTexture.active = null;
-
-            // 5. 清理
-            screenshotCamera.targetTexture = null;
-            Destroy(rt);
-
-            // 6. 将 Texture2D 编码为 PNG 并保存
-            byte[] bytes = tex.EncodeToPNG(); // PNG 支持透明通道
-            Destroy(tex);
-            File.WriteAllBytes(savePath, bytes);
+            byte[] bytes = drawingBoard.drawingTexture.EncodeToPNG();
+            File.WriteAllBytes(fullFilePath, bytes);
             
-            Debug.Log($"[相机过滤法] 截图成功保存至: {savePath}");
-            return savePath;
+            Debug.Log($"图片成功保存至: {fullFilePath}");
+            tripoRuntime.SetImagePath(fullFilePath).ImageToModel();
+            isGenerating = true;
+            simpleModel.GetComponent<BoxCollider>().enabled = true;
         }
-        catch (System.Exception e)
+        catch (IOException e)
         {
-            Debug.LogError($"[相机过滤法] 截图失败: {e.Message}");
-            if (screenshotCamera.targetTexture != null)
-            {
-                screenshotCamera.targetTexture = null;
-            }
-            return null;
+            Debug.LogError($"保存文件失败: {e.Message}");
+            return;
         }
+
+        // 7. [仅限编辑器] 刷新 AssetDatabase
+        // 这是为了让你保存在 Assets 文件夹中的图片能立刻显示在 Project 窗口
+#if UNITY_EDITOR
+        AssetDatabase.Refresh();
+        Debug.Log("编辑器环境：已刷新 AssetDatabase。");
+#endif
     }
+
+    public void ChangeBool()
+    {
+        isGenerating = false;
+    }
+
 }
