@@ -25,11 +25,14 @@ public class EmotionTestController : MonoBehaviour
     public GameObject overPanel;
     
     public TextMeshProUGUI resultText;
+    public TextMeshProUGUI tfText;
     
     private AllSettingCtr allSettingCtr;
     
     private int correct;
     private int incorrect;
+    
+    private Coroutine runningCoroutine;
     
     private int currentQuestionIndex = 0;
     private string currentEmotion;
@@ -120,11 +123,13 @@ public class EmotionTestController : MonoBehaviour
         if (selectedEmotion == currentEmotion)
         {
             Debug.Log("回答正确!");
+            ShowTemporaryText("正确!",Color.white);
             correct++;
         }
         else
         {
             Debug.Log("回答错误!");
+            ShowTemporaryText("错误!",Color.white);
             incorrect++;
         }
 
@@ -132,6 +137,35 @@ public class EmotionTestController : MonoBehaviour
 
         // 【修改点】
         StartCoroutine(NextQuestionRoutine());
+    }
+    
+    // 一个公开的方法，可以从其他脚本中调用
+    public void ShowTemporaryText(string message, Color textColor)
+    {
+        // 如果当前有正在运行的协程，先将它停止
+        if (runningCoroutine != null)
+        {
+            StopCoroutine(runningCoroutine);
+        }
+
+        // 启动新的协程，并保存它的引用
+        runningCoroutine = StartCoroutine(ShowTextCoroutine(message, textColor));
+    }
+
+    private IEnumerator ShowTextCoroutine(string message, Color textColor)
+    {
+        // 设置 TextMeshPro 组件的文本和颜色
+        tfText.text = message;
+        tfText.color = textColor;
+
+        // 等待 1 秒
+        yield return new WaitForSeconds(1f);
+
+        // 清除文本
+        tfText.text = string.Empty;
+        
+        // 协程执行完毕，清空引用
+        runningCoroutine = null;
     }
     
     IEnumerator NextQuestionRoutine()

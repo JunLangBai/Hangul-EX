@@ -428,6 +428,26 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 157768538}
     m_Modifications:
+    - target: {fileID: 1881100174409957609, guid: 9e80c59a384a9d64c8b5810d6d1718e6, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1881100174409957609, guid: 9e80c59a384a9d64c8b5810d6d1718e6, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: SceneChange
+      objectReference: {fileID: 0}
+    - target: {fileID: 1881100174409957609, guid: 9e80c59a384a9d64c8b5810d6d1718e6, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: ScenesChange, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 1881100174409957609, guid: 9e80c59a384a9d64c8b5810d6d1718e6, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_StringArgument
+      value: Main
+      objectReference: {fileID: 0}
+    - target: {fileID: 1881100174409957609, guid: 9e80c59a384a9d64c8b5810d6d1718e6, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
     - target: {fileID: 4636732636039756765, guid: 9e80c59a384a9d64c8b5810d6d1718e6, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
