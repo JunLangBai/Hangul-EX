@@ -242,7 +242,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 118100642}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1954348935}
+        m_TargetAssemblyTypeName: MainController, Assembly-CSharp
+        m_MethodName: QuitGame
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &153649751
 GameObject:
   m_ObjectHideFlags: 0
@@ -604,7 +616,7 @@ PrefabInstance:
       objectReference: {fileID: 21300000, guid: 1464e248cc8a3fe41888601a3f33de10, type: 3}
     - target: {fileID: 3745692274357203606, guid: 21a6fe16444053b46936dc7dd462b792, type: 3}
       propertyPath: m_Name
-      value: "\u4ECB\u7ECD"
+      value: "\u865A\u5B9E\u7ED8\u666F"
       objectReference: {fileID: 0}
     - target: {fileID: 4015548714728027664, guid: 21a6fe16444053b46936dc7dd462b792, type: 3}
       propertyPath: m_Name
@@ -1854,7 +1866,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1824858615}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1954348933}
+        m_TargetAssemblyTypeName: ScenesChange, Assembly-CSharp
+        m_MethodName: SceneChange
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 3DGenerate
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &1920690356
 GameObject:
   m_ObjectHideFlags: 0
@@ -1999,6 +2023,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1954348934}
   - component: {fileID: 1954348933}
+  - component: {fileID: 1954348935}
   m_Layer: 0
   m_Name: MainManager
   m_TagString: Untagged
@@ -2033,6 +2058,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1954348935
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1954348932}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9c9794822c3c99f4782f5fef033352a4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1983140539
 GameObject:
   m_ObjectHideFlags: 0
@@ -2090,7 +2127,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\u4EA7\u54C1\u4ECB\u7ECD"
+  m_text: "\u865A\u5B9E\u7ED8\u666F"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 3949d331f3833e340a2575a0496ff63d, type: 2}
   m_sharedMaterial: {fileID: 6280683387203250435, guid: 3949d331f3833e340a2575a0496ff63d, type: 2}

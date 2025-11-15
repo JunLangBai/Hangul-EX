@@ -22,15 +22,7 @@ public class ExternalInputManager : MonoBehaviour
 {
     [Header("API Key (必须)")]
     public string apiKey = "在此处粘贴你的API Key"; 
-
-    [Header("新的UI按钮")]
-    public Button btnStartASR;
-    public TMP_Text asrButtonText;
-    // (截图按钮已移除)
     
-    [Header("模型显示时的UI (新)")]
-    [Tooltip("此按钮在模型生成后出现，点击可隐藏模型并恢复主UI")]
-    public Button btnHideModelAndShowMainUI;
 
     [Header("目标 UI Manager (必须)")]
     public TripoSimpleUI_Manager targetUIManager;
@@ -65,15 +57,6 @@ public class ExternalInputManager : MonoBehaviour
             return;
         }
         
-        if (btnHideModelAndShowMainUI == null)
-        {
-            Debug.LogError("ExternalInputManager: 'btnHideModelAndShowMainUI' 未设置!", this.gameObject);
-        }
-        else
-        {
-            btnHideModelAndShowMainUI.onClick.AddListener(OnHideModelButtonPress);
-            btnHideModelAndShowMainUI.gameObject.SetActive(false); // 默认隐藏
-        }
 
         if (targetUIManager == null)
             Debug.LogError("ExternalInputManager: 'targetUIManager' 未设置!");
@@ -83,18 +66,12 @@ public class ExternalInputManager : MonoBehaviour
         if (Microphone.devices.Length == 0)
         {
             Debug.LogError("未找到麦克风设备！");
-            if (btnStartASR != null) btnStartASR.interactable = false;
-            if (asrButtonText != null) asrButtonText.text = text_MicError;
             return;
         }
         microphoneDeviceName = Microphone.devices[0];
-
-        if (btnStartASR != null)
-            btnStartASR.onClick.AddListener(OnAsrButtonPress);
             
         // (截图按钮监听已移除)
-
-        UpdateAsrButtonText();
+        
         
         // 此脚本负责设置API Key
         if (targetUIManager != null)
@@ -111,14 +88,7 @@ public class ExternalInputManager : MonoBehaviour
             }
             
             var runtimeCore = targetUIManager.GetComponent<TripoRuntimeCore>();
-            if (runtimeCore != null)
-            {
-                runtimeCore.OnModelGenerateComplete.AddListener(OnGenerationComplete);
-            }
-            else
-            {
-                Debug.LogError("在 'targetUIManager' 上找不到 TripoRuntimeCore! 无法重新显示UI。");
-            }
+
         }
     }
 
@@ -144,7 +114,6 @@ public class ExternalInputManager : MonoBehaviour
         Debug.Log("开始录音...");
         audioSource.clip = Microphone.Start(microphoneDeviceName, true, 300, 44100);
         isRecording = true;
-        UpdateAsrButtonText();
     }
 
     private void StopRecordingAndProcess()
@@ -156,7 +125,6 @@ public class ExternalInputManager : MonoBehaviour
         if (lastSamplePosition <= 0)
         {
             Debug.LogWarning("录音时间过短或没有录到声音。");
-            UpdateAsrButtonText();
             return;
         }
 
@@ -165,7 +133,6 @@ public class ExternalInputManager : MonoBehaviour
         originalClip.GetData(audioData, 0);
 
         isProcessing = true;
-        UpdateAsrButtonText();
         
         StartCoroutine(SaveAndUploadCoroutine(audioData, originalClip.channels, originalClip.frequency));
     }
@@ -207,7 +174,6 @@ public class ExternalInputManager : MonoBehaviour
         {
             Debug.LogError($"本地保存文件失败！");
             isProcessing = false;
-            UpdateAsrButtonText();
         }
     }
 
@@ -216,7 +182,6 @@ public class ExternalInputManager : MonoBehaviour
         if (!File.Exists(filePath))
         {
             isProcessing = false;
-            UpdateAsrButtonText();
             yield break; 
         }
 
@@ -259,25 +224,8 @@ public class ExternalInputManager : MonoBehaviour
         isProcessing = false;
     }
 
-    private void UpdateAsrButtonText()
-    {
-        if (asrButtonText == null || btnStartASR == null) return;
-        if (isProcessing)
-        {
-            asrButtonText.text = text_Processing;
-            btnStartASR.interactable = false;
-        }
-        else if (isRecording)
-        {
-            asrButtonText.text = text_StopRecording;
-            btnStartASR.interactable = true;
-        }
-        else
-        {
-            asrButtonText.text = text_StartRecording;
-            btnStartASR.interactable = true;
-        }
-    }
+
+    
     #endregion
 
     // (截图区域已删除)
@@ -285,48 +233,9 @@ public class ExternalInputManager : MonoBehaviour
     #region 辅助函数
     
     // (这部分代码被保留，因为两个脚本都需要它)
-
-    /// <summary>
-    /// 当模型生成完毕时，由 TripoRuntimeCore 的事件调用
-    /// </summary>
-    private void OnGenerationComplete(string modelUrl)
-    {
-        Debug.Log("模型生成完毕，显示'隐藏模型'按钮。");
-        
-        if (btnHideModelAndShowMainUI != null)
-        {
-            btnHideModelAndShowMainUI.gameObject.SetActive(true);
-        }
-
-        if (targetUIManager != null && targetUIManager.SimpleModel != null)
-        {
-            targetUIManager.SimpleModel.SetActive(true);
-        }
-    }
     
-    /// <summary>
-    /// 由 btnHideModelAndShowMainUI 按钮调用
-    /// </summary>
-    private void OnHideModelButtonPress()
-    {
-        Debug.Log("隐藏模型并恢复主UI...");
-        
-        if (targetUIManager != null && targetUIManager.SimpleModel != null)
-        {
-            targetUIManager.SimpleModel.SetActive(false);
-        }
-        
-        GlobalUIManager.Instance.ShowAllManagedItems(); 
-        
-        // 恢复UI后，刷新一下按钮文本
-        UpdateAsrButtonText();
-        
-        if (btnHideModelAndShowMainUI != null)
-        {
-            btnHideModelAndShowMainUI.gameObject.SetActive(false);
-        }
-    }
     
+   
     private string GetDynamicSavePath(string fileName)
     {
         #if UNITY_EDITOR
