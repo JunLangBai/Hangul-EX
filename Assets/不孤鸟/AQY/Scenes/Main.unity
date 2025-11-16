@@ -1747,6 +1747,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1233148307011800137, guid: 3c20833d81e354626b8365b459274912, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.05
+      objectReference: {fileID: 0}
+    - target: {fileID: 1233148307795227410, guid: 3c20833d81e354626b8365b459274912, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -0.05
+      objectReference: {fileID: 0}
     - target: {fileID: 1233148308800772758, guid: 3c20833d81e354626b8365b459274912, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -1787,6 +1795,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1233148308800772766, guid: 3c20833d81e354626b8365b459274912, type: 3}
+      propertyPath: m_Center.y
+      value: -0.05
+      objectReference: {fileID: 0}
     - target: {fileID: 1233148308800772767, guid: 3c20833d81e354626b8365b459274912, type: 3}
       propertyPath: m_Name
       value: PointableUI
@@ -1800,8 +1812,37 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1233148307795227410, guid: 3c20833d81e354626b8365b459274912, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1287824078}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1233148308800772767, guid: 3c20833d81e354626b8365b459274912, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1758832497}
   m_SourcePrefab: {fileID: 100100000, guid: 3c20833d81e354626b8365b459274912, type: 3}
+--- !u!1 &1758832496 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1233148308800772767, guid: 3c20833d81e354626b8365b459274912, type: 3}
+  m_PrefabInstance: {fileID: 1758832495}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1758832497
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1758832496}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d31cccc6f70473542863ccef3e8d0a84, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  followType: 0
+  offsetPosition: {x: 0, y: 0, z: 1.5}
+  offsetRotation: {x: 0, y: 0, z: 0, w: 1}
+  lockRotX: 0
+  lockRotY: 0
+  lockRotZ: 0
+  followThresholdAngle: 20
+  followSpeed: 4
+  adjustCenterByFov: 1
 --- !u!1 &1824858613 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 3745692274357203606, guid: 21a6fe16444053b46936dc7dd462b792, type: 3}

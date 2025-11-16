@@ -27,29 +27,29 @@ EditorBuildSettings:
     path: "Assets/\u4E0D\u5B64\u9E1F/AQY/Scenes/\u6BCF\u7AE0\u8BBE\u7F6E/MemoryReady.unity"
     guid: 56f2d17fda0874046a5a7ab4068e6a3f
   - enabled: 1
-    path: "Assets/\u4E0D\u5B64\u9E1F/AQY/Scenes/\u5404\u7AE0\u8282/NBack.unity"
-    guid: c586daf812e38e64dbd1c30c519fb97e
-  - enabled: 1
-    path: "Assets/\u4E0D\u5B64\u9E1F/AZ/DigitSpan/DigitSpan.unity"
-    guid: de41d98e81f3d764bbcc6934f59eb4b8
-  - enabled: 1
     path: "Assets/\u4E0D\u5B64\u9E1F/AQY/Scenes/\u6BCF\u7AE0\u8BBE\u7F6E/ExcutiveReady.unity"
     guid: eef8d495aa08ac94491a6b91d9f3a4ab
-  - enabled: 1
-    path: "Assets/\u4E0D\u5B64\u9E1F/AZ/Direction/Direction.unity"
-    guid: 50f4da842700dd04691f987175622bf0
   - enabled: 1
     path: "Assets/\u4E0D\u5B64\u9E1F/AQY/Scenes/\u6BCF\u7AE0\u8BBE\u7F6E/AttentionReady.unity"
     guid: 42e9abaab177c254781c5dfda1d1d25d
   - enabled: 1
+    path: "Assets/\u4E0D\u5B64\u9E1F/AQY/Scenes/\u6BCF\u7AE0\u8BBE\u7F6E/EmotionReady.unity"
+    guid: d0eac1b6102d131499c584feae167766
+  - enabled: 1
+    path: "Assets/\u4E0D\u5B64\u9E1F/AQY/Scenes/\u5404\u7AE0\u8282/NBack.unity"
+    guid: c586daf812e38e64dbd1c30c519fb97e
+  - enabled: 1
     path: "Assets/\u4E0D\u5B64\u9E1F/AQY/Scenes/\u5404\u7AE0\u8282/RVP.unity"
     guid: c018412af74cdb84f962e8508235e657
   - enabled: 1
+    path: "Assets/\u4E0D\u5B64\u9E1F/AZ/DigitSpan/DigitSpan.unity"
+    guid: de41d98e81f3d764bbcc6934f59eb4b8
+  - enabled: 1
+    path: "Assets/\u4E0D\u5B64\u9E1F/AZ/Direction/Direction.unity"
+    guid: 50f4da842700dd04691f987175622bf0
+  - enabled: 1
     path: "Assets/\u4E0D\u5B64\u9E1F/AZ/Emotion/Emotion.unity"
     guid: 67ce33eb9e88c9041b94d0a788ec690a
-  - enabled: 1
-    path: "Assets/\u4E0D\u5B64\u9E1F/AQY/Scenes/\u6BCF\u7AE0\u8BBE\u7F6E/EmotionReady.unity"
-    guid: d0eac1b6102d131499c584feae167766
   - enabled: 1
     path: "Assets/\u4E0D\u5B64\u9E1F/AZ/3DGenerate/3DGenerate.unity"
     guid: bdbfa79bce6b1df4b830912c4f8f489a
