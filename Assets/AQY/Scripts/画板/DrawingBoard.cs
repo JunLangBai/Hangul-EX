@@ -63,6 +63,9 @@ public class DrawingBoard : MonoBehaviour
     private readonly Color eraserColor = Color.white; 
 
     // --- 私有字段 ---
+    private GameObject brush;
+    private Vector3 brushTransform;
+    private Quaternion brushRotation;
     public Texture2D drawingTexture;
     private bool isDrawingOnBoard;
     private Color[] pixels;
@@ -107,6 +110,9 @@ public class DrawingBoard : MonoBehaviour
     
     private void Start()
     {
+        brush = brushTip.gameObject.transform.parent.gameObject;
+        brushTransform = brush.transform.position;
+        brushRotation = brush.transform.rotation;
         // 1. 获取白板的碰撞体，用于射线检测
         boardCollider = GetComponent<Collider>();
         if (boardCollider == null)
@@ -249,6 +255,8 @@ public class DrawingBoard : MonoBehaviour
     {
         brushColor = Color.black;
         brushSize = 2f;
+        brush.transform.position = brushTransform;
+        brush.transform.rotation = brushRotation;
     }
 
     //( 0=red,1=yellow,2=green,3=cyan,4=black)

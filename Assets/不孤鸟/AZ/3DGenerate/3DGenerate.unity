@@ -132,7 +132,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 570026001101569731, guid: a1893896ec1d9a340a962cc62a68a676, type: 3}
       propertyPath: m_text
-      value: "\u9ED8\u8BA4\u753B\u7B14"
+      value: "\u590D\u539F\u753B\u7B14"
       objectReference: {fileID: 0}
     - target: {fileID: 570026001101569731, guid: a1893896ec1d9a340a962cc62a68a676, type: 3}
       propertyPath: m_fontAsset
@@ -156,7 +156,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1755135069188028655, guid: a1893896ec1d9a340a962cc62a68a676, type: 3}
       propertyPath: m_text
-      value: "\u9ED8\u8BA4\u753B\u7B14"
+      value: "\u590D\u539F\u753B\u7B14"
       objectReference: {fileID: 0}
     - target: {fileID: 1755135069188028655, guid: a1893896ec1d9a340a962cc62a68a676, type: 3}
       propertyPath: m_fontAsset
@@ -13126,9 +13126,9 @@ MonoBehaviour:
   textToModelProgress: 0
   imagePath: 
   imageToModelProgress: 0
-  face_limit: 10000
+  face_limit: 8000
   rigging_optional: 0
-  pbr_optional: 1
+  pbr_optional: 0
   texture_optional: 0
   texture_quality_optional: 0
   quad_optional: 0
