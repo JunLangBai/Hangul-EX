@@ -19,19 +19,18 @@ public class GestureManager : MonoBehaviour
     [Tooltip("在切换到下一张图片前，图片消失的空白时间（秒）")]
     public float flashDuration = 0.1f; // 闪烁持续时间
 
-    [Header("UI组件")] 
+    [Header("UI组件")]
     public GameObject rvpPrefabs;
     public Transform contentPanel;
     public TextMeshProUGUI tfHint;
-    // 用来保存当前正在运行的协程的引用
     private Coroutine tfTextCoroutine;
     
-    public Image stimulusImage;     // 用于显示手势图片的UI Image组件。
-    public TextMeshProUGUI instructionText;    // 用于在指令阶段显示提示文字的UI Text组件。
-    public TextMeshProUGUI resultText;         // 用于在结果阶段显示分数的UI Text组件。
-    public GameObject instructionPanel; // 指令阶段的UI面板。
-    public GameObject gesturePanel;     // 测试进行中显示手势图片的UI面板。
-    public GameObject resultPanel;      // 展示最终结果的UI面板。
+    public Image stimulusImage;
+    public TextMeshProUGUI instructionText;
+    public TextMeshProUGUI resultText;
+    public GameObject instructionPanel;
+    public GameObject gesturePanel;
+    public GameObject resultPanel;
 
     // --- 内部状态变量 ---
     private enum TestState { Instructions, Testing, Results }
@@ -45,7 +44,11 @@ public class GestureManager : MonoBehaviour
     private float stimulusInterval;
     private float testTimer;
     private float reactionTimer;
+    
+    // --- 逻辑修改 ---
     private bool responseMadeForCurrentStimulus;
+    // 新增一个标志位，专门用于判断“是否做出了正确的反应”
+    private bool correctResponseMadeForCurrentStimulus; 
 
     // --- 计分 ---
     private int hits = 0;
@@ -55,6 +58,7 @@ public class GestureManager : MonoBehaviour
 
     void Start()
     {
+        // ... Start() 函数内容不变 ...
         if (AllSettingCtr.Instance != null)
         {
             gesturesPerMinute = AllSettingCtr.Instance.attentionGesturesPerMinute;
@@ -74,17 +78,15 @@ public class GestureManager : MonoBehaviour
 
     void OnEnable()
     {
-        // 订阅手势输入事件
         GestureInputController.OnGesturePerformed += HandleGestureInput;
     }
 
     void OnDisable()
     {
-        // 取消订阅，防止内存泄漏
         GestureInputController.OnGesturePerformed -= HandleGestureInput;
     }
 
-    // 阶段1：指令阶段
+    // ... StartInstructionPhase(), StartTestPhase(), ShowResults(), Update() 内容不变 ...
     void StartInstructionPhase()
     {
         currentState = TestState.Instructions;
@@ -94,41 +96,45 @@ public class GestureManager : MonoBehaviour
         
         GenerateSequences();
 
-        // TODO: 在UI上优雅地展示 targetGestures
         string targets = "以下图片出现时\n模仿手势:";
+        // 清理旧的图标（如果重新开始测试）
+        foreach (Transform child in contentPanel)
+        {
+            Destroy(child.gameObject);
+        }
+        
         foreach(var target in targetGestures)
         {
-            // 实例化预制体
             GameObject newUIElement = Instantiate(rvpPrefabs, contentPanel);
             Image image = newUIElement.GetComponent<Image>();
             if (image != null)
             {
                 image.sprite = target.gestureImage;
             }
-            
         }
         instructionText.text = targets;
 
-        // 示例：5秒后自动开始测试
         Invoke(nameof(StartTestPhase), 5f);
     }
     
-    // 阶段2：测试阶段
     void StartTestPhase()
     {
         currentState = TestState.Testing;
+        instructionPanel.SetActive(false); // 确保指令面板关闭
         gesturePanel.SetActive(true);
+        resultPanel.SetActive(false); // 确保结果面板关闭
 
         hits = 0;
         misses = 0;
         falseAlarms = 0;
         reactionTimes.Clear();
         testTimer = testDuration;
+        currentStimulusIndex = -1; // 重置索引
 
+        StopAllCoroutines(); // 确保旧的协程已停止
         StartCoroutine(PresentStimuli());
     }
 
-    // 阶段3：结果阶段
     void ShowResults()
     {
         currentState = TestState.Results;
@@ -144,121 +150,132 @@ public class GestureManager : MonoBehaviour
     {
         if (currentState == TestState.Testing)
         {
-            testTimer -= Time.deltaTime;
-            reactionTimer += Time.deltaTime;
-            if (testTimer <= 0)
+            if (testTimer > 0)
+            {
+                testTimer -= Time.deltaTime;
+                reactionTimer += Time.deltaTime;
+            }
+            else
             {
                 StopAllCoroutines();
                 ShowResults();
             }
         }
     }
-    
-    // 核心逻辑：处理用户手势输入
+
+    // --- 核心逻辑修改 ---
     private void HandleGestureInput(Hand hand, CustomGestureType gestureType)
     {
         if (currentState != TestState.Testing || responseMadeForCurrentStimulus)
         {
-            return; // 如果不在测试中，或已对当前刺激做出反应，则忽略
+            return;
         }
 
-        responseMadeForCurrentStimulus = true; // 标记已反应
+        responseMadeForCurrentStimulus = true; // 锁定，防止对同一刺激进行多次响应
 
         bool isTarget = IsTarget(currentStimulus);
-        bool isCorrect = (currentStimulus.hand == hand && currentStimulus.gestureType == gestureType);
+        bool isCorrectGesture = (currentStimulus.hand == hand && currentStimulus.gestureType == gestureType);
 
         if (isTarget)
         {
-            if (isCorrect)
+            if (isCorrectGesture)
             {
                 hits++;
                 reactionTimes.Add(reactionTimer);
+                correctResponseMadeForCurrentStimulus = true; // 标记已正确响应
                 Debug.Log($"命中! 反应时间: {reactionTimer}");
-                ShowTemporaryText("正确！",Color.green);
+                ShowTemporaryText("正确！", Color.green);
             }
-            // 如果是目标但做错了，也算作漏报（在切换刺激时处理）
+            // 如果是目标但手势错误 (isCorrectGesture is false)，我们在这里不做任何事。
+            // 漏报(Miss)的逻辑将在切换到下一个刺激时处理。
         }
-        else // 不是目标
+        else // 非目标
         {
-            if (isCorrect) // 即使不是目标，但模仿了，就是虚报
-            {
-                 falseAlarms++;
-                 Debug.Log("虚报!");
-                 ShowTemporaryText("错误！",Color.red);
-            }
+            // 对非目标做出了任何手势，都应被视为虚报
+            falseAlarms++;
+            Debug.Log("虚报!");
+            ShowTemporaryText("错误！", Color.red);
         }
     }
 
-    //// <summary>
-    /// 这是一个协程，用于按设定的时间间隔，依次呈现手势刺激序列。
-    /// 新版本加入了闪烁效果。
-    /// </summary>
     private IEnumerator PresentStimuli()
     {
-        // --- 闪烁逻辑修改 ---
-        // 1. 计算出图片真正需要显示的时间。
-        // 总间隔时间 = 图片显示时间 + 闪烁空白时间
         float visibleDuration = stimulusInterval - flashDuration;
-
-        // 2. 安全检查：确保闪烁时间不会比总的间隔时间还长。
         if (visibleDuration <= 0)
         {
-            Debug.LogError("错误：闪烁时间 (flashDuration) 必须小于总的刺激间隔时间 (stimulusInterval)！");
-            // 在出错时提供一个极短的显示时间以避免死循环。
+            Debug.LogError("错误：flashDuration 必须小于 stimulusInterval！");
             visibleDuration = 0.01f; 
         }
         
-        // 遍历本次测试生成的完整手势序列。
-        for (int i = 0; i < currentSequence.Count; i++)
+        // 计算总共要呈现多少个手势
+        int totalStimuli = Mathf.FloorToInt(testDuration / stimulusInterval);
+
+        for (int i = 0; i < totalStimuli; i++)
         {
-            // 在呈现一个新的刺激之前，先检查上一个刺激的结果。
+            // --- 计分逻辑修改 ---
+            // 在呈现新刺激之前，检查上一个刺激的计分情况
             if (currentStimulusIndex >= 0)
             {
-                // 如果上一个刺激是目标，并且用户直到现在还没有做出任何反应...
-                if (IsTarget(currentStimulus) && !responseMadeForCurrentStimulus)
+                // 如果上一个刺激是目标，并且直到现在还没有收到“正确”的响应
+                if (IsTarget(currentStimulus) && !correctResponseMadeForCurrentStimulus)
                 {
-                    misses++; // ...则记为一次“漏报”。
+                    misses++; // 记为一次“漏报”
                     Debug.Log("漏报!");
-                    ShowTemporaryText("漏掉了！",Color.red);
+                    ShowTemporaryText("漏掉了！", Color.yellow);
                 }
             }
+            
+            // 检查测试时间是否结束
+            if (testTimer <= 0) break;
 
             // --- 准备并呈现下一个刺激 ---
-            currentStimulusIndex = i; // 更新当前刺激的索引。
-            stimulusImage.sprite = currentStimulus.gestureImage; // 在UI上更新手势图片。
-            responseMadeForCurrentStimulus = false; // 重置反应标记。
-            reactionTimer = 0f; // 重置反应时间计时器。
+            currentStimulusIndex = i;
+            // 确保索引不会越界
+            if (currentStimulusIndex >= currentSequence.Count)
+            {
+                Debug.LogWarning("手势序列已用完，测试提前结束。");
+                break;
+            }
+            
+            stimulusImage.sprite = currentStimulus.gestureImage;
+            responseMadeForCurrentStimulus = false; 
+            correctResponseMadeForCurrentStimulus = false; // 重置正确响应标记
+            reactionTimer = 0f;
 
-            // --- 闪烁逻辑修改 ---
-            // 3. 让图片显示出来
             stimulusImage.enabled = true;
-
-            // 4. 等待“图片显示时间”
             yield return new WaitForSeconds(visibleDuration);
 
-            // 5. 时间到后，隐藏图片，开始“闪烁空白期”
             stimulusImage.enabled = false;
-            
-            // 6. 等待“闪烁空白时间”
             yield return new WaitForSeconds(flashDuration);
         }
+        
+        // 循环结束后，手动检查最后一个刺激
+        if (currentStimulusIndex >= 0 && IsTarget(currentStimulus) && !correctResponseMadeForCurrentStimulus)
+        {
+            misses++;
+            Debug.Log("漏报 (最后一个)!");
+        }
+
+        // 协程自然结束，调用结果展示
+        if(currentState == TestState.Testing)
+        {
+            ShowResults();
+        }
     }
-    // --- 辅助函数 ---
+
+    // ... GenerateSequences(), IsTarget(), ShowTemporaryText() 和 ShowTextCoroutine() 不变 ...
     void GenerateSequences()
     {
-        // 1. 确定本次测试用左手还是右手
         Hand targetHand = (Random.value > 0.5f) ? Hand.Left : Hand.Right;
         
-        // 2. 从该手中随机挑选目标手势
         targetGestures = allGestures
             .Where(g => g.hand == targetHand)
             .OrderBy(x => Random.value)
             .Take(targetCount)
             .ToList();
 
-        // 3. 生成完整的伪随机测试序列
         currentSequence.Clear();
-        int totalGesturesInTest = (int)(testDuration / stimulusInterval);
+        int totalGesturesInTest = Mathf.CeilToInt(testDuration / stimulusInterval) + 2; // 多生成几个以防万一
         for (int i = 0; i < totalGesturesInTest; i++)
         {
             currentSequence.Add(allGestures[Random.Range(0, allGestures.Count)]);
@@ -270,35 +287,21 @@ public class GestureManager : MonoBehaviour
         return targetGestures.Contains(gesture);
     }
     
-    // 一个公开的方法，可以从其他脚本中调用
     public void ShowTemporaryText(string message, Color textColor)
     {
-        // 如果当前有正在运行的协程，先将它停止
         if (tfTextCoroutine != null)
         {
             StopCoroutine(tfTextCoroutine);
         }
-
-        // 启动新的协程，并保存它的引用
         tfTextCoroutine = StartCoroutine(ShowTextCoroutine(message, textColor));
     }
 
     private IEnumerator ShowTextCoroutine(string message, Color textColor)
     {
-        // 清除文本
-        tfHint.text = string.Empty;
-        
-        // 设置 TextMeshPro 组件的文本和颜色
         tfHint.text = message;
         tfHint.color = textColor;
-
-        // 等待 1 秒
         yield return new WaitForSeconds(1.2f);
-
-        // 清除文本
         tfHint.text = string.Empty;
-        
-        // 协程执行完毕，清空引用
         tfTextCoroutine = null;
     }
 }

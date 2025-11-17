@@ -304,6 +304,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1233148307011800137, guid: 3c20833d81e354626b8365b459274912, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.05
+      objectReference: {fileID: 0}
+    - target: {fileID: 1233148307795227410, guid: 3c20833d81e354626b8365b459274912, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -0.05
+      objectReference: {fileID: 0}
     - target: {fileID: 1233148308800772758, guid: 3c20833d81e354626b8365b459274912, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -344,6 +352,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1233148308800772766, guid: 3c20833d81e354626b8365b459274912, type: 3}
+      propertyPath: m_Center.y
+      value: -0.05
+      objectReference: {fileID: 0}
     - target: {fileID: 1233148308800772767, guid: 3c20833d81e354626b8365b459274912, type: 3}
       propertyPath: m_Name
       value: PointableUI
@@ -360,7 +372,10 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1233148307795227410, guid: 3c20833d81e354626b8365b459274912, type: 3}
       insertIndex: -1
       addedObject: {fileID: 197954723}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1233148308800772767, guid: 3c20833d81e354626b8365b459274912, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 716051301}
   m_SourcePrefab: {fileID: 100100000, guid: 3c20833d81e354626b8365b459274912, type: 3}
 --- !u!1001 &332794990
 PrefabInstance:
@@ -1115,6 +1130,57 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 85cc648a20be07649bb133f35ca2f1fc, type: 3}
+--- !u!1 &495594744
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 495594746}
+  - component: {fileID: 495594745}
+  m_Layer: 0
+  m_Name: GameObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &495594745
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 495594744}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 633c4de0431f1472d919b7e821000f49, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  followType: 0
+  offsetPosition: {x: 0, y: 0, z: 0}
+  offsetRotation: {x: 0, y: 0, z: 0, w: 1}
+  lockRotX: 0
+  lockRotY: 0
+  lockRotZ: 0
+  adjustCenterByFov: 1
+--- !u!4 &495594746
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 495594744}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &534475581
 GameObject:
   m_ObjectHideFlags: 0
@@ -1402,6 +1468,32 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 694247908}
   m_CullTransparentMesh: 0
+--- !u!1 &716051300 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1233148308800772767, guid: 3c20833d81e354626b8365b459274912, type: 3}
+  m_PrefabInstance: {fileID: 220139830}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &716051301
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 716051300}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d31cccc6f70473542863ccef3e8d0a84, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  followType: 0
+  offsetPosition: {x: 0, y: 0, z: 0.5}
+  offsetRotation: {x: 0, y: 0, z: 0, w: 1}
+  lockRotX: 0
+  lockRotY: 0
+  lockRotZ: 0
+  followThresholdAngle: 10
+  followSpeed: 5
+  adjustCenterByFov: 1
 --- !u!1001 &797304530
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3281,3 +3373,4 @@ SceneRoots:
   - {fileID: 220139830}
   - {fileID: 1755024320}
   - {fileID: 57731709}
+  - {fileID: 495594746}
