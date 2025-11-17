@@ -36,7 +36,7 @@ public class EmotionTestController : MonoBehaviour
     
     private int currentQuestionIndex = 0;
     private string currentEmotion;
-    private List<string> emotions = new List<string> { "smiling", "sad", "angry", "Fear" }; // 与您的动画状态名称对应
+    private List<string> emotions = new List<string> { "smiling", "sad", "angry", "fear" }; // 与您的动画状态名称对应
 
     void Start()
     {
