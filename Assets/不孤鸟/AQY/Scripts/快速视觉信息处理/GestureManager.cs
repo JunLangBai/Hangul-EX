@@ -8,23 +8,20 @@ using UnityEngine.UI;
 public class GestureManager : MonoBehaviour
 {
     // --- 在Inspector中设置的参数 ---
-    [Header("测试配置")]
-    public float testDuration = 60f; // 测试总时长
+    [Header("测试配置")] public float testDuration = 60f; // 测试总时长
     public int gesturesPerMinute = 40;
-    [Range(1, 3)]
-    public int targetCount = 1; // 目标数量，用于控制难度
+    [Range(1, 3)] public int targetCount = 1; // 目标数量，用于控制难度
     public List<GestureData> allGestures; // 将所有8个GestureData资源拖到这里
 
-    [Header("视觉效果")]
-    [Tooltip("在切换到下一张图片前，图片消失的空白时间（秒）")]
+    [Header("视觉效果")] [Tooltip("在切换到下一张图片前，图片消失的空白时间（秒）")]
     public float flashDuration = 0.1f; // 闪烁持续时间
 
-    [Header("UI组件")]
-    public GameObject rvpPrefabs;
+    [Header("UI组件")] public GameObject rvpPrefabs;
     public Transform contentPanel;
+    public TextMeshProUGUI timeText;
     public TextMeshProUGUI tfHint;
     private Coroutine tfTextCoroutine;
-    
+
     public Image stimulusImage;
     public TextMeshProUGUI instructionText;
     public TextMeshProUGUI resultText;
@@ -33,9 +30,15 @@ public class GestureManager : MonoBehaviour
     public GameObject resultPanel;
 
     // --- 内部状态变量 ---
-    private enum TestState { Instructions, Testing, Results }
+    private enum TestState
+    {
+        Instructions,
+        Testing,
+        Results
+    }
+
     private TestState currentState;
-    
+
     private List<GestureData> currentSequence = new List<GestureData>();
     private List<GestureData> targetGestures = new List<GestureData>();
     private int currentStimulusIndex = -1;
@@ -44,11 +47,12 @@ public class GestureManager : MonoBehaviour
     private float stimulusInterval;
     private float testTimer;
     private float reactionTimer;
-    
+
     // --- 逻辑修改 ---
     private bool responseMadeForCurrentStimulus;
+
     // 新增一个标志位，专门用于判断“是否做出了正确的反应”
-    private bool correctResponseMadeForCurrentStimulus; 
+    private bool correctResponseMadeForCurrentStimulus;
 
     // --- 计分 ---
     private int hits = 0;
@@ -71,7 +75,7 @@ public class GestureManager : MonoBehaviour
             targetCount = 1;
             flashDuration = 0.1f;
         }
-        
+
         stimulusInterval = 60f / gesturesPerMinute;
         StartInstructionPhase();
     }
@@ -91,9 +95,10 @@ public class GestureManager : MonoBehaviour
     {
         currentState = TestState.Instructions;
         instructionPanel.SetActive(true);
+        timeText.gameObject.SetActive(true);
         gesturePanel.SetActive(false);
         resultPanel.SetActive(false);
-        
+
         GenerateSequences();
 
         string targets = "以下图片出现时\n模仿手势:";
@@ -102,8 +107,8 @@ public class GestureManager : MonoBehaviour
         {
             Destroy(child.gameObject);
         }
-        
-        foreach(var target in targetGestures)
+
+        foreach (var target in targetGestures)
         {
             GameObject newUIElement = Instantiate(rvpPrefabs, contentPanel);
             Image image = newUIElement.GetComponent<Image>();
@@ -112,16 +117,18 @@ public class GestureManager : MonoBehaviour
                 image.sprite = target.gestureImage;
             }
         }
+
         instructionText.text = targets;
 
+        StartCoroutine(StartCount(5));
         Invoke(nameof(StartTestPhase), 5f);
     }
-    
+
     void StartTestPhase()
     {
         currentState = TestState.Testing;
-        instructionPanel.SetActive(false); // 确保指令面板关闭
         gesturePanel.SetActive(true);
+        timeText.gameObject.SetActive(false);
         resultPanel.SetActive(false); // 确保结果面板关闭
 
         hits = 0;
@@ -139,6 +146,7 @@ public class GestureManager : MonoBehaviour
     {
         currentState = TestState.Results;
         instructionPanel.SetActive(false);
+        timeText.gameObject.SetActive(false);
         gesturePanel.SetActive(false);
         resultPanel.SetActive(true);
 
@@ -204,9 +212,9 @@ public class GestureManager : MonoBehaviour
         if (visibleDuration <= 0)
         {
             Debug.LogError("错误：flashDuration 必须小于 stimulusInterval！");
-            visibleDuration = 0.01f; 
+            visibleDuration = 0.01f;
         }
-        
+
         // 计算总共要呈现多少个手势
         int totalStimuli = Mathf.FloorToInt(testDuration / stimulusInterval);
 
@@ -224,7 +232,7 @@ public class GestureManager : MonoBehaviour
                     ShowTemporaryText("漏掉了！", Color.yellow);
                 }
             }
-            
+
             // 检查测试时间是否结束
             if (testTimer <= 0) break;
 
@@ -236,9 +244,9 @@ public class GestureManager : MonoBehaviour
                 Debug.LogWarning("手势序列已用完，测试提前结束。");
                 break;
             }
-            
+
             stimulusImage.sprite = currentStimulus.gestureImage;
-            responseMadeForCurrentStimulus = false; 
+            responseMadeForCurrentStimulus = false;
             correctResponseMadeForCurrentStimulus = false; // 重置正确响应标记
             reactionTimer = 0f;
 
@@ -248,7 +256,7 @@ public class GestureManager : MonoBehaviour
             stimulusImage.enabled = false;
             yield return new WaitForSeconds(flashDuration);
         }
-        
+
         // 循环结束后，手动检查最后一个刺激
         if (currentStimulusIndex >= 0 && IsTarget(currentStimulus) && !correctResponseMadeForCurrentStimulus)
         {
@@ -257,7 +265,7 @@ public class GestureManager : MonoBehaviour
         }
 
         // 协程自然结束，调用结果展示
-        if(currentState == TestState.Testing)
+        if (currentState == TestState.Testing)
         {
             ShowResults();
         }
@@ -267,7 +275,7 @@ public class GestureManager : MonoBehaviour
     void GenerateSequences()
     {
         Hand targetHand = (Random.value > 0.5f) ? Hand.Left : Hand.Right;
-        
+
         targetGestures = allGestures
             .Where(g => g.hand == targetHand)
             .OrderBy(x => Random.value)
@@ -286,13 +294,14 @@ public class GestureManager : MonoBehaviour
     {
         return targetGestures.Contains(gesture);
     }
-    
+
     public void ShowTemporaryText(string message, Color textColor)
     {
         if (tfTextCoroutine != null)
         {
             StopCoroutine(tfTextCoroutine);
         }
+
         tfTextCoroutine = StartCoroutine(ShowTextCoroutine(message, textColor));
     }
 
@@ -303,5 +312,23 @@ public class GestureManager : MonoBehaviour
         yield return new WaitForSeconds(1.2f);
         tfHint.text = string.Empty;
         tfTextCoroutine = null;
+    }
+
+    IEnumerator StartCount(int time)
+    {
+        int remainingTime = time;
+
+        // 循环直到剩余时间为0
+        while (remainingTime > 0)
+        {
+            // 更新UI显示（这里直接显示数字，也可以格式化如"00:05"）
+            timeText.text = $"{remainingTime}秒后开始...";
+
+            // 等待1秒（协程暂停1秒后继续执行）
+            yield return new WaitForSeconds(1f);
+
+            // 剩余时间减1
+            remainingTime--;
+        }
     }
 }
