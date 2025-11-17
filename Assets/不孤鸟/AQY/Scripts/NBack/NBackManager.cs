@@ -60,7 +60,7 @@ public class NBackManager : MonoBehaviour
         else
         {
             Debug.LogError("NBackSetting 实例未找到! 请确保设置场景已首先加载。");
-            nValue = 2;
+            nValue = 1;
             stimulusDuration = 2.0f;
             interStimulusInterval = 2.5f;
             totalTrials = 40;
@@ -70,8 +70,18 @@ public class NBackManager : MonoBehaviour
     
     void Start()
     {
-            if (feedbackText != null) feedbackText.text = "↓↓ 向下低头看向平面进行游戏 ↓↓";
-        
+        if (feedbackText != null)
+        {
+            if (nValue > 0)
+            {
+                feedbackText.text = $"↓↓ 向下低头看向平面进行游戏 ↓↓\n<size=25>检测出现的方块是否与前{nValue}个方块相同</size>";
+            }
+            else if(nValue == 0)
+            {
+                feedbackText.text = $"↓↓ 向下低头看向平面进行游戏 ↓↓\n<size=25>检测出现的方块是在九宫格中心</size>";
+            }
+        }
+
         // --- 修改 2: 确保3D对象在游戏开始时是隐藏的 ---
         if (stimulus3DObject != null)
         {

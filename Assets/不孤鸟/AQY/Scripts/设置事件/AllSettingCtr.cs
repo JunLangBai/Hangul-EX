@@ -9,7 +9,7 @@ public class AllSettingCtr : MonoBehaviour
 
     // --- N-Back 设置 ---
     [Header("N-Back 设置")]
-    public int nValue = 2;
+    public int nValue = 1;
     public float stimulusDuration = 2.0f;
     public float interStimulusInterval = 2.5f;
     public int totalTrials = 40;
