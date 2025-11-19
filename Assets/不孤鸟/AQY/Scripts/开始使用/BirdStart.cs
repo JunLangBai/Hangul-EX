@@ -38,10 +38,15 @@ public class BirdStart : MonoBehaviour
             .SetEase(fadeEase)
             .OnStart(() => {
                 Debug.Log("渐显动画开始");
-            }));
+            }).OnComplete(LoadNextScene));
         
         // 优化动画性能
         _startSequence.SetUpdate(true); // 使用独立于Time.timeScale的更新
+    }
+
+    private void LoadNextScene()
+    {
+        SceneManager.LoadScene("Main");
     }
 
     private void SoundLoading()

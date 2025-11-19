@@ -14,7 +14,7 @@ public class AllSettingCtr : MonoBehaviour
     public float interStimulusInterval = 2.5f;
     public int totalTrials = 40;
     public int targetIndexN0 = 4;
-    public float matchProbability = 0.33f;
+    public float matchProbability = 0.4f;
     public bool isOneBlockMode = false;
 
     // --- 记忆游戏设置 ---

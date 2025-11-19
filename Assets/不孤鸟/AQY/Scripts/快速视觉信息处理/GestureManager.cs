@@ -37,6 +37,8 @@ public class GestureManager : MonoBehaviour
         Results
     }
 
+    private float targetProbability = 0.4f; // 控制目标出现概率，例如25%
+    
     private TestState currentState;
 
     private List<GestureData> currentSequence = new List<GestureData>();
@@ -274,19 +276,47 @@ public class GestureManager : MonoBehaviour
     // ... GenerateSequences(), IsTarget(), ShowTemporaryText() 和 ShowTextCoroutine() 不变 ...
     void GenerateSequences()
     {
+        // 1. 随机选择一只手作为目标手
         Hand targetHand = (Random.value > 0.5f) ? Hand.Left : Hand.Right;
 
+        // 2. 从所有手势中，根据目标手和数量，选出目标手势
         targetGestures = allGestures
             .Where(g => g.hand == targetHand)
             .OrderBy(x => Random.value)
             .Take(targetCount)
             .ToList();
 
+        // 3. 为了高效生成序列，先筛选出所有的“非目标手势”
+        List<GestureData> nonTargetGestures = allGestures.Except(targetGestures).ToList();
+
+        // 清空旧序列
         currentSequence.Clear();
-        int totalGesturesInTest = Mathf.CeilToInt(testDuration / stimulusInterval) + 2; // 多生成几个以防万一
+        int totalGesturesInTest = Mathf.CeilToInt(testDuration / stimulusInterval) + 2;
+
+        // --- 核心修改在这里 ---
         for (int i = 0; i < totalGesturesInTest; i++)
         {
-            currentSequence.Add(allGestures[Random.Range(0, allGestures.Count)]);
+            // 根据设定的概率，决定下一个手势是“目标”还是“非目标”
+            bool isNextGestureTarget = Random.value < targetProbability;
+
+            if (isNextGestureTarget && targetGestures.Count > 0)
+            {
+                // 如果是目标，就从目标列表中随机选一个
+                currentSequence.Add(targetGestures[Random.Range(0, targetGestures.Count)]);
+            }
+            else
+            {
+                // 如果是非目标，或者目标列表为空（以防万一），就从非目标列表中随机选一个
+                if (nonTargetGestures.Count > 0)
+                {
+                    currentSequence.Add(nonTargetGestures[Random.Range(0, nonTargetGestures.Count)]);
+                }
+                else
+                {
+                    // 极端情况：如果所有手势都是目标，就只能从目标里选了
+                    currentSequence.Add(targetGestures[Random.Range(0, targetGestures.Count)]);
+                }
+            }
         }
     }
 
