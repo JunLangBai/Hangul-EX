@@ -20,7 +20,7 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/ARUpgrad.unity
     guid: f6d30eaa574b3a84295fc0510c654d7b
-  - enabled: 1
+  - enabled: 0
     path: "Assets/\u4E0D\u5B64\u9E1F/AQY/Scenes/BridEnter.unity"
     guid: 88acc9c003774884bbdb2ce9ddf97e2e
   - enabled: 1
