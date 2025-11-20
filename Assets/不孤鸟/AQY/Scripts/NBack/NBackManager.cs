@@ -4,6 +4,8 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using Random = System.Random;
+using System.Linq;
+
 
 public struct Trial
 {
@@ -27,6 +29,8 @@ public class NBackManager : MonoBehaviour
     public TextMeshProUGUI buttonText;
     public TextMeshProUGUI feedbackText;
 
+    public SettlementScreen settings;
+
     private readonly List<Trial> trialSequence = new();
     private int currentTrialIndex;
     private int score;
@@ -40,6 +44,9 @@ public class NBackManager : MonoBehaviour
     private float matchProbability;
 
     private AllSettingCtr allSettingCtr;
+    
+    private int totalMatchesInSequence;
+
 
     private void Awake()
     {
@@ -86,6 +93,9 @@ public class NBackManager : MonoBehaviour
         UpdateScoreUI();
 
         GenerateTrialSequence();
+        
+        totalMatchesInSequence = trialSequence.Count(trial => trial.isMatch);
+        Debug.Log($"序列已生成，共包含 {totalMatchesInSequence} 个匹配项。");
         StartCoroutine(RunGame());
     }
 
@@ -123,9 +133,7 @@ public class NBackManager : MonoBehaviour
         for (var i = 0; i < trialIndices.Count - 1; i++)
         {
             var randomIndex = rand.Next(i, trialIndices.Count);
-            var temp = trialIndices[i];
-            trialIndices[i] = trialIndices[randomIndex];
-            trialIndices[randomIndex] = temp;
+            (trialIndices[i], trialIndices[randomIndex]) = (trialIndices[randomIndex], trialIndices[i]);
         }
 
         // --- 步骤 C: 将前 `matchesToCreate` 个索引标记为“匹配” ---
@@ -263,7 +271,24 @@ public class NBackManager : MonoBehaviour
         }
 
         Debug.Log("游戏结束！最终得分: " + score);
-        if (feedbackText != null) feedbackText.text = $"游戏结束!分数为:{score}\n点击返回按钮回到主界面";
+        // 计算正确率
+        float accuracy = 0f;
+        // 为防止除以零，先检查总匹配数是否大于0
+        if (totalMatchesInSequence > 0)
+        {
+            accuracy = (float)score / totalMatchesInSequence;
+        }
+
+        var historyScore = settings.GetSavedAccuracyForCurrentScene();
+        if (historyScore == null)
+        {
+            historyScore = accuracy;
+        }
+
+        if (feedbackText != null)
+        {
+            feedbackText.text = $"游戏结束!正确率:{accuracy:P0}%\n最佳记录:{historyScore}%\n点击返回按钮回到主界面";
+        }
 
         matchButton.interactable = false;
     }

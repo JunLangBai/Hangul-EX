@@ -46,7 +46,7 @@ public class BounceFadeInMoveSimultaneous : MonoBehaviour
                 if (disableAfter)
                     gameObject.SetActive(false);
 
-                SceneManager.LoadScene("test");
+                SceneManager.LoadScene("MainMenu");
             });
     }
 

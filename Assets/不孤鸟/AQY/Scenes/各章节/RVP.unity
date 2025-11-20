@@ -809,7 +809,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\u5206\u6570\u4E3A\n\u7684\u6492\uFF1A\n\u6492\u662F\uFF1A\n\u5341\u5927\uFF1A\n"
+  m_text: "\u6D4B\u8BD5\u7ED3\u675F!\\n\\n\u6B63\u786E\u7387:{correctRate}\\n\u5E73\u5747\u53CD\u5E94\u65F6\u95F4:
+    0.02}\u79D2"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 3949d331f3833e340a2575a0496ff63d, type: 2}
   m_sharedMaterial: {fileID: 6280683387203250435, guid: 3949d331f3833e340a2575a0496ff63d, type: 2}
@@ -1006,6 +1007,7 @@ GameObject:
   - component: {fileID: 1103373571}
   - component: {fileID: 1103373573}
   - component: {fileID: 1103373572}
+  - component: {fileID: 1103373574}
   m_Layer: 0
   m_Name: RVPMgr
   m_TagString: Untagged
@@ -1066,6 +1068,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: a02c0a20e83d1514f89799a090e11ac7, type: 2}
   flashDuration: 0.1
   rvpPrefabs: {fileID: 387662617635322570, guid: 5f74a5422518df744846610672746c45, type: 3}
+  settings: {fileID: 1103373574}
   contentPanel: {fileID: 32709722}
   timeText: {fileID: 1655661923}
   tfHint: {fileID: 1393169967}
@@ -1075,6 +1078,18 @@ MonoBehaviour:
   instructionPanel: {fileID: 611165797}
   gesturePanel: {fileID: 838505371}
   resultPanel: {fileID: 451458576}
+--- !u!114 &1103373574
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1103373569}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ce60687ae7aa56468d0fa2ad782e815, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1393169964
 GameObject:
   m_ObjectHideFlags: 0

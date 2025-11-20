@@ -36,7 +36,9 @@ public class DirectionManager : MonoBehaviour
     public float gameDuration = 10f; // 每回合的持续时间
     public int gameRound = 40; // 总共的回合数
     public bool isRandomMode = false; // 是否是随机（困难）模式
-    public float feedbackDelay = 2.0f; // 正确/错误反馈后的延迟时间
+    public float feedbackDelay = 2.0f; // 正确/错误反馈后的延迟时间、
+
+    public SettlementScreen settings;
 
     // --- 游戏状态与数据 ---
     private GameState currentState; // 当前游戏状态
@@ -140,7 +142,12 @@ public class DirectionManager : MonoBehaviour
         startButton.SetActive(true);
         // 您可以根据需要显示更详细的结果，例如正确率
         float accuracy = (gameRound > 0) ? ((float)score / trialsCompleted) * 100 : 0;
-        countdownText.text = $"测试结束！\n总回合: {trialsCompleted}\n正确率: {accuracy:F1}%";
+        var historyScore = settings.GetSavedAccuracyForCurrentScene();
+        if (historyScore == null)
+        {
+            historyScore = accuracy;
+        }
+        countdownText.text = $"测试结束！\n总回合: {trialsCompleted}\n正确率: {accuracy:F1}%\n最佳记录:{historyScore}%";
     }
 
     #endregion

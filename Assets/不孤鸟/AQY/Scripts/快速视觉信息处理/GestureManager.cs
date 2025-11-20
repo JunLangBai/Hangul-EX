@@ -17,6 +17,10 @@ public class GestureManager : MonoBehaviour
     public float flashDuration = 0.1f; // 闪烁持续时间
 
     [Header("UI组件")] public GameObject rvpPrefabs;
+    
+    public SettlementScreen settings;
+    
+    
     public Transform contentPanel;
     public TextMeshProUGUI timeText;
     public TextMeshProUGUI tfHint;
@@ -61,6 +65,9 @@ public class GestureManager : MonoBehaviour
     private int misses = 0;
     private int falseAlarms = 0;
     private List<float> reactionTimes = new List<float>();
+    
+    // --- 新增：用于记录总共呈现了多少个刺激物 ---
+    private int stimuliPresentedCount = 0;
 
     void Start()
     {
@@ -139,6 +146,7 @@ public class GestureManager : MonoBehaviour
         reactionTimes.Clear();
         testTimer = testDuration;
         currentStimulusIndex = -1; // 重置索引
+        stimuliPresentedCount = 0;
 
         StopAllCoroutines(); // 确保旧的协程已停止
         StartCoroutine(PresentStimuli());
@@ -151,9 +159,19 @@ public class GestureManager : MonoBehaviour
         timeText.gameObject.SetActive(false);
         gesturePanel.SetActive(false);
         resultPanel.SetActive(true);
-
+        
+        // 正确率 = (总正确数 / 总呈现数) * 100
+        // 添加一个检查以防止除以零
+        float correctRate = (gesturesPerMinute > 0) ? ((float)hits / gesturesPerMinute) * 100f : 0f;
+        
         float avgReactionTime = reactionTimes.Count > 0 ? reactionTimes.Average() : 0;
-        resultText.text = $"测试结束!\n\n命中: {hits}\n漏报: {misses}\n虚报: {falseAlarms}\n平均反应时间: {avgReactionTime:F2}秒";
+        var historyCorrect = settings.GetSavedAccuracyForCurrentScene();
+        if (historyCorrect == null)
+        {
+            historyCorrect = correctRate;
+        }
+        resultText.text = $"测试结束!\n\n正确率:{correctRate}%\n平均反应时间: {avgReactionTime:F2}秒\n历史最佳记录:{historyCorrect}%";
+        settings.SaveLevelAccuracy(correctRate);
     }
 
     void Update()
@@ -247,6 +265,9 @@ public class GestureManager : MonoBehaviour
                 break;
             }
 
+            
+            stimuliPresentedCount++; // --- 修改：每次呈现新刺激时，计数器加1 ---
+            
             stimulusImage.sprite = currentStimulus.gestureImage;
             responseMadeForCurrentStimulus = false;
             correctResponseMadeForCurrentStimulus = false; // 重置正确响应标记

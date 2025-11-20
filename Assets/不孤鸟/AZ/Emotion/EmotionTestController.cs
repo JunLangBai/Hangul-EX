@@ -26,6 +26,8 @@ public class EmotionTestController : MonoBehaviour
     
     public TextMeshProUGUI resultText;
     public TextMeshProUGUI tfText;
+
+    public SettlementScreen settings;
     
     private AllSettingCtr allSettingCtr;
     
@@ -89,7 +91,24 @@ public class EmotionTestController : MonoBehaviour
             gamePanel.SetActive(false);
             overPanel.SetActive(true);
 
-            resultText.text = $"测试结束!请点击返回按钮\n\n正确: {correct}\n错误: {incorrect}";
+            
+            // ---【修改点开始】---
+
+            // 1. 计算正确率
+            float accuracy = 0f;
+            if (totalQuestions > 0)
+            {
+                // 需要将其中一个整数转换为float，以确保得到的是小数而不是整数
+                accuracy = ((float)correct / totalQuestions) * 100;
+            }
+
+            var historyScore = settings.GetSavedAccuracyForCurrentScene();
+            if (historyScore == null)
+            {
+                historyScore = accuracy;
+            }
+
+            resultText.text = $"测试结束!请点击返回按钮\n\n正确率:{accuracy:F2}%\n最佳记录:{historyScore}%";
             // 在这里可以添加测试结束的逻辑，例如显示最终得分
         }
     }
