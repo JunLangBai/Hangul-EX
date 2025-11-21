@@ -147,7 +147,8 @@ public class DirectionManager : MonoBehaviour
         {
             historyScore = accuracy;
         }
-        countdownText.text = $"测试结束！\n总回合: {trialsCompleted}\n正确率: {accuracy:F1}%\n最佳记录:{historyScore}%";
+        countdownText.text = $"测试结束！\n总回合: {trialsCompleted}\n正确率: {accuracy:F0}\n最佳记录:{historyScore:F0}";
+        settings.SaveLevelAccuracy(accuracy);
     }
 
     #endregion

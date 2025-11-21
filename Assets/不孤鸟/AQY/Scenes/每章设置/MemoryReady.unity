@@ -854,6 +854,8 @@ MonoBehaviour:
   lockRotY: 0
   lockRotZ: 0
   followThresholdAngle: 20
+  stopFollowThresholdAngle: 1
+  followDistanceThreshold: 0.2
   followSpeed: 4
   adjustCenterByFov: 1
 --- !u!1 &250722049
@@ -2419,7 +2421,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6542946676881204803, guid: 85cc648a20be07649bb133f35ca2f1fc, type: 3}
       propertyPath: m_Value
-      value: 5
+      value: 40
       objectReference: {fileID: 0}
     - target: {fileID: 6542946676881204803, guid: 85cc648a20be07649bb133f35ca2f1fc, type: 3}
       propertyPath: m_MaxValue
