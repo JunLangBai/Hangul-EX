@@ -132,6 +132,7 @@ GameObject:
   m_Component:
   - component: {fileID: 90286255}
   - component: {fileID: 90286254}
+  - component: {fileID: 90286256}
   m_Layer: 0
   m_Name: EmotionMgr
   m_TagString: Untagged
@@ -166,6 +167,7 @@ MonoBehaviour:
   overPanel: {fileID: 1928536729}
   resultText: {fileID: 830068911}
   tfText: {fileID: 368178086}
+  settings: {fileID: 90286256}
 --- !u!4 &90286255
 Transform:
   m_ObjectHideFlags: 0
@@ -181,6 +183,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &90286256
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 90286253}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ce60687ae7aa56468d0fa2ad782e815, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &157768537
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2007,7 +2021,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -6194930836362400034, guid: 08ac3fb1d606e304eb099a4e8a9a1f61, type: 3}
       propertyPath: m_text
-      value: "\u6050\u60E7"
+      value: "\u60CA\u8BB6"
       objectReference: {fileID: 0}
     - target: {fileID: -6194930836362400034, guid: 08ac3fb1d606e304eb099a4e8a9a1f61, type: 3}
       propertyPath: m_fontAsset

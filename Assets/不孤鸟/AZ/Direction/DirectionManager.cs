@@ -108,7 +108,7 @@ public class DirectionManager : MonoBehaviour
     private void InitializeUI()
     {
         startButton.SetActive(true);
-        countdownText.text = "准备好了吗？";
+        countdownText.text = "准备好了吗？\n开始之后保持握拳\n直到题目出现";
         HideAllCues();
     }
 

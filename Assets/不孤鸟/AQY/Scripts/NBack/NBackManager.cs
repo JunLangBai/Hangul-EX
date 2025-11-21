@@ -277,7 +277,8 @@ public class NBackManager : MonoBehaviour
         // 为防止除以零，先检查总匹配数是否大于0
         if (totalTrials > 0)
         {
-            accuracy = (float)score / totalTrials;
+            // ReSharper disable once PossibleLossOfFraction
+            accuracy = (float) (totalTrials - score) / totalTrials;
         }
 
         var historyScore = settings.GetSavedAccuracyForCurrentScene();
@@ -307,12 +308,12 @@ public class NBackManager : MonoBehaviour
 
         if (currentTrial.isMatch)
         {
-            score++;
             buttonText.text = "正确!";
             Debug.Log("Correct! 正确匹配! 得分: " + score);
         }
         else
         {
+            score++;
             buttonText.text = "错误!";
             Debug.Log("Incorrect! 错误匹配! 得分: " + score);
         }
