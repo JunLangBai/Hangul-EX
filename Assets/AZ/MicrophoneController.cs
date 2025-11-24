@@ -3,6 +3,7 @@ using System.Collections;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using AZ;
 using OpenapiDemo;
 using TMPro;
 using UnityEngine;
@@ -271,9 +272,9 @@ public class MicrophoneController : MonoBehaviour
 
                             // 1. 根据标签决定要播放哪个Trigger集合
                             if (emotion == "开心" && animationManager != null)
-                                animationManager.PlayRandomAnimation("TriggerHappy");
+                                animationManager.PlaySpecificAnimation("smiling", 2.5f);
                             else if (emotion == "伤心" && animationManager != null)
-                                animationManager.PlayRandomAnimation("TriggerSad");
+                                animationManager.PlaySpecificAnimation("sad", 2.5f);
 
                             // 2. 移除标签，得到干净的文本
                             cleanedText = emotionRegex.Replace(rawFinalText, "").TrimStart();
