@@ -7,9 +7,19 @@ using Random = System.Random;
 using System.Linq;
 
 
+/// <summary>
+/// 试次数据结构
+/// </summary>
 public struct Trial
 {
+    /// <summary>
+    /// 刺激物在九宫格中的位置索引（0-8）
+    /// </summary>
     public int positionIndex;
+    
+    /// <summary>
+    /// 是否为匹配项（需要玩家按下按钮）
+    /// </summary>
     public bool isMatch;
 }
 
