@@ -79,7 +79,7 @@ public class NBackManager : MonoBehaviour
             nValue = 1;
             stimulusDuration = 2.0f;
             interStimulusInterval = 2.5f;
-            totalTrials = 40;
+            totalTrials = 5;
             matchProbability = 0.33f;
         }
     }
@@ -100,10 +100,10 @@ public class NBackManager : MonoBehaviour
             Debug.LogError("刺激物3D对象 (stimulus3DObject) 未在检视器中设置!");
 
         matchButton.onClick.AddListener(OnMatchButtonPressed);
-        UpdateScoreUI();
 
         GenerateTrialSequence();
         
+        UpdateScoreUI();
         totalMatchesInSequence = trialSequence.Count(trial => trial.isMatch);
         Debug.Log($"序列已生成，共包含 {totalMatchesInSequence} 个匹配项。");
         StartCoroutine(RunGame());
@@ -267,6 +267,7 @@ public class NBackManager : MonoBehaviour
             // --- 修改 3: 将3D对象移动到目标位置并显示它 ---
             stimulus3DObject.transform.position = currentCell.transform.position;
             stimulus3DObject.SetActive(true);
+            UpdateScoreUI();
 
             // 等待刺激持续时间
             yield return new WaitForSeconds(stimulusDuration);
@@ -284,9 +285,10 @@ public class NBackManager : MonoBehaviour
         // 计算正确率
         float accuracy = 0f;
         // 为防止除以零，先检查总匹配数是否大于0
-        if (totalMatchesInSequence > 0)
+        if (totalTrials > 0)
         {
-            accuracy = (float)score / totalMatchesInSequence;
+            // ReSharper disable once PossibleLossOfFraction
+            accuracy = (float) (totalTrials - score) / totalTrials;
         }
 
         var historyScore = settings.GetSavedAccuracyForCurrentScene();
@@ -297,9 +299,10 @@ public class NBackManager : MonoBehaviour
 
         if (feedbackText != null)
         {
-            feedbackText.text = $"游戏结束!正确率:{accuracy:P0}%\n最佳记录:{historyScore}%\n点击返回按钮回到主界面";
+            feedbackText.text = $"游戏结束!正确率:{accuracy:P0}\n最佳记录:{historyScore:P0}\n点击返回按钮回到主界面";
         }
 
+        settings.SaveLevelAccuracy(accuracy);
         matchButton.interactable = false;
     }
 
@@ -315,12 +318,12 @@ public class NBackManager : MonoBehaviour
 
         if (currentTrial.isMatch)
         {
-            score++;
             buttonText.text = "正确!";
             Debug.Log("Correct! 正确匹配! 得分: " + score);
         }
         else
         {
+            score++;
             buttonText.text = "错误!";
             Debug.Log("Incorrect! 错误匹配! 得分: " + score);
         }
@@ -330,7 +333,7 @@ public class NBackManager : MonoBehaviour
 
     private void UpdateScoreUI()
     {
-        if (scoreText != null) scoreText.text = currentTrialIndex + "/" + trialSequence.Count;
+        if (scoreText != null) scoreText.text = (currentTrialIndex + 1) + "/" + trialSequence.Count;
     }
 
     // --- 修改 5: SetCellColor 函数不再需要，可以安全删除 ---

@@ -50,10 +50,9 @@ public class EmotionTestController : MonoBehaviour
         }
         else
         {
-            totalQuestions = 20; 
+            totalQuestions = 10; 
             displayTime = 3.0f;
-        }
-
+        }   
         startPanel.SetActive(true);
         gamePanel.SetActive(false);
         overPanel.SetActive(false);
@@ -108,7 +107,8 @@ public class EmotionTestController : MonoBehaviour
                 historyScore = accuracy;
             }
 
-            resultText.text = $"测试结束!请点击返回按钮\n\n正确率:{accuracy:F2}%\n最佳记录:{historyScore}%";
+            resultText.text = $"测试结束!请点击返回按钮\n\n正确率:{accuracy:F0}%\n最佳记录:{historyScore:F0}%";
+            settings.SaveLevelAccuracy(accuracy);
             // 在这里可以添加测试结束的逻辑，例如显示最终得分
         }
     }

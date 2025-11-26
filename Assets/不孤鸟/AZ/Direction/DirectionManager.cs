@@ -108,7 +108,7 @@ public class DirectionManager : MonoBehaviour
     private void InitializeUI()
     {
         startButton.SetActive(true);
-        countdownText.text = "准备好了吗？";
+        countdownText.text = "准备好了吗？\n开始之后保持握拳\n直到题目出现";
         HideAllCues();
     }
 
@@ -147,7 +147,8 @@ public class DirectionManager : MonoBehaviour
         {
             historyScore = accuracy;
         }
-        countdownText.text = $"测试结束！\n总回合: {trialsCompleted}\n正确率: {accuracy:F1}%\n最佳记录:{historyScore}%";
+        countdownText.text = $"测试结束！\n总回合: {trialsCompleted}\n正确率: {accuracy:F0}\n最佳记录:{historyScore:F0}";
+        settings.SaveLevelAccuracy(accuracy);
     }
 
     #endregion

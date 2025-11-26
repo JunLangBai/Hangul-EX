@@ -170,7 +170,7 @@ public class GestureManager : MonoBehaviour
         {
             historyCorrect = correctRate;
         }
-        resultText.text = $"测试结束!\n\n正确率:{correctRate}%\n平均反应时间: {avgReactionTime:F2}秒\n历史最佳记录:{historyCorrect}%";
+        resultText.text = $"测试结束!\n\n正确率:{correctRate:F0}\n平均反应时间: {Mathf.Round(avgReactionTime * 100) / 100}秒\n历史最佳记录:{historyCorrect:F0}";
         settings.SaveLevelAccuracy(correctRate);
     }
 
