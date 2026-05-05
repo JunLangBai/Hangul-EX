@@ -38,6 +38,13 @@ public class AllSettingCtr : MonoBehaviour
     public int emotionCount = 10;
     public float emotionDisplayTime = 3f;
 
+    // --- 多任务进阶设置 ---
+    [Header("多任务进阶设置")]
+    public float multiTaskRoundDuration = 5f;
+    public int multiTaskTotalRounds = 40;
+    public int multiTaskGesturesPerSide = 1; // 每侧显示的手势数量（1-3）
+    public float multiTaskFeedbackDelay = 1.5f;
+
     // 2. Awake 方法，用于实现单例模式
     private void Awake()
     {

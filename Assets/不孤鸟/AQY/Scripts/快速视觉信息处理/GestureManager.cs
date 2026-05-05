@@ -16,6 +16,11 @@ public class GestureManager : MonoBehaviour
     [Header("视觉效果")] [Tooltip("在切换到下一张图片前，图片消失的空白时间（秒）")]
     public float flashDuration = 0.1f; // 闪烁持续时间
 
+    [Header("音频设置")]
+    public AudioSource audioSource;
+    public AudioClip correctSound; // 正确时的声音
+    public AudioClip incorrectSound; // 错误时的声音
+
     [Header("UI组件")] public GameObject rvpPrefabs;
     
     public SettlementScreen settings;
@@ -213,6 +218,12 @@ public class GestureManager : MonoBehaviour
                 correctResponseMadeForCurrentStimulus = true; // 标记已正确响应
                 Debug.Log($"命中! 反应时间: {reactionTimer}");
                 ShowTemporaryText("正确！", Color.green);
+                
+                // 播放正确音效
+                if (audioSource != null && correctSound != null)
+                {
+                    audioSource.PlayOneShot(correctSound);
+                }
             }
             // 如果是目标但手势错误 (isCorrectGesture is false)，我们在这里不做任何事。
             // 漏报(Miss)的逻辑将在切换到下一个刺激时处理。
@@ -223,6 +234,12 @@ public class GestureManager : MonoBehaviour
             falseAlarms++;
             Debug.Log("虚报!");
             ShowTemporaryText("错误！", Color.red);
+            
+            // 播放错误音效
+            if (audioSource != null && incorrectSound != null)
+            {
+                audioSource.PlayOneShot(incorrectSound);
+            }
         }
     }
 
