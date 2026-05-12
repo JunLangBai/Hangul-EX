@@ -209,13 +209,6 @@ public class DrawingBoard : MonoBehaviour
     /// </summary>
     private void ContinueStroke(Vector2 pixelCoord)
     {
-        // 【新增安全判断】：如果列表为空，则强制按新笔画处理，防止越界
-        if (strokePoints.Count == 0)
-        {
-            StartStroke(pixelCoord);
-            return;
-        }
-
         // 检查与上一个点的距离，如果太近则忽略
         if (Vector2.Distance(pixelCoord, strokePoints[strokePoints.Count - 1]) < minPointDistance) return;
 
@@ -233,6 +226,7 @@ public class DrawingBoard : MonoBehaviour
             UpdateTexture();
         }
     }
+
     /// <summary>
     /// 结束当前的笔画 (相当于 OnPointerUp)
     /// </summary>

@@ -41,7 +41,7 @@ namespace TripoForUnity
 
 
         #region NetworkConfig
-        const int TIMEOUT_DURATION = 60000;
+        const int TIMEOUT_DURATION = 5000;
         const float PROGRESS_CHECK_INTERVAL = 1.0f;
         #endregion
 

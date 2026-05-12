@@ -34,12 +34,6 @@ public class NBackManager : MonoBehaviour
     // public Color normalColor = Color.gray;
     // public Color stimulusColor = Color.green;
 
-    [Header("音频设置")]
-    public AudioSource audioSource;
-    public AudioClip stimulusAppearSound; // 方块出现时的声音
-    public AudioClip correctSound; // 选对时的声音
-    public AudioClip incorrectSound; // 选错时的声音
-
     [Header("UI 引用")] public TextMeshPro scoreText;
     public Button matchButton;
     public TextMeshProUGUI buttonText;
@@ -273,13 +267,6 @@ public class NBackManager : MonoBehaviour
             // --- 修改 3: 将3D对象移动到目标位置并显示它 ---
             stimulus3DObject.transform.position = currentCell.transform.position;
             stimulus3DObject.SetActive(true);
-            
-            // 播放方块出现的声音
-            if (audioSource != null && stimulusAppearSound != null)
-            {
-                audioSource.PlayOneShot(stimulusAppearSound);
-            }
-            
             UpdateScoreUI();
 
             // 等待刺激持续时间
@@ -333,24 +320,12 @@ public class NBackManager : MonoBehaviour
         {
             buttonText.text = "正确!";
             Debug.Log("Correct! 正确匹配! 得分: " + score);
-            
-            // 播放正确的声音
-            if (audioSource != null && correctSound != null)
-            {
-                audioSource.PlayOneShot(correctSound);
-            }
         }
         else
         {
             score++;
             buttonText.text = "错误!";
             Debug.Log("Incorrect! 错误匹配! 得分: " + score);
-            
-            // 播放错误的声音
-            if (audioSource != null && incorrectSound != null)
-            {
-                audioSource.PlayOneShot(incorrectSound);
-            }
         }
 
         UpdateScoreUI();

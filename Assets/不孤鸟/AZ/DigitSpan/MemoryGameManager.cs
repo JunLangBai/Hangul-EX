@@ -57,20 +57,6 @@ public class MemoryGameManager : MonoBehaviour
 
     private readonly Regex punctuationRegex = new Regex("[,.，。？！ ]");
     private readonly string[] chineseNumbers = { "零", "一", "二", "三", "四", "五", "六", "七", "八", "九" };
-    
-    private readonly Dictionary<char, char> koreanToChineseMap = new Dictionary<char, char>()
-    {
-        {'영', '零'}, {'공', '零'}, {'령', '零'}, // 0
-        {'일', '一'},                             // 1
-        {'이', '二'},                             // 2
-        {'삼', '三'}, {'선', '三'},               // 3 (包含你遇到的音译 "선")
-        {'사', '四'}, {'시', '四'},               // 4 (包含你遇到的音译 "시")
-        {'오', '五'}, {'우', '五'},                             // 5
-        {'육', '六'}, {'륙', '六'},               // 6
-        {'칠', '七'},                             // 7
-        {'팔', '八'},                             // 8
-        {'구', '九'}, {'주', '九'}                              // 9
-    };
 
     void Start()
     {
@@ -265,76 +251,15 @@ public class MemoryGameManager : MonoBehaviour
         if (string.IsNullOrEmpty(currentAnswerString)) return; 
 
         Debug.Log($"[GameManager] 收到 ASR 原始结果 (Raw ASR): {rawASRResult}");
-        
-        // 1. 去除标点符号和空格
         string cleanedResult = CleanASRString(rawASRResult);
-        
-        // 2. 将可能存在的阿拉伯数字统一转换为中文数字
-        cleanedResult = ConvertArabicToChinese(cleanedResult);
+        Debug.Log($"[GameManager] 清理后结果 (Cleaned): {cleanedResult}");
 
-        // 3. 【新增】将可能存在的韩文统一转换为中文数字
-        cleanedResult = ConvertKoreanToChinese(cleanedResult);
-        
-        Debug.Log($"[GameManager] 清理与转换后最终结果 (Final Result): {cleanedResult}");
-
-        // 4. 比对
         bool isCorrect = (cleanedResult == currentAnswerString);
         string feedback = isCorrect ? "正确！" : $"错误。识别到: {cleanedResult}。正确答案是: {currentAnswerString}";
         
         ProcessAnswer(isCorrect, feedback);
     }
 
-    /// <summary>
-    /// 【新增】将字符串中的阿拉伯数字 (0-9) 转换为对应的中文数字 (零-九)
-    /// </summary>
-    string ConvertArabicToChinese(string input)
-    {
-        if (string.IsNullOrEmpty(input)) return "";
-        
-        StringBuilder sb = new StringBuilder();
-        foreach (char c in input)
-        {
-            // 判断当前字符是否为阿拉伯数字
-            if (char.IsDigit(c))
-            {
-                // 将字符 '0'-'9' 转换为整数 0-9
-                int digit = c - '0';
-                // 使用类中已经定义好的 chineseNumbers 数组进行映射
-                sb.Append(chineseNumbers[digit]); 
-            }
-            else
-            {
-                // 如果原本就是中文（如"一"）或其他字符，原样保留
-                sb.Append(c);
-            }
-        }
-        return sb.ToString();
-    }
-    
-    /// <summary>
-    /// 【新增】将字符串中的韩文数字/音译转换为对应的中文数字
-    /// </summary>
-    string ConvertKoreanToChinese(string input)
-    {
-        if (string.IsNullOrEmpty(input)) return "";
-        
-        StringBuilder sb = new StringBuilder();
-        foreach (char c in input)
-        {
-            // 如果字典里包含这个韩文字符，就转换成对应的中文数字
-            if (koreanToChineseMap.ContainsKey(c))
-            {
-                sb.Append(koreanToChineseMap[c]);
-            }
-            else
-            {
-                // 如果不是韩文，原样保留（比如已经是中文了）
-                sb.Append(c);
-            }
-        }
-        return sb.ToString();
-    }
-    
     /// <summary>
     /// [已修改] 统一处理答案对错的逻辑
     /// </summary>

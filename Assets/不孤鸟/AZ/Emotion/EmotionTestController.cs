@@ -17,11 +17,6 @@ public class EmotionTestController : MonoBehaviour
     public GameObject characterModel; // 拖入您的模型对象
     public Animator modelAnimator;
 
-    [Header("音频设置")]
-    public AudioSource audioSource;
-    public AudioClip correctSound; // 回答正确时的音效
-    public AudioClip incorrectSound; // 回答错误时的音效
-
     [Header("UI 元素")]
     public Button[] emotionButtons; // 拖入四个情绪按钮
     
@@ -149,24 +144,12 @@ public class EmotionTestController : MonoBehaviour
             Debug.Log("回答正确!");
             ShowTemporaryText("正确!",Color.white);
             correct++;
-            
-            // 播放正确音效
-            if (audioSource != null && correctSound != null)
-            {
-                audioSource.PlayOneShot(correctSound);
-            }
         }
         else
         {
             Debug.Log("回答错误!");
             ShowTemporaryText("错误!",Color.white);
             incorrect++;
-            
-            // 播放错误音效
-            if (audioSource != null && incorrectSound != null)
-            {
-                audioSource.PlayOneShot(incorrectSound);
-            }
         }
 
         SetButtonsInteractable(false);
