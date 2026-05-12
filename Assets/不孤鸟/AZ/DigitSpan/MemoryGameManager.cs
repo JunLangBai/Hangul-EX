@@ -56,7 +56,7 @@ public class MemoryGameManager : MonoBehaviour
     private bool gameInProgress = false; 
 
     private readonly Regex punctuationRegex = new Regex("[,.，。？！ ]");
-    private readonly string[] chineseNumbers = { "零", "一", "二", "三", "四", "五", "六", "七", "八", "九" };
+    private readonly string[] chineseNumbers = { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" };
 
     void Start()
     {
