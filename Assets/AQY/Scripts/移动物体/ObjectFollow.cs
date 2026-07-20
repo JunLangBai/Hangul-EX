@@ -18,7 +18,7 @@ namespace Rokid.UXR.Utility
 
         [Header("跟随偏移设置")]
         [SerializeField, Tooltip("相对于相机位置的目标偏移量")]
-        private Vector3 offsetPosition = new Vector3(0, 0, 1.5f);
+        public Vector3 offsetPosition = new Vector3(0, 0, 1.5f);
         [SerializeField, Tooltip("相对于相机旋转的目标偏移量")]
         private Quaternion offsetRotation = Quaternion.identity;
 

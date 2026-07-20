@@ -300,6 +300,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bc7bf2e56b74d4038af31f75d0b2d024, type: 3}
+--- !u!20 &210323137 stripped
+Camera:
+  m_CorrespondingSourceObject: {fileID: 6045076911616643428, guid: bc7bf2e56b74d4038af31f75d0b2d024, type: 3}
+  m_PrefabInstance: {fileID: 210323136}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &220139830
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -326,7 +331,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1233148308800772758, guid: 3c20833d81e354626b8365b459274912, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.5
+      value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: 1233148308800772758, guid: 3c20833d81e354626b8365b459274912, type: 3}
       propertyPath: m_LocalRotation.w
@@ -380,6 +385,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1233148308800772767, guid: 3c20833d81e354626b8365b459274912, type: 3}
       insertIndex: -1
       addedObject: {fileID: 220139832}
+    - targetCorrespondingSourceObject: {fileID: 1233148307795227417, guid: 3c20833d81e354626b8365b459274912, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2045129643}
   m_SourcePrefab: {fileID: 100100000, guid: 3c20833d81e354626b8365b459274912, type: 3}
 --- !u!1 &220139831 stripped
 GameObject:
@@ -399,7 +407,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   followType: 0
-  offsetPosition: {x: 0, y: 0, z: 0.5}
+  offsetPosition: {x: 0, y: 0, z: 1.5}
   offsetRotation: {x: 0, y: 0, z: 0, w: 1}
   lockRotX: 0
   lockRotY: 0
@@ -409,6 +417,11 @@ MonoBehaviour:
   followDistanceThreshold: 0.2
   followSpeed: 4
   adjustCenterByFov: 1
+--- !u!1 &220139833 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1233148307795227417, guid: 3c20833d81e354626b8365b459274912, type: 3}
+  m_PrefabInstance: {fileID: 220139830}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &332794990
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2833,6 +2846,21 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 1233148307795227410, guid: 3c20833d81e354626b8365b459274912, type: 3}
   m_PrefabInstance: {fileID: 220139830}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &2045129643
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 220139833}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ab5b53e2636f54645bcfc50f08eb367b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetCamera: {fileID: 210323137}
+  referenceDistance: 0.5
+  referenceScale: 0.0004156749
 --- !u!224 &2069366525 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 670813952826469328, guid: 85cc648a20be07649bb133f35ca2f1fc, type: 3}

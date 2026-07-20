@@ -265,7 +265,9 @@ public class NBackManager : MonoBehaviour
             var currentCell = gridCells[currentTrial.positionIndex];
 
             // --- 修改 3: 将3D对象移动到目标位置并显示它 ---
-            stimulus3DObject.transform.position = currentCell.transform.position;
+            stimulus3DObject.transform.position = currentCell.transform.position + currentCell.transform.up * 0.02f;;
+            stimulus3DObject.transform.rotation = currentCell.transform.rotation;
+            stimulus3DObject.GetComponent<ObjectCtr>().currentCell = currentCell;
             stimulus3DObject.SetActive(true);
             UpdateScoreUI();
 
