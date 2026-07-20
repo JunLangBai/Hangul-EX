@@ -2497,6 +2497,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 85cc648a20be07649bb133f35ca2f1fc, type: 3}
+--- !u!114 &493593441 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6542946676881204803, guid: 85cc648a20be07649bb133f35ca2f1fc, type: 3}
+  m_PrefabInstance: {fileID: 493593440}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67db9e8f0e2ae9c40bc1e2b64352a6b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &532362946
 GameObject:
   m_ObjectHideFlags: 0
@@ -3713,6 +3724,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 624f23b69765cf448909ff2f18757556, type: 3}
+--- !u!114 &1074318741 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2971882572480207575, guid: 624f23b69765cf448909ff2f18757556, type: 3}
+  m_PrefabInstance: {fileID: 1074318740}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 33f68131516d29e4c88873f070f0d093, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1093500070
 GameObject:
   m_ObjectHideFlags: 0
@@ -4432,6 +4454,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 85cc648a20be07649bb133f35ca2f1fc, type: 3}
+--- !u!114 &1201673490 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6542946676881204803, guid: 85cc648a20be07649bb133f35ca2f1fc, type: 3}
+  m_PrefabInstance: {fileID: 1201673489}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67db9e8f0e2ae9c40bc1e2b64352a6b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1232705344
 GameObject:
   m_ObjectHideFlags: 0
@@ -5688,12 +5721,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 88881be973b78e04cbdd1040476114c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  nValue: 2
-  stimulusDuration: 2
-  interStimulusInterval: 2.5
-  totalTrials: 40
-  targetIndexN0: 4
-  matchProbability: 0.33
+  oneBlockToggle: {fileID: 1074318741}
+  totalTrialsSlider: {fileID: 493593441}
+  nValueSlider: {fileID: 1201673490}
 --- !u!4 &1755024320
 Transform:
   m_ObjectHideFlags: 0

@@ -785,6 +785,8 @@ MonoBehaviour:
   lockRotY: 0
   lockRotZ: 0
   followThresholdAngle: 20
+  stopFollowThresholdAngle: 1
+  followDistanceThreshold: 0.2
   followSpeed: 4
   adjustCenterByFov: 1
 --- !u!1 &250722049
@@ -1273,11 +1275,23 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2971882572480207575, guid: 624f23b69765cf448909ff2f18757556, type: 3}
+      propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_Mode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2971882572480207575, guid: 624f23b69765cf448909ff2f18757556, type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1755024323}
     - target: {fileID: 2971882572480207575, guid: 624f23b69765cf448909ff2f18757556, type: 3}
+      propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_Target
+      value: 
+      objectReference: {fileID: 342821788}
+    - target: {fileID: 2971882572480207575, guid: 624f23b69765cf448909ff2f18757556, type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2971882572480207575, guid: 624f23b69765cf448909ff2f18757556, type: 3}
+      propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_CallState
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 2971882572480207575, guid: 624f23b69765cf448909ff2f18757556, type: 3}
@@ -1285,11 +1299,23 @@ PrefabInstance:
       value: OnRandomToggleChanged
       objectReference: {fileID: 0}
     - target: {fileID: 2971882572480207575, guid: 624f23b69765cf448909ff2f18757556, type: 3}
+      propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
+      value: set_IsOn
+      objectReference: {fileID: 0}
+    - target: {fileID: 2971882572480207575, guid: 624f23b69765cf448909ff2f18757556, type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
       value: DirectionSettings, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 2971882572480207575, guid: 624f23b69765cf448909ff2f18757556, type: 3}
+      propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
+      value: RainbowArt.CleanFlatUI.Switch, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 2971882572480207575, guid: 624f23b69765cf448909ff2f18757556, type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 2971882572480207575, guid: 624f23b69765cf448909ff2f18757556, type: 3}
+      propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     - target: {fileID: 4567225956759239172, guid: 624f23b69765cf448909ff2f18757556, type: 3}
@@ -1385,6 +1411,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 624f23b69765cf448909ff2f18757556, type: 3}
+--- !u!114 &342821788 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2971882572480207575, guid: 624f23b69765cf448909ff2f18757556, type: 3}
+  m_PrefabInstance: {fileID: 342821787}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 33f68131516d29e4c88873f070f0d093, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &440704523 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 4636732636039756765, guid: 9e80c59a384a9d64c8b5810d6d1718e6, type: 3}
@@ -3675,7 +3712,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d610812cc4aac9b4da623c6477698d7f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  IsRandomMode: 0
+  IsRandomMode: {fileID: 342821788}
+  timeSlider: {fileID: 97381751}
+  groundSlider: {fileID: 897138006}
 --- !u!1001 &1804962775
 PrefabInstance:
   m_ObjectHideFlags: 0

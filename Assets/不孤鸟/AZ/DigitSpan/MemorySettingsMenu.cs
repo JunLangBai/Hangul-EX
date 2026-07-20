@@ -4,25 +4,18 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-/// <summary>
-/// 【单例版本 - 混合模式】
-/// 负责存储跨场景的游戏设置。
-/// (Singleton version using a mix of Buttons and a Slider: Stores game settings across scenes.)
-/// </summary>
 public class MemorySettingsMenu : MonoBehaviour
 {
-    // --- 单例模式 ---
-    
+    // --- 单例引用 ---
+    private AllSettingCtr allSettingCtr;
+
     [Header("UI 元素 (UI Elements)")]
-    [Tooltip("用于显示当前设置的文本 (Display for current settings)")]
     public TextMeshProUGUI settingsDisplay;
 
     // --- [模式] 设置按钮 ---
     [Header("模式设置按钮 (Mode Buttons)")]
-    // 在 Inspector 窗口中将你的 Toggle Group 拖拽到这里
     public ToggleGroup toggleGroup;
-
-    // 在 Inspector 窗口中将你的所有 Toggle 拖拽到这里
+    [Tooltip("确保顺序是：0=自动, 1=顺序, 2=逆序")]
     public List<Toggle> toggles;
 
     // --- [难度] 设置滑动条 ---
@@ -31,56 +24,65 @@ public class MemorySettingsMenu : MonoBehaviour
     public Slider difficultySlider;
 
     [Header("视觉反馈 (Visuals for Buttons)")]
-    [Tooltip("按钮被选中时高亮的颜色")]
     public Color selectedColor = Color.green;
-    [Tooltip("按钮未选中时的默认颜色")]
     public Color defaultColor = Color.white;
 
-    // 内部存储 (Internal storage)
-    private int selectedDifficulty = 0; // 0=随机, 2=2个, 3=3个...
-    private int selectedMode = 0; // 0=自动, 1=顺序, 2=逆序
-
-    private const string SETTING_PREFIX = "手动设置: ";
-    
-    private AllSettingCtr allSettingCtr;
+    private const string SETTING_PREFIX = "当前记忆设置: ";
 
     void Awake()
     {
         allSettingCtr = AllSettingCtr.Instance;
        
-        // 遍历所有 Toggle，并将它们分配给同一个 ToggleGroup
-        foreach (Toggle toggle in toggles)
+        // 确保所有 Toggle 都被正确分配到同一个 ToggleGroup，从而实现自动单选
+        if (toggleGroup != null)
         {
-            toggle.group = toggleGroup;
-        }
-
-        // 示例：通过代码设置默认选中的 Toggle (例如第一个)
-        if (toggles.Count > 0)
-        {
-            toggles[0].isOn = true;
+            foreach (Toggle toggle in toggles)
+            {
+                toggle.group = toggleGroup;
+            }
         }
     }
 
     void Start()
     {
-        
-        // 1. 绑定UI事件
-        BindDifficultySlider();
-
-        // 2. 根据UI初始值，初始化显示
-        OnDifficultyChanged(difficultySlider.value); // 同步滑动条的初始位置
-    }
-
-    
-
-    /// <summary>
-    /// 绑定难度滑动条的值变化事件
-    /// </summary>
-    void BindDifficultySlider()
-    {
-        if (difficultySlider != null)
+        if (allSettingCtr != null)
         {
-            difficultySlider.onValueChanged.AddListener(OnDifficultyChanged);
+            // 1. 同步单例数据到 Slider (难度)
+            if (difficultySlider != null)
+            {
+                // 反向映射：难度(0, 2, 3, 4, 5) -> 滑动条(0, 1, 2, 3, 4)
+                if (allSettingCtr.memoryDifficulty == 0)
+                    difficultySlider.value = 0;
+                else
+                    difficultySlider.value = allSettingCtr.memoryDifficulty - 1;
+
+                // 绑定滑动条事件
+                difficultySlider.onValueChanged.AddListener(OnDifficultyChanged);
+            }
+
+            // 2. 同步单例数据到 Toggle (模式)
+            int savedMode = allSettingCtr.memoryMode;
+            if (savedMode >= 0 && savedMode < toggles.Count)
+            {
+                // 这会自动触发对应 Toggle 的 OnValueChanged 
+                toggles[savedMode].isOn = true;
+            }
+
+            // 3. 动态绑定 Toggle 事件 (无需在 Inspector 面板里手动连线)
+            for (int i = 0; i < toggles.Count; i++)
+            {
+                int modeIndex = i; // 必须使用局部变量传递给闭包
+                toggles[i].onValueChanged.AddListener((isOn) => 
+                {
+                    if (isOn) 
+                    {
+                        UpdateMode(modeIndex);
+                    }
+                });
+            }
+
+            // 4. 初始化文字显示
+            UpdateSettingsDisplay();
         }
     }
 
@@ -91,39 +93,35 @@ public class MemorySettingsMenu : MonoBehaviour
     {
         int sliderValue = (int)value;
         
-        // 将滑动条的值 (0, 1, 2, 3, 4) 映射到实际的难度值 (0, 2, 3, 4, 5)
+        // 正向映射：滑动条(0, 1, 2, 3, 4) -> 难度(0, 2, 3, 4, 5)
         if (sliderValue == 0)
-        {
             allSettingCtr.memoryDifficulty = 0; // "随机"
-        }
         else
-        {
-            allSettingCtr.memoryDifficulty = sliderValue + 1; // 1->2, 2->3, ...
-        }
-        
+            allSettingCtr.memoryDifficulty = sliderValue + 1; 
+
+        UpdateSettingsDisplay();
     }
     
     /// <summary>
-    /// 更新设置显示文本
+    /// 当 Toggle 模式改变时调用
     /// </summary>
-    public void UpdateMode(float value)
+    public void UpdateMode(int modeIndex)
     {
-        allSettingCtr.memoryMode = (int)value;
+        allSettingCtr.memoryMode = modeIndex;
+        UpdateSettingsDisplay();
     }
 
-    private void OnToggleChanged(Toggle changedToggle, bool isOn)
+    /// <summary>
+    /// 更新底部 TextMeshPro 的文字显示 (可选功能，如果需要的话)
+    /// </summary>
+    private void UpdateSettingsDisplay()
     {
-        if (isOn)
+        if (settingsDisplay != null)
         {
-            // 取消其他所有Toggle的选中状态
-            foreach (Toggle toggle in toggles)
-            {
-                if (toggle != changedToggle && toggle.isOn)
-                {
-                    toggle.isOn = false;
-                }
-            }
+            string modeStr = allSettingCtr.memoryMode == 0 ? "自动" : (allSettingCtr.memoryMode == 1 ? "顺序" : "逆序");
+            string diffStr = allSettingCtr.memoryDifficulty == 0 ? "随机" : $"{allSettingCtr.memoryDifficulty}个";
+            
+            settingsDisplay.text = $"{SETTING_PREFIX}\n模式: {modeStr} | 难度: {diffStr}";
         }
     }
-    
 }

@@ -1,41 +1,61 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI; // 必须引入 UI 命名空间
 
 public class AttentionSetting : MonoBehaviour
 {
-    // 1. 单例实例
-    public  AllSettingCtr allSettingCtr; 
+    // 1. 获取单例引用
+    private AllSettingCtr allSettingCtr; 
     
-    // 2. 公共实例变量（带有默认值）
-    //    其他场景将通过 AttentionSetting.Instance.GameDuration 访问
-    public int GesturesPerMinute = 20;
-    public int TargetCount = 1;
-    public float FlashDuration = 1; // 闪烁持续时间;
-    
+    // 2. 引入对你的 UI Slider 的引用（需要在 Unity 面板中拖拽赋值）
+    [Header("UI 引用")]
+    public Slider perSlider;
+    public Slider targetSlider;
+    public Slider flashSlider;
+
+    // 注意：把原来的 public int GesturesPerMinute = 20 等变量删除了，
+    // 因为数据只应该存在于 AllSettingCtr 单例中，避免数据存在两份导致不同步。
 
     void Awake()
     {
+        // 建议在 Awake 中获取引用
         allSettingCtr = AllSettingCtr.Instance;
     }
-    
-    // 当 Slider 值改变时
-    public void OnPerSliderChanged(float value)
+
+    void Start()
     {
-        // 只更新内存中的实例变量
-        allSettingCtr.attentionGesturesPerMinute = Mathf.RoundToInt(value); 
+        // 3. 关键步骤：每次进入这个场景时，读取单例中保存的值，并强行赋给 UI 组件
+        // 使用 Start 而不是 Awake，可以确保 AllSettingCtr 已经初始化完毕
+        if (allSettingCtr != null)
+        {
+            if (perSlider != null) 
+                perSlider.value = allSettingCtr.attentionGesturesPerMinute;
+                
+            if (targetSlider != null) 
+                targetSlider.value = allSettingCtr.attentionTargetCount;
+                
+            if (flashSlider != null) 
+                flashSlider.value = allSettingCtr.attentionFlashDuration;
+        }
     }
     
-    // 当 Slider 值改变时
+    // --- 以下是绑在 Slider 的 OnValueChanged 事件上的方法 ---
+
+    public void OnPerSliderChanged(float value)
+    {
+        if (allSettingCtr != null)
+            allSettingCtr.attentionGesturesPerMinute = Mathf.RoundToInt(value); 
+    }
+    
     public void OnTargetSliderChanged(float value)
     {
-        // 只更新内存中的实例变量
-        allSettingCtr.attentionTargetCount = Mathf.RoundToInt(value); 
+        if (allSettingCtr != null)
+            allSettingCtr.attentionTargetCount = Mathf.RoundToInt(value); 
     }
 
     public void OnFlashSliderChanged(float value)
     {
-        allSettingCtr.attentionFlashDuration = (float)Math.Round(value, 1);
+        if (allSettingCtr != null)
+            allSettingCtr.attentionFlashDuration = (float)Math.Round(value, 1);
     }
 }

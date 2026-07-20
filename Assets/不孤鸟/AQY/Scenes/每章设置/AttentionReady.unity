@@ -1146,6 +1146,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 85cc648a20be07649bb133f35ca2f1fc, type: 3}
+--- !u!114 &493593441 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6542946676881204803, guid: 85cc648a20be07649bb133f35ca2f1fc, type: 3}
+  m_PrefabInstance: {fileID: 493593440}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67db9e8f0e2ae9c40bc1e2b64352a6b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &495594744
 GameObject:
   m_ObjectHideFlags: 0
@@ -1508,6 +1519,8 @@ MonoBehaviour:
   lockRotY: 0
   lockRotZ: 0
   followThresholdAngle: 10
+  stopFollowThresholdAngle: 1
+  followDistanceThreshold: 0.2
   followSpeed: 5
   adjustCenterByFov: 1
 --- !u!1001 &797304530
@@ -1773,6 +1786,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 670813952826469328, guid: 85cc648a20be07649bb133f35ca2f1fc, type: 3}
   m_PrefabInstance: {fileID: 797304530}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &797304532 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6542946676881204803, guid: 85cc648a20be07649bb133f35ca2f1fc, type: 3}
+  m_PrefabInstance: {fileID: 797304530}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67db9e8f0e2ae9c40bc1e2b64352a6b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &807782805
 GameObject:
   m_ObjectHideFlags: 0
@@ -2213,6 +2237,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 85cc648a20be07649bb133f35ca2f1fc, type: 3}
+--- !u!114 &1201673490 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6542946676881204803, guid: 85cc648a20be07649bb133f35ca2f1fc, type: 3}
+  m_PrefabInstance: {fileID: 1201673489}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67db9e8f0e2ae9c40bc1e2b64352a6b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1233032523
 GameObject:
   m_ObjectHideFlags: 0
@@ -2915,10 +2950,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7ceb47c929461434d8a48afbb98b4ad4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  allSettingCtr: {fileID: 0}
-  GesturesPerMinute: 20
-  TargetCount: 1
-  FlashDuration: 1
+  perSlider: {fileID: 493593441}
+  targetSlider: {fileID: 797304532}
+  flashSlider: {fileID: 1201673490}
 --- !u!224 &1881389904 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 5135626370850883127, guid: bb395c4516e27ad48bf409d9413a4f00, type: 3}
