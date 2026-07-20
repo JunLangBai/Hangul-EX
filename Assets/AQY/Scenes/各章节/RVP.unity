@@ -1385,7 +1385,7 @@ MonoBehaviour:
   lockRotY: 0
   lockRotZ: 0
   followThresholdAngle: 35
-  stopFollowThresholdAngle: 1
+  stopFollowThresholdAngle: 10
   followDistanceThreshold: 0.2
   followSpeed: 5
   adjustCenterByFov: 1
