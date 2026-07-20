@@ -624,7 +624,7 @@ MonoBehaviour:
   musicTime: 0.3
   fadeEase: 6
   audio: {fileID: 1838973690}
-  audioClip: {fileID: 8300000, guid: 48e2cf96e99c0384998df9d4db4a7b77, type: 3}
+  audioClip: {fileID: 8300000, guid: 0df1bba6e87e94c4797b3304122ddfc5, type: 3}
 --- !u!4 &1838973689
 Transform:
   m_ObjectHideFlags: 0
