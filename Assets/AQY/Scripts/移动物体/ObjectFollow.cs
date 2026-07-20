@@ -29,7 +29,7 @@ namespace Rokid.UXR.Utility
 
         [Header("平滑跟随设置")]
         [SerializeField, Tooltip("触发跟随的角度阈值(死区)。超过此角度开始跟随。")]
-        private float followThresholdAngle = 20.0f;
+        private float followThresholdAngle = 35.0f;
         
         [SerializeField, Tooltip("停止跟随的角度阈值。当角度小于此值时停止跟随(回到中心)。")]
         private float stopFollowThresholdAngle = 1.0f; // 新增：回到中心才停止

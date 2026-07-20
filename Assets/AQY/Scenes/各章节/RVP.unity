@@ -629,7 +629,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4636732636039756765, guid: 9e80c59a384a9d64c8b5810d6d1718e6, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -370.3
+      value: -280.3
       objectReference: {fileID: 0}
     - target: {fileID: 4636732636039756765, guid: 9e80c59a384a9d64c8b5810d6d1718e6, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -1384,7 +1384,7 @@ MonoBehaviour:
   lockRotX: 0
   lockRotY: 0
   lockRotZ: 0
-  followThresholdAngle: 20
+  followThresholdAngle: 35
   stopFollowThresholdAngle: 1
   followDistanceThreshold: 0.2
   followSpeed: 5

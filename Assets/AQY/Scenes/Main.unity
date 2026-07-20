@@ -2364,7 +2364,7 @@ MonoBehaviour:
   lockRotX: 0
   lockRotY: 0
   lockRotZ: 0
-  followThresholdAngle: 20
+  followThresholdAngle: 35
   stopFollowThresholdAngle: 1
   followDistanceThreshold: 0.2
   followSpeed: 4
