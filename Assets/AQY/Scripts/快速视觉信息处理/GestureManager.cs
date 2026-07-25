@@ -15,6 +15,11 @@ public class GestureManager : MonoBehaviour
 
     [Header("视觉效果")] [Tooltip("在切换到下一张图片前，图片消失的空白时间（秒）")]
     public float flashDuration = 0.1f; // 闪烁持续时间
+    
+    [Header("音频")]
+    public AudioSource audioSource;
+    public AudioClip no;
+    public AudioClip yes;
 
     [Header("UI组件")] public GameObject rvpPrefabs;
     
@@ -212,6 +217,7 @@ public class GestureManager : MonoBehaviour
                 reactionTimes.Add(reactionTimer);
                 correctResponseMadeForCurrentStimulus = true; // 标记已正确响应
                 Debug.Log($"命中! 反应时间: {reactionTimer}");
+                audioSource.PlayOneShot(yes);
                 ShowTemporaryText("正确！", Color.green);
             }
             // 如果是目标但手势错误 (isCorrectGesture is false)，我们在这里不做任何事。
@@ -222,6 +228,7 @@ public class GestureManager : MonoBehaviour
             // 对非目标做出了任何手势，都应被视为虚报
             falseAlarms++;
             Debug.Log("虚报!");
+            audioSource.PlayOneShot(no);
             ShowTemporaryText("错误！", Color.red);
         }
     }

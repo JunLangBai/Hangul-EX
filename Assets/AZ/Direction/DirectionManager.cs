@@ -117,6 +117,7 @@ public class DirectionManager : MonoBehaviour
     /// </summary>
     private void UpdatePlayingState()
     {
+        countdownText.color = Color.white;
         // 更新回合倒计时
         roundTimer -= Time.deltaTime;
         countdownText.text = roundTimer.ToString("F2");
@@ -275,6 +276,7 @@ public class DirectionManager : MonoBehaviour
             score++; // 正确次数增加
             Debug.Log("Correct!");
             countdownText.text = "正确!";
+            countdownText.color = Color.green;
             if (audioSource && correctSound)
             {
                 audioSource.PlayOneShot(correctSound);
@@ -284,6 +286,7 @@ public class DirectionManager : MonoBehaviour
         {
             Debug.Log("Incorrect!");
             countdownText.text = "错误!";
+            countdownText.color = Color.red;
             if (audioSource && incorrectSound)
             {
                 audioSource.PlayOneShot(incorrectSound);

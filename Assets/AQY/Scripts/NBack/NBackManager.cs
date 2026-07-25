@@ -41,6 +41,11 @@ public class NBackManager : MonoBehaviour
 
     public SettlementScreen settings;
 
+    [Header("音频")]
+    public AudioSource audioSource;
+    public AudioClip yes;
+    public AudioClip no;
+
     private readonly List<Trial> trialSequence = new();
     private int currentTrialIndex;
     private int score;
@@ -86,6 +91,8 @@ public class NBackManager : MonoBehaviour
 
     private void Start()
     {
+        audioSource = GetComponent<AudioSource>();
+        
         if (feedbackText != null)
         {
             if (nValue > 0)
@@ -321,12 +328,14 @@ public class NBackManager : MonoBehaviour
         if (currentTrial.isMatch)
         {
             buttonText.text = "正确!";
+            audioSource.PlayOneShot(yes);
             Debug.Log("Correct! 正确匹配! 得分: " + score);
         }
         else
         {
             score++;
             buttonText.text = "错误!";
+            audioSource.PlayOneShot(no);
             Debug.Log("Incorrect! 错误匹配! 得分: " + score);
         }
 
