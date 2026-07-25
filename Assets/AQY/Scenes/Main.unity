@@ -2848,7 +2848,7 @@ MonoBehaviour:
   nValue: 2
   stimulusDuration: 2
   interStimulusInterval: 2.5
-  totalTrials: 40
+  totalTrials: 15
   targetIndexN0: 4
   matchProbability: 0.33
   isOneBlockMode: 0
@@ -2856,11 +2856,11 @@ MonoBehaviour:
   memoryMode: 0
   directionGameDuration: 10
   directionIsRandomMode: 0
-  directionGameRounds: 40
-  attentionGesturesPerMinute: 20
+  directionGameRounds: 15
+  attentionGesturesPerMinute: 15
   attentionTargetCount: 1
   attentionFlashDuration: 1
-  emotionCount: 20
+  emotionCount: 10
   emotionDisplayTime: 3
 --- !u!4 &1992341491
 Transform:

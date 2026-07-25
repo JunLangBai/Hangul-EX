@@ -1141,8 +1141,8 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 47c14ddd28b6a364c8ab6f9b0e8a8ead, type: 3}
   audioClipOrder: {fileID: 8300000, guid: 5e5ed89d928b17a419efd555ba61a687, type: 3}
   audioClipReverse: {fileID: 8300000, guid: c6b58bc47c470f2478c222b775abaf35, type: 3}
-  audioClipCorrect: {fileID: 8300000, guid: d01de851079ee934c854e0171d37ab90, type: 3}
-  audioClipWrong: {fileID: 8300000, guid: 40f82e324cf9b4c408083f6b04e47586, type: 3}
+  audioClipCorrect: {fileID: 8300000, guid: bc6f62343922cda4fa6ab13182fde4be, type: 3}
+  audioClipWrong: {fileID: 8300000, guid: 3dd93ed7712d72c4aa6446d2f3440981, type: 3}
   audioClipRest: {fileID: 8300000, guid: a8279b2834fc91f4fb695e4e4bc9e4eb, type: 3}
 --- !u!114 &925220921
 MonoBehaviour:

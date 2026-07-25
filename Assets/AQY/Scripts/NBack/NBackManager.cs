@@ -275,6 +275,7 @@ public class NBackManager : MonoBehaviour
             stimulus3DObject.transform.position = currentCell.transform.position + currentCell.transform.up * 0.02f;;
             stimulus3DObject.transform.rotation = currentCell.transform.rotation;
             stimulus3DObject.GetComponent<ObjectCtr>().currentCell = currentCell;
+            stimulus3DObject.GetComponent<Renderer>().material.color = Color.white;
             stimulus3DObject.SetActive(true);
             UpdateScoreUI();
 
@@ -327,6 +328,7 @@ public class NBackManager : MonoBehaviour
 
         if (currentTrial.isMatch)
         {
+            stimulus3DObject.GetComponent<Renderer>().material.color = Color.green;
             buttonText.text = "正确!";
             audioSource.PlayOneShot(yes);
             Debug.Log("Correct! 正确匹配! 得分: " + score);
@@ -335,6 +337,7 @@ public class NBackManager : MonoBehaviour
         {
             score++;
             buttonText.text = "错误!";
+            stimulus3DObject.GetComponent<Renderer>().material.color = Color.red;
             audioSource.PlayOneShot(no);
             Debug.Log("Incorrect! 错误匹配! 得分: " + score);
         }

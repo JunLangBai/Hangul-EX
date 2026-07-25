@@ -12,7 +12,7 @@ public class AllSettingCtr : MonoBehaviour
     public int nValue = 1;
     public float stimulusDuration = 2.0f;
     public float interStimulusInterval = 2.5f;
-    public int totalTrials = 40;
+    public int totalTrials = 15;
     public int targetIndexN0 = 4;
     public float matchProbability = 0.4f;
     public bool isOneBlockMode = false;
@@ -26,11 +26,11 @@ public class AllSettingCtr : MonoBehaviour
     [Header("方向游戏设置")]
     public float directionGameDuration = 10f;
     public bool directionIsRandomMode = false;
-    public float directionGameRounds = 40f;
+    public float directionGameRounds = 15f;
 
     // --- 注意力游戏设置 ---
     [Header("注意力游戏设置")]
-    public int attentionGesturesPerMinute = 20;
+    public int attentionGesturesPerMinute = 15;
     public int attentionTargetCount = 1;
     public float attentionFlashDuration = 1.0f;
 
